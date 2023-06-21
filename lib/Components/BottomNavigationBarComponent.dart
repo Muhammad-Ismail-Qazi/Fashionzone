@@ -3,7 +3,7 @@ import 'package:fashionzone/CustomerPannels/CustomerDashboard.dart';
 import 'package:flutter/material.dart';
 
 import '../CustomerPannels/Ar.dart';
-import '../CustomerPannels/Profile.dart';
+import '../CommonPannels/Profile.dart';
 import '../CustomerPannels/Reels.dart';
 
 class MyCustomBottomNavigationBar extends StatefulWidget {

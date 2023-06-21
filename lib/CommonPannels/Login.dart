@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import '../CustomerPannels/CustomerDashboard.dart';
+
 import 'Signup.dart';
 
 class Login extends StatefulWidget {
@@ -76,8 +77,20 @@ class _LoginState extends State<Login> {
                               border: OutlineInputBorder()),
                           style: const TextStyle(
                               fontFamily: 'Roboto', fontSize: 16),
-                          validator: (email)=>email != null && !EmailValidator.validate(email) ?
-                          'Enter a valid email' : null,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter your email address.';
+                            } else if (!RegExp(
+                                r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                                .hasMatch(value)) {
+                              return 'Invalid email address format.';
+                            }
+                            else {
+                              return null;
+                            }
+
+
+                          }
                           ),
                     ),
                   ),
@@ -128,7 +141,7 @@ class _LoginState extends State<Login> {
                               fontFamily: 'Roboto', fontSize: 16),
                           validator: (value) {
                           if (value!=null && value.length<8){
-                            return 'Enter min 7 character ';
+                            return 'Enter min 8 character ';
                           }
                           else {
                             return null;

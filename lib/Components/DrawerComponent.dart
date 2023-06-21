@@ -1,6 +1,6 @@
 import 'package:fashionzone/CommonPannels/Login.dart';
 import 'package:fashionzone/CustomerPannels/CustomerDashboard.dart';
-import 'package:fashionzone/CustomerPannels/Profile.dart';
+import 'package:fashionzone/CommonPannels/Profile.dart';
 import 'package:flutter/material.dart';
 
 import '../CustomerPannels/Ar.dart';

@@ -4,6 +4,8 @@ import 'package:fashionzone/Components/AppBarComponent.dart';
 import 'package:fashionzone/Components/BottomNavigationBarComponent.dart';
 import 'package:fashionzone/Components/DrawerComponent.dart';
 import 'package:flutter/material.dart';
+
+
 // import 'package:image_picker/image_picker.dart';
 // import 'package:video_player/video_player.dart';
 
