@@ -1,9 +1,10 @@
+import 'package:camera/camera.dart';
 import 'package:fashionzone/Components/AppBarComponent.dart';
 import 'package:fashionzone/Components/DrawerComponent.dart';
 import 'package:flutter/material.dart';
 
 import '../Components/BottomNavigationBarComponent.dart';
-// import 'package:camera/camera.dart';
+import 'package:camera/camera.dart';
 
 class AR extends StatefulWidget {
   const AR({Key? key}) : super(key: key);
@@ -13,36 +14,36 @@ class AR extends StatefulWidget {
 }
 
 class _ARState extends State<AR> {
-  // List<CameraDescription>? cameras;
-  // CameraController? cameraController;
+  List<CameraDescription>? cameras;
+  CameraController? cameraController;
   int selectedCameraIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    // initCamera();
+    initCamera();
   }
 
-  // Future<void> initCamera() async {
-  //   cameras = await availableCameras();
-  //   cameraController = CameraController(
-  //     cameras![selectedCameraIndex],
-  //     ResolutionPreset.high,
-  //   );
-  //   await cameraController!.initialize();
-  //   setState(() {});
-  // }
+  Future<void> initCamera() async {
+    cameras = await availableCameras();
+    cameraController = CameraController(
+      cameras![selectedCameraIndex],
+      ResolutionPreset.high,
+    );
+    await cameraController!.initialize();
+    setState(() {});
+  }
 
-  // void toggleCamera() {
-  //   selectedCameraIndex = selectedCameraIndex == 0 ? 1 : 0;
-  //   cameraController = CameraController(
-  //     cameras![selectedCameraIndex],
-  //     ResolutionPreset.high,
-  //   );
-  //   cameraController!.initialize().then((_) {
-  //     setState(() {});
-  //   });
-  // }
+  void toggleCamera() {
+    selectedCameraIndex = selectedCameraIndex == 0 ? 1 : 0;
+    cameraController = CameraController(
+      cameras![selectedCameraIndex],
+      ResolutionPreset.high,
+    );
+    cameraController!.initialize().then((_) {
+      setState(() {});
+    });
+  }
 
 
   @override
@@ -54,19 +55,19 @@ class _ARState extends State<AR> {
           drawer: const MyCustomDrawerComponent(),
           body: Stack(
             children: [
-              // cameraController != null && cameraController!.value.isInitialized
-              //     ? SizedBox(
-              //   height: MediaQuery
-              //       .of(context)
-              //       .size
-              //       .height,
-              //   width: MediaQuery
-              //       .of(context)
-              //       .size
-              //       .width,
-              //   child: CameraPreview(cameraController!),
-              // )
-              //     : const Center(child: CircularProgressIndicator()),
+              cameraController != null && cameraController!.value.isInitialized
+                  ? SizedBox(
+                height: MediaQuery
+                    .of(context)
+                    .size
+                    .height,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                child: CameraPreview(cameraController!),
+              )
+                  : const Center(child: CircularProgressIndicator()),
               Positioned(
                   top: 300,
                   left: 250,
@@ -85,7 +86,8 @@ class _ARState extends State<AR> {
                                   children: [
                                     CircleAvatar(
                                       backgroundImage:
-                                      AssetImage("assets/logo.jpg"),
+                                      AssetImage("images/logo.png"),
+                                      backgroundColor: Colors.white,
                                     ),
                                     SizedBox(
                                       height: 5,
@@ -103,7 +105,7 @@ class _ARState extends State<AR> {
                                   children: [
                                     CircleAvatar(
                                       backgroundImage:
-                                      AssetImage("assets/logo.jpg"),
+                                      AssetImage("images/logo0.jpeg"),
                                     ),
                                     SizedBox(
                                       height: 5,
@@ -121,7 +123,7 @@ class _ARState extends State<AR> {
                                   children: [
                                     CircleAvatar(
                                       backgroundImage:
-                                      AssetImage("assets/logo.jpg"),
+                                      AssetImage("images/logo1.jpeg"),
                                     ),
                                     SizedBox(
                                       height: 5,
@@ -235,7 +237,7 @@ class _ARState extends State<AR> {
 
   @override
   void dispose() {
-    // cameraController?.dispose();
+    cameraController?.dispose();
     super.dispose();
   }
 }

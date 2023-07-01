@@ -28,7 +28,7 @@ class _BookingState extends State<Booking> {
       theme: ThemeData(
         primaryColor: const Color.fromARGB(247, 84, 74, 158),
         iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
-        fontFamily: 'Roboto',
+        fontFamily: 'Poppins',
       ),
       home: Scaffold(
         backgroundColor: const Color.fromARGB(224, 248, 249, 252),
@@ -73,7 +73,7 @@ class _BookingState extends State<Booking> {
                               filled: true,
                               labelText: 'Full Name',
                               labelStyle: TextStyle(
-                                fontFamily: 'Roboto',
+                                fontFamily: 'Poppins',
                                 fontSize: 16,
                                 color: Color.fromARGB(247, 84, 74, 158),
                               ),
@@ -91,7 +91,7 @@ class _BookingState extends State<Booking> {
                               ),
                               border: OutlineInputBorder()),
                           style: const TextStyle(
-                              fontFamily: 'Roboto', fontSize: 20),
+                              fontFamily: 'Poppins', fontSize: 20),
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'Please enter your full name.';
@@ -123,7 +123,7 @@ class _BookingState extends State<Booking> {
                               filled: true,
                               labelText: 'Phone',
                               labelStyle: TextStyle(
-                                fontFamily: 'Roboto',
+                                fontFamily: 'Poppins',
                                 fontSize: 16,
                                 color: Color.fromARGB(247, 84, 74, 158),
                               ),
@@ -141,7 +141,7 @@ class _BookingState extends State<Booking> {
                               ),
                               border: OutlineInputBorder()),
                           style: const TextStyle(
-                              fontFamily: 'Roboto', fontSize: 20),
+                              fontFamily: 'Poppins', fontSize: 20),
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'Please enter your phone number.';
@@ -172,7 +172,7 @@ class _BookingState extends State<Booking> {
                               filled: true,
                               labelText: 'Address',
                               labelStyle: TextStyle(
-                                fontFamily: 'Roboto',
+                                fontFamily: 'Poppins',
                                 fontSize: 16,
                                 color: Color.fromARGB(247, 84, 74, 158),
                               ),
@@ -190,7 +190,7 @@ class _BookingState extends State<Booking> {
                               ),
                               border: OutlineInputBorder()),
                           style: const TextStyle(
-                              fontFamily: 'Roboto', fontSize: 20),
+                              fontFamily: 'Poppins', fontSize: 20),
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'Please enter your street address.';
@@ -219,7 +219,7 @@ class _BookingState extends State<Booking> {
                           filled: true,
                           labelText: 'Time',
                           labelStyle: TextStyle(
-                            fontFamily: 'Roboto',
+                            fontFamily: 'Poppins',
                             fontSize: 16,
                             color: Color.fromARGB(247, 84, 74, 158),
                           ),
@@ -295,7 +295,7 @@ class _BookingState extends State<Booking> {
                           }
                         },
                         style: const TextStyle(
-                            fontFamily: 'Roboto',
+                            fontFamily: 'Poppins',
                             fontSize: 16,
                             color: Colors.black), // Set the text color
                         validator: (value) {
@@ -359,7 +359,7 @@ class _BookingState extends State<Booking> {
                           "Reserve your seat",
                           style: TextStyle(
                             fontSize: 16,
-                            fontFamily: 'Roboto',
+                            fontFamily: 'Poppins',
                             color: isHover
                                 ? Colors.black45
                                 : Colors

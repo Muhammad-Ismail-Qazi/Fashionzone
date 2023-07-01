@@ -8,10 +8,13 @@ import 'package:fashionzone/CustomerPannels/CustomerDashboard.dart';
 import 'package:fashionzone/CommonPannels/Profile.dart';
 import 'package:fashionzone/CustomerPannels/Salon.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-import '../AdminPannels/AdminDashboard.dart';
+import 'AdminPannels/AdminDashboard.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+   Firebase.initializeApp();
   runApp(const Fashionzone());
 }
 
@@ -26,9 +29,9 @@ class Fashionzone extends StatelessWidget {
           primaryColor: const Color.fromARGB(247, 84, 74, 158),
           backgroundColor:const Color.fromARGB(247, 84, 74, 158) ,
           iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
-          fontFamily: 'Roboto',
+          fontFamily: 'Poppins',
         ),
-        home:  const Booking(),
+        home:  const Customer_Dashboard(),
     );
   }
 }

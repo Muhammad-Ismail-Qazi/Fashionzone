@@ -1,8 +1,9 @@
 import 'package:fashionzone/AdminPannels/AdminDashboard.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:email_validator/email_validator.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import '../CustomerPannels/CustomerDashboard.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'Signup.dart';
 
@@ -11,15 +12,18 @@ class Login extends StatefulWidget {
   @override
   State<Login> createState() => _LoginState();
 }
+
 enum userRole { customer, admin }
+
 class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
   final passwordController = TextEditingController();
   final emailController = TextEditingController();
+  FirebaseAuth auth = FirebaseAuth.instance;
   userRole role = userRole.customer;
-  bool isHover=false;
-  bool isEyeOpen=true;
-
+  bool isHover = false;
+  bool isEyeOpen = true;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +31,7 @@ class _LoginState extends State<Login> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor:  const Color.fromARGB(252, 241, 239, 248),
+        backgroundColor: const Color.fromARGB(252, 241, 239, 248),
         body: Form(
           autovalidateMode: AutovalidateMode.onUserInteraction,
           key: formKey,
@@ -36,13 +40,13 @@ class _LoginState extends State<Login> {
               child: Column(
                 children: [
                   //Top logo
-                   Padding(
-                      padding: EdgeInsets.only(top: screenHeight * 0.1),
+                  Padding(
+                    padding: EdgeInsets.only(top: screenHeight * 0.1),
                     child: SizedBox(
                       child: Image(
-                          image: const AssetImage('images/logo.png'),
-                        height: MediaQuery.of(context).size.height*0.25,
-                        width: MediaQuery.of(context).size.width*0.25,
+                        image: const AssetImage('images/logo.png'),
+                        height: MediaQuery.of(context).size.height * 0.25,
+                        width: MediaQuery.of(context).size.width * 0.25,
                       ),
                     ),
                   ),
@@ -61,8 +65,10 @@ class _LoginState extends State<Login> {
                               fillColor: Colors.white,
                               filled: true,
                               labelText: 'Email',
-                              labelStyle:
-                              TextStyle(fontFamily: 'Roboto', fontSize: 16,color: Color.fromARGB(247, 84, 74, 158)),
+                              labelStyle: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 16,
+                                  color: Color.fromARGB(247, 84, 74, 158)),
                               prefixIcon: Icon(
                                 Icons.email,
                                 color: Color.fromARGB(247, 84, 74, 158),
@@ -71,27 +77,24 @@ class _LoginState extends State<Login> {
                                 borderSide: BorderSide(color: Colors.white),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                BorderSide(color: Color.fromARGB(247, 84, 74, 158), width: 1),
+                                borderSide: BorderSide(
+                                    color: Color.fromARGB(247, 84, 74, 158),
+                                    width: 1),
                               ),
                               border: OutlineInputBorder()),
                           style: const TextStyle(
-                              fontFamily: 'Roboto', fontSize: 16),
+                              fontFamily: 'Poppins', fontSize: 16),
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'Please enter your email address.';
                             } else if (!RegExp(
-                                r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                                    r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
                                 .hasMatch(value)) {
                               return 'Invalid email address format.';
-                            }
-                            else {
+                            } else {
                               return null;
                             }
-
-
-                          }
-                          ),
+                          }),
                     ),
                   ),
                   // space
@@ -100,52 +103,57 @@ class _LoginState extends State<Login> {
                   ),
                   // password
                   SizedBox(
-                      height: 50,
+                    height: 50,
                     width: MediaQuery.of(context).size.width * 0.86,
                     child: Material(
                       elevation: 5,
                       shadowColor: Colors.black45,
                       child: TextFormField(
-                        obscureText: isEyeOpen,
+                          obscureText: isEyeOpen,
                           controller: passwordController,
                           keyboardType: TextInputType.visiblePassword,
-                          decoration:  InputDecoration(
+                          decoration: InputDecoration(
                               fillColor: Colors.white,
                               filled: true,
                               labelText: 'Password',
-                              labelStyle:
-                              const TextStyle(fontFamily: 'Roboto', fontSize: 16, color: Color.fromARGB(247, 84, 74, 158)),
+                              labelStyle: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 16,
+                                  color: Color.fromARGB(247, 84, 74, 158)),
                               prefixIcon: const Icon(
                                 Icons.person,
                                 color: Color.fromARGB(247, 84, 74, 158),
                               ),
-                              suffixIcon:  GestureDetector(
+                              suffixIcon: GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    isEyeOpen=! isEyeOpen;
+                                    isEyeOpen = !isEyeOpen;
                                   });
-
                                 },
-                                child: Icon(isEyeOpen ? Icons.visibility :Icons.visibility_off, color: const Color.fromARGB(247, 84, 74, 158)
-                                ),
+                                child: Icon(
+                                    isEyeOpen
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color:
+                                        const Color.fromARGB(247, 84, 74, 158)),
                               ),
                               enabledBorder: const OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.white),
                               ),
                               focusedBorder: const OutlineInputBorder(
-                                borderSide:
-                                BorderSide(color: Color.fromARGB(247, 84, 74, 158), width: 1),
+                                borderSide: BorderSide(
+                                    color: Color.fromARGB(247, 84, 74, 158),
+                                    width: 1),
                               ),
                               border: const OutlineInputBorder()),
                           style: const TextStyle(
-                              fontFamily: 'Roboto', fontSize: 16),
+                              fontFamily: 'Poppins', fontSize: 16),
                           validator: (value) {
-                          if (value!=null && value.length<8){
-                            return 'Enter min 8 character ';
-                          }
-                          else {
-                            return null;
-                          }
+                            if (value != null && value.length < 8) {
+                              return 'Enter min 8 character ';
+                            } else {
+                              return null;
+                            }
 
                             return null;
                           }),
@@ -156,7 +164,8 @@ class _LoginState extends State<Login> {
                     height: 10,
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.07),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.of(context).size.width * 0.07),
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
@@ -169,7 +178,7 @@ class _LoginState extends State<Login> {
                           'Forgot Password?',
                           style: TextStyle(
                             fontSize: 16,
-                            fontFamily: 'Roboto',
+                            fontFamily: 'Poppins',
                             decoration: TextDecoration.underline,
                             color: Color.fromARGB(247, 84, 74, 158),
                           ),
@@ -179,7 +188,8 @@ class _LoginState extends State<Login> {
                   ),
                   //Radio Button
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.07),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.of(context).size.width * 0.07),
                     child: Row(
                       children: [
                         Radio(
@@ -196,7 +206,8 @@ class _LoginState extends State<Login> {
                         const Expanded(
                           child: Text(
                             "customer",
-                            style: TextStyle(fontSize: 16, fontFamily: 'Roboto'),
+                            style:
+                                TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
                         ),
                         Radio(
@@ -213,7 +224,8 @@ class _LoginState extends State<Login> {
                         const Expanded(
                           child: Text(
                             "Admin",
-                            style: TextStyle(fontSize: 16, fontFamily: 'Roboto'),
+                            style:
+                                TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                           ),
                         ),
                       ],
@@ -225,7 +237,7 @@ class _LoginState extends State<Login> {
                   ),
                   //Login button
                   SizedBox(
-                       height: 50,
+                    height: 50,
                     width: MediaQuery.of(context).size.width * 0.86,
                     child: MouseRegion(
                       onHover: (event) {
@@ -242,49 +254,87 @@ class _LoginState extends State<Login> {
                         style: ElevatedButton.styleFrom(
                           elevation: 5,
                           backgroundColor: isHover
-                              ? const Color.fromARGB(247, 255, 255, 255) // White background when hovering
-                              : const Color.fromARGB(247, 84, 74, 158), // Purple background when not hovering
+                              ? const Color.fromARGB(247, 255, 255,
+                                  255) // White background when hovering
+                              : const Color.fromARGB(247, 84, 74,
+                                  158), // Purple background when not hovering
                         ),
                         onPressed: () {
-                          final isValidationform=formKey.currentState!.validate();
                           if (formKey.currentState!.validate()) {
-                            if (role == userRole.customer) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const Customer_Dashboard(),
-                                ),
+
+                            auth.createUserWithEmailAndPassword(
+                                    email: emailController.text.toString(),
+                                    password:
+                                        passwordController.text.toString())
+                                .then((value) {
+                              // Account created successfully
+                              // Do something
+                              Fluttertoast.showToast(
+                                msg: "Account Successfully created!",
+                                backgroundColor:const  Color.fromARGB(247, 84, 74, 158),
+                                textColor: Colors.white,
                               );
-                            } else if (role == userRole.admin) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const AdminDashboard(),
-                                ),
-                              );
-                            } else {
+                              if (role == userRole.customer) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                    const Customer_Dashboard(),
+                                  ),
+                                );
+                              }
+                              else if (role == userRole.admin) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const AdminDashboard(),
+                                  ),
+                                );
+                              }
+                              else {
+                                setState(() {
+                                  role =
+                                      userRole.customer; // Update the role here
+                                });
+                              }
+                                  
+                            })
+                                .onError((error, stackTrace) {
                               setState(() {
-                                role = userRole.customer; // Update the role here
+                                isLoading=false;
                               });
-                            }
+                              Fluttertoast.showToast(
+                                msg: error.toString(),
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                              );
+                            });
+                        
 
                             // Reset isHover after the button is clicked
                             setState(() {
                               isHover = false;
+                              isLoading = true;
                             });
                           }
                         },
-                        child: Text(
-                          "Login",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Roboto',
-                            color: isHover ? Colors.black45 : Colors.white, // black45 text when not hovering, white text when hovering
-                          ),
-                        ),
+                        child: isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : Text(
+                                "Login",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'Poppins',
+                                  color: isHover
+                                      ? Colors.black45
+                                      : Colors
+                                          .white, // black45 text when not hovering, white text when hovering
+                                ),
+                              ),
                       ),
                     ),
-
                   ),
                   // don't have an account
                   Padding(
@@ -294,7 +344,7 @@ class _LoginState extends State<Login> {
                         text: "Don't have an account? ",
                         style: const TextStyle(
                           fontSize: 16,
-                          fontFamily: 'Roboto',
+                          fontFamily: 'Poppins',
                           color: Colors.black45,
                         ),
                         children: [
@@ -307,20 +357,22 @@ class _LoginState extends State<Login> {
                             // Add the `onTap` callback to handle the tap on "Login"
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => const Signup(),));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const Signup(),
+                                    ));
                               },
                           ),
                         ],
                       ),
                     ),
                   ),
-
                 ],
               ),
             ),
           ),
         ),
-
       ),
     );
   }

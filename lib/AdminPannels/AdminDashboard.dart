@@ -42,14 +42,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ? const Text(
                       'Upload Cover Photo',
                       style: TextStyle(
-                        fontSize: 20.0,
+                        fontSize: 18,
                         color: Colors.white,
                       ),
                     )
                   : const Text(
                       'Upload Your Logo',
                       style: TextStyle(
-                        fontSize: 20.0,
+                        fontSize: 18,
                         color: Colors.white,
                       ),
                     ),
@@ -111,7 +111,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         primaryColor: const Color.fromARGB(247, 84, 74, 158),
         backgroundColor: const Color.fromARGB(247, 84, 74, 158),
         iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
-        fontFamily: 'Roboto',
+        fontFamily: 'Poppins',
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -247,7 +247,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                       child: Text(
                                         "Save",
                                         style: TextStyle(
-                                          fontSize: 20,
+                                          fontSize: 18,
                                           color: isHover
                                               ? Colors.black45
                                               : Colors.white,
@@ -260,26 +260,33 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             ),
 
                             // Title
-                            const Text(
-                              'Gents Salon',
-                              style: TextStyle(
-                                fontSize: 25,
-                                color: Colors.black45,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'Gents Salon',
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    color: Colors.black45,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.edit),
+                                  onPressed: () {
+                                    // Add your onPressed logic here
+                                    openDialogToOpen(context);
+                                  },
+                                ),
+                              ],
                             ),
+
                             // space
                             SizedBox(
                               height:
                                   MediaQuery.of(context).size.height * 0.001,
                             ),
                             // Subtitle
-                            const Text(
-                              'Hair, Color, Beard',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black45,
-                              ),
-                            ),
+
                             // space
                             SizedBox(
                               height: MediaQuery.of(context).size.height * 0.01,
@@ -330,7 +337,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                             Text(
                                               "4.5",
                                               style: TextStyle(
-                                                fontSize: 20,
+                                                fontSize: 18,
                                                 color: isHover
                                                     ? Colors.black45
                                                     : Colors.white,
@@ -378,7 +385,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                         child: Text(
                                           "Check Appointments",
                                           style: TextStyle(
-                                              fontSize: 20,
+                                              fontSize: 18,
                                               color: isHover
                                                   ? Colors.black45
                                                   : Colors.white),
@@ -453,7 +460,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                               color: isHover
                                                   ? Colors.black45
                                                   : Colors.white,
-                                              fontSize: 20,
+                                              fontSize: 18,
                                             ),
                                           ),
                                         ),
@@ -519,7 +526,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                               color: isHover
                                                   ? Colors.black45
                                                   : Colors.white,
-                                              fontSize: 20,
+                                              fontSize: 18,
                                             ),
                                           ),
                                         ),
@@ -539,7 +546,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 const Text(
                                   "Gallery",
                                   style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 18,
+                                    fontFamily: 'Poppins'
                                   ),
                                 ),
                                 const Spacer(),
@@ -550,7 +558,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   child: const Text(
                                     "see all",
                                     textAlign: TextAlign.end,
-                                    style: TextStyle(fontSize: 20),
+                                    style: TextStyle(fontSize: 18),
                                   ),
                                 ),
                               ],
@@ -591,7 +599,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 const Text(
                                   "Services",
                                   style: TextStyle(
-                                    fontSize: 20,
+                                    fontFamily: 'Poppins',
+                                    fontSize: 18,
                                   ),
                                 ),
                                 const Spacer(),
@@ -602,7 +611,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   child: const Text(
                                     "see all",
                                     textAlign: TextAlign.end,
-                                    style: TextStyle(fontSize: 20),
+                                    style: TextStyle(fontSize: 18),
                                   ),
                                 ),
                               ],
@@ -636,35 +645,34 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ),
                   // the Logo
                   Positioned(
-                    top: MediaQuery.of(context).size.height * 0.23,
-                    left: MediaQuery.of(context).size.width * 0.4,
+                    top: MediaQuery.of(context).size.height * 0.3 - kToolbarHeight, // Adjusted for the app bar,
+                    left: (MediaQuery.of(context).size.width * 0.5) - (MediaQuery.of(context).size.width * 0.25 / 2),
+                    right: (MediaQuery.of(context).size.width * 0.5) - (MediaQuery.of(context).size.width * 0.25 / 2),
                     child: Stack(
                       children: [
                         Material(
                           elevation: 5,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(20)),
+                          borderRadius: const BorderRadius.all(Radius.circular(20)),
                           child: Container(
-                              width: MediaQuery.of(context).size.width * 0.25,
-                              height:
-                                  MediaQuery.of(context).size.height * 0.125,
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20)),
+                            width: MediaQuery.of(context).size.width * 0.25,
+                            height: MediaQuery.of(context).size.height * 0.125,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(Radius.circular(20)),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: _imageFile == null
+                                  ? Image.asset(
+                                'images/logo0.jpeg',
+                                fit: BoxFit.fill,
+                              )
+                                  : Image.file(
+                                File(_imageFile!.path),
+                                fit: BoxFit.fill,
                               ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: _imageFile == null
-                                    ? Image.asset(
-                                        'images/logo0.jpeg',
-                                        fit: BoxFit.fill,
-                                      )
-                                    : Image.file(
-                                        File(_imageFile!.path),
-                                        fit: BoxFit.fill,
-                                      ),
-                              )),
+                            ),
+                          ),
                         ),
                         Positioned(
                           bottom: -10,
@@ -689,6 +697,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ],
                     ),
                   ),
+
                 ],
               ),
             ),
@@ -698,4 +707,38 @@ class _AdminDashboardState extends State<AdminDashboard> {
       ),
     );
   }
+
+  Future<void> openDialogToOpen(BuildContext context) async {
+    String salonName = '';
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14.0),
+          ),
+          title: const Text("Salon Name"),
+          content: TextField(
+            onChanged: (value) {
+              salonName = value;
+            },
+          ),
+          actions: [
+            ElevatedButton(
+              child: const Text("OK"),
+              onPressed: () {
+                // Use the salonName variable as needed
+                print('Salon Name: $salonName');
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
 }

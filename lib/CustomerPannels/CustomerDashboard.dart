@@ -21,7 +21,7 @@ class _Customer_DashboardState extends State<Customer_Dashboard> {
       theme: ThemeData(
         primaryColor: const Color.fromARGB(247, 84, 74, 158),
         iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
-        fontFamily: 'Roboto',
+        fontFamily: 'Poppins',
       ),
       debugShowCheckedModeBanner: false,
       home:  Scaffold(
@@ -42,7 +42,7 @@ class _Customer_DashboardState extends State<Customer_Dashboard> {
                       "Find the best salon",
                       style: TextStyle(
                           color: Colors.black45,
-                          fontFamily: 'Roboto',
+                          fontFamily: 'Poppins',
                           fontSize: 30,
                           fontWeight: FontWeight.w500),
                     )),
@@ -52,7 +52,7 @@ class _Customer_DashboardState extends State<Customer_Dashboard> {
                       "Services!",
                       style: TextStyle(
                           color: Colors.black45,
-                          fontFamily: 'Roboto',
+                          fontFamily: 'Poppins',
                           fontSize: 30,
                           fontWeight: FontWeight.w500),
                     )),
@@ -70,7 +70,7 @@ class _Customer_DashboardState extends State<Customer_Dashboard> {
                         hintText: 'Search...' ,contentPadding: const EdgeInsets.only(left: 20),
                         hintStyle: TextStyle(
                           fontSize: MediaQuery.of(context).size.width * 0.04,
-                          fontFamily: 'Roboto',
+                          fontFamily: 'Poppins',
                           color:const Color.fromARGB(247, 84, 74, 158),
                         ),
                         filled: true,
@@ -124,7 +124,7 @@ class _Customer_DashboardState extends State<Customer_Dashboard> {
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             fontSize: 20,
-                            fontFamily: 'Roboto',
+                            fontFamily: 'Poppins',
                             fontWeight: FontWeight.w500,
                             color: Colors.black45,
 
@@ -141,7 +141,7 @@ class _Customer_DashboardState extends State<Customer_Dashboard> {
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             fontSize: 20,
-                            fontFamily: 'Roboto',
+                            fontFamily: 'Poppins',
                               fontWeight: FontWeight.w500,
                             color: Colors.black45,
                           ),

@@ -221,7 +221,7 @@ class _ProfileState extends State<Profile> {
                                       filled: true,
                                       labelText: 'Full Name',
                                       labelStyle: TextStyle(
-                                          fontFamily: 'Roboto',
+                                          fontFamily: 'Poppins',
                                           fontSize: 16,
                                           color:
                                               Color.fromARGB(247, 84, 74, 158)),
@@ -241,7 +241,7 @@ class _ProfileState extends State<Profile> {
                                       ),
                                       border: OutlineInputBorder()),
                                   style: const TextStyle(
-                                      fontFamily: 'Roboto', fontSize: 15),
+                                      fontFamily: 'Poppins', fontSize: 15),
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return 'Please enter your full name.';
@@ -275,7 +275,7 @@ class _ProfileState extends State<Profile> {
                                       filled: true,
                                       labelText: 'Email',
                                       labelStyle: TextStyle(
-                                          fontFamily: 'Roboto',
+                                          fontFamily: 'Poppins',
                                           fontSize: 16,
                                           color:
                                               Color.fromARGB(247, 84, 74, 158)),
@@ -295,7 +295,7 @@ class _ProfileState extends State<Profile> {
                                       ),
                                       border: OutlineInputBorder()),
                                   style: const TextStyle(
-                                      fontFamily: 'Roboto', fontSize: 15),
+                                      fontFamily: 'Poppins', fontSize: 15),
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return 'Please enter your email address.';
@@ -331,7 +331,7 @@ class _ProfileState extends State<Profile> {
                                       filled: true,
                                       labelText: 'Phone',
                                       labelStyle: TextStyle(
-                                          fontFamily: 'Roboto',
+                                          fontFamily: 'Poppins',
                                           fontSize: 16,
                                           color:
                                               Color.fromARGB(247, 84, 74, 158)),
@@ -351,7 +351,7 @@ class _ProfileState extends State<Profile> {
                                       ),
                                       border: OutlineInputBorder()),
                                   style: const TextStyle(
-                                      fontFamily: 'Roboto', fontSize: 15),
+                                      fontFamily: 'Poppins', fontSize: 15),
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return 'Please enter your phone number.';
@@ -384,7 +384,7 @@ class _ProfileState extends State<Profile> {
                                       filled: true,
                                       labelText: 'Address',
                                       labelStyle: TextStyle(
-                                          fontFamily: 'Roboto',
+                                          fontFamily: 'Poppins',
                                           fontSize: 16,
                                           color:
                                               Color.fromARGB(247, 84, 74, 158)),
@@ -404,7 +404,7 @@ class _ProfileState extends State<Profile> {
                                       ),
                                       border: OutlineInputBorder()),
                                   style: const TextStyle(
-                                      fontFamily: 'Roboto', fontSize: 15),
+                                      fontFamily: 'Poppins', fontSize: 15),
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return 'Please enter your street address.';
@@ -433,7 +433,7 @@ class _ProfileState extends State<Profile> {
                                       filled: true,
                                       labelText: 'Password',
                                       labelStyle: TextStyle(
-                                          fontFamily: 'Roboto',
+                                          fontFamily: 'Poppins',
                                           fontSize: 16,
                                           color:
                                               Color.fromARGB(247, 84, 74, 158)),
@@ -453,7 +453,7 @@ class _ProfileState extends State<Profile> {
                                       ),
                                       border: OutlineInputBorder()),
                                   style: const TextStyle(
-                                      fontFamily: 'Roboto', fontSize: 15),
+                                      fontFamily: 'Poppins', fontSize: 15),
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return 'Please enter your password.';
@@ -518,7 +518,7 @@ class _ProfileState extends State<Profile> {
                                   "Edit Profile",
                                   style: TextStyle(
                                     fontSize: 16,
-                                    fontFamily: 'Roboto',
+                                    fontFamily: 'Poppins',
                                     color: isHover
                                         ? Colors.black45
                                         : Colors

@@ -29,7 +29,7 @@ class _UploadServicesState extends State<UploadServices> {
         primaryColor: const Color.fromARGB(247, 84, 74, 158),
         backgroundColor:const Color.fromARGB(247, 84, 74, 158) ,
         iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
-        fontFamily: 'Roboto',
+        fontFamily: 'Poppins',
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -61,7 +61,7 @@ class _UploadServicesState extends State<UploadServices> {
                                 filled: true,
                                 labelText: 'Services',
                                 labelStyle: TextStyle(
-                                  fontFamily: 'Roboto',
+                                  fontFamily: 'Poppins',
                                   fontSize: 16,
                                   color: Color.fromARGB(247, 84, 74, 158),
                                 ),
@@ -74,7 +74,7 @@ class _UploadServicesState extends State<UploadServices> {
                                 ),
                                 border: OutlineInputBorder(),
                               ),
-                              style: const TextStyle(fontFamily: 'Roboto', fontSize: 15),
+                              style: const TextStyle(fontFamily: 'Poppins', fontSize: 15),
                               validator: (value) {
                                 if (value!.isEmpty && value.length < 3) {
                                   return 'Please enter your full name.';
@@ -103,7 +103,7 @@ class _UploadServicesState extends State<UploadServices> {
                                 filled: true,
                                 labelText: 'Price',
                                 labelStyle: TextStyle(
-                                  fontFamily: 'Roboto',
+                                  fontFamily: 'Poppins',
                                   fontSize: 16,
                                   color: Color.fromARGB(247, 84, 74, 158),
                                 ),
@@ -116,7 +116,7 @@ class _UploadServicesState extends State<UploadServices> {
                                 ),
                                 border: OutlineInputBorder(),
                               ),
-                              style: const TextStyle(fontFamily: 'Roboto', fontSize: 15),
+                              style: const TextStyle(fontFamily: 'Poppins', fontSize: 15),
                               validator: (value) {
                                 if (value!.isEmpty && value.length < 3) {
                                   return 'Please enter the price.';
@@ -160,7 +160,7 @@ class _UploadServicesState extends State<UploadServices> {
                                 "Add",
                                 style: TextStyle(
                                   fontSize: 16,
-                                  fontFamily: 'Roboto',
+                                  fontFamily: 'Poppins',
                                   color: isHover ? Colors.black45 : Colors.white, // black45 text when not hovering, white text when hovering
                                 ),
                               ),
@@ -222,7 +222,7 @@ class _UploadServicesState extends State<UploadServices> {
                             "Upload Services",
                             style: TextStyle(
                               fontSize: 16,
-                              fontFamily: 'Roboto',
+                              fontFamily: 'Poppins',
                               color: isHover ? Colors.black45 : Colors.white,
                             ),
                           ),

@@ -21,7 +21,7 @@ class _MyCustomAppBarComponentState extends State<MyCustomAppBarComponent> {
           "FASHIONZONE",
           style: TextStyle(
             color: Colors.white,
-            fontFamily: 'Roboto',
+            fontFamily: 'Poppins',
             fontSize: 24,
           ),
         ),

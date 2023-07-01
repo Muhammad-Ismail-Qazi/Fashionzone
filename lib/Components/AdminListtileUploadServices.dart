@@ -29,7 +29,7 @@ class _MyCustomListTileComponentState extends State<MyCustomListTileComponent> {
           padding: const EdgeInsets.only(left: 14.0),
           child: Text(
             widget.servicesName,
-            style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'Roboto'),
+            style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'Poppins'),
           ),
         ),
         subtitle: Padding(

@@ -35,7 +35,7 @@ class ThankYou extends StatelessWidget {
             child: Center(
               child: Text(
                 'Your reservation has been processed and will response soon. we are glad you have joined FASHIONZONE. To view your reservation please check the notifaction bell in case of any query or complain plese feel free to contact us',
-                style: TextStyle(fontSize:  16, fontFamily: 'Roboto',color: Colors.black45),
+                style: TextStyle(fontSize:  16, fontFamily: 'Poppins',color: Colors.black45),
               ),
             ),
           )

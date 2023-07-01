@@ -118,7 +118,7 @@ class _MyCustomCard_ComponentState extends State<MyCustomCard_Component> {
                           widget.salonName,
                           style: TextStyle(
                             fontSize: screenWidth * 0.05,
-                            fontFamily: 'Roboto',
+                            fontFamily: 'Poppins',
                             color: Colors.white
                           ),
                         ),

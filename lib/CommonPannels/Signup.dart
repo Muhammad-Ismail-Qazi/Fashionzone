@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'Login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Signup extends StatefulWidget {
   const Signup({Key? key}) : super(key: key);
@@ -19,8 +20,17 @@ class _SignupState extends State<Signup> {
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
   final passwordController = TextEditingController();
+  FirebaseAuth auth = FirebaseAuth.instance;
   userRole role = userRole.customer;
   bool isHover=false;
+  @override
+  void dispose(){
+    //TODO: implement dispose
+    super.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+
+  }
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -30,7 +40,7 @@ class _SignupState extends State<Signup> {
         primaryColor: const Color.fromARGB(247, 84, 74, 158),
 
         iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
-        fontFamily: 'Roboto',
+        fontFamily: 'Poppins',
       ),
       home: Scaffold(
 
@@ -69,7 +79,7 @@ class _SignupState extends State<Signup> {
                                 filled: true,
                                 labelText: 'Full Name',
                                 labelStyle:
-                                TextStyle(fontFamily: 'Roboto', fontSize: 16,color: Color.fromARGB(247, 84, 74, 158)),
+                                TextStyle(fontFamily: 'Poppins', fontSize: 16,color: Color.fromARGB(247, 84, 74, 158)),
                                 prefixIcon: Icon(
                                   Icons.person,
                                  color: Color.fromARGB(247, 84, 74, 158),
@@ -83,7 +93,7 @@ class _SignupState extends State<Signup> {
                                 ),
                                 border: OutlineInputBorder()),
                             style:
-                            const TextStyle(fontFamily: 'Roboto', fontSize: 15),
+                            const TextStyle(fontFamily: 'Poppins', fontSize: 15),
                             validator: (value) {
                               if (value!.isEmpty && value.length<3) {
                                 return 'Please enter your full name.';
@@ -116,7 +126,7 @@ class _SignupState extends State<Signup> {
                                 filled: true,
                                 labelText: 'Email',
                                 labelStyle:
-                                TextStyle(fontFamily: 'Roboto', fontSize: 16,color: Color.fromARGB(247, 84, 74, 158)),
+                                TextStyle(fontFamily: 'Poppins', fontSize: 16,color: Color.fromARGB(247, 84, 74, 158)),
                                 prefixIcon: Icon(
                                   Icons.email,
                                  color: Color.fromARGB(247, 84, 74, 158),
@@ -130,7 +140,7 @@ class _SignupState extends State<Signup> {
                                 ),
                                 border: OutlineInputBorder()),
                             style:
-                            const TextStyle(fontFamily: 'Roboto', fontSize: 15),
+                            const TextStyle(fontFamily: 'Poppins', fontSize: 15),
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'Please enter your email address.';
@@ -163,7 +173,7 @@ class _SignupState extends State<Signup> {
                                 filled: true,
                                 labelText: 'Phone',
                                 labelStyle:
-                                TextStyle(fontFamily: 'Roboto', fontSize: 16,color: Color.fromARGB(247, 84, 74, 158)),
+                                TextStyle(fontFamily: 'Poppins', fontSize: 16,color: Color.fromARGB(247, 84, 74, 158)),
                                 prefixIcon: Icon(
                                   Icons.phone,
                                  color: Color.fromARGB(247, 84, 74, 158),
@@ -177,7 +187,7 @@ class _SignupState extends State<Signup> {
                                 ),
                                 border: OutlineInputBorder()),
                             style:
-                            const TextStyle(fontFamily: 'Roboto', fontSize: 15),
+                            const TextStyle(fontFamily: 'Poppins', fontSize: 15),
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'Please enter your phone number.';
@@ -202,13 +212,14 @@ class _SignupState extends State<Signup> {
                         elevation: 5,
                         shadowColor: Colors.black,
                         child: TextFormField(
+                          controller: addressController,
                             keyboardType: TextInputType.streetAddress,
                             decoration: const InputDecoration(
                                 fillColor: Colors.white,
                                 filled: true,
                                 labelText: 'Address',
                                 labelStyle:
-                                TextStyle(fontFamily: 'Roboto', fontSize: 16,color: Color.fromARGB(247, 84, 74, 158)),
+                                TextStyle(fontFamily: 'Poppins', fontSize: 16,color: Color.fromARGB(247, 84, 74, 158)),
                                 prefixIcon: Icon(
                                   Icons.location_city,
                                  color: Color.fromARGB(247, 84, 74, 158),
@@ -222,7 +233,7 @@ class _SignupState extends State<Signup> {
                                 ),
                                 border: OutlineInputBorder()),
                             style:
-                            const TextStyle(fontFamily: 'Roboto', fontSize: 15),
+                            const TextStyle(fontFamily: 'Poppins', fontSize: 15),
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'Please enter your street address.';
@@ -245,13 +256,14 @@ class _SignupState extends State<Signup> {
                         elevation: 5,
                         shadowColor: Colors.black,
                         child: TextFormField(
+                          controller: passwordController,
                             keyboardType: TextInputType.visiblePassword,
                             decoration: const InputDecoration(
                                 fillColor: Colors.white,
                                 filled: true,
                                 labelText: 'Password',
                                 labelStyle:
-                                TextStyle(fontFamily: 'Roboto', fontSize: 16,color: Color.fromARGB(247, 84, 74, 158)),
+                                TextStyle(fontFamily: 'Poppins', fontSize: 16,color: Color.fromARGB(247, 84, 74, 158)),
                                 prefixIcon: Icon(
                                   Icons.password,
                                  color: Color.fromARGB(247, 84, 74, 158),
@@ -265,7 +277,7 @@ class _SignupState extends State<Signup> {
                                 ),
                                 border: OutlineInputBorder()),
                             style:
-                            const TextStyle(fontFamily: 'Roboto', fontSize: 15),
+                            const TextStyle(fontFamily: 'Poppins', fontSize: 15),
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'Please enter your password.';
@@ -301,7 +313,7 @@ class _SignupState extends State<Signup> {
                           const Expanded(
                             child: Text(
                               "customer",
-                              style: TextStyle(fontSize: 16, fontFamily: 'Roboto'),
+                              style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                             ),
                           ),
                           Radio(
@@ -318,7 +330,7 @@ class _SignupState extends State<Signup> {
                           const Expanded(
                             child: Text(
                               "Admin",
-                              style: TextStyle(fontSize: 16, fontFamily: 'Roboto'),
+                              style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                             ),
                           ),
                         ],
@@ -350,32 +362,50 @@ class _SignupState extends State<Signup> {
                           ),
                           onPressed: () {
                             if (formKey.currentState!.validate()) {
-                              Fluttertoast.showToast(
-                                msg: "Successfully Account create !",
-                                backgroundColor:const Color.fromARGB(247, 84, 74, 158) ,
-                                textColor: Colors.white,
-                              );
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const Login(),
-                                  ));
+                              // Perform your desired actions when the button is pressed
+
+                              // Access form field values
+                              // Perform account creation or other operations here
+
+                              // Example code to create user account using FirebaseAuth
+                              auth.createUserWithEmailAndPassword(
+                                 email: emailController.text,
+                                password: passwordController.text,
+                              ).then((value) {
+                                // Account created successfully
+                                // Do something
+                                Fluttertoast.showToast(
+                                  msg: "Account Successfully created!",
+                                  backgroundColor:const  Color.fromARGB(247, 84, 74, 158),
+                                  textColor: Colors.white,
+                                );
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const Login(),));
+                              }).onError((error, stackTrace) {
+                                // Error occurred during account creation
+                                Fluttertoast.showToast(
+                                  msg: error.toString(),
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                );
+                              });
+
+                              setState(() {
+                                isHover = false;
+                              });
                             }
-                            setState(() {
-                              isHover = false;
-                            });
                           },
                           child: Text(
                             "Create new account",
                             style: TextStyle(
                               fontSize: 16,
-                              fontFamily: 'Roboto',
+                              fontFamily: 'Poppins',
                               color: isHover ? Colors.black45 : Colors.white, // black45 text when not hovering, white text when hovering
                             ),
                           ),
                         ),
                       ),
                     ),
+
 
                     Padding(
                       padding: const EdgeInsets.all(10.0),
@@ -384,7 +414,7 @@ class _SignupState extends State<Signup> {
                           text: "Already have an account? ",
                           style: const TextStyle(
                             fontSize: 16,
-                            fontFamily: 'Roboto',
+                            fontFamily: 'Poppins',
                             color: Colors.black54,
                           ),
                           children: [

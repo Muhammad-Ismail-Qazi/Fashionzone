@@ -16,9 +16,10 @@ class _CheckAppointmentDetailsState extends State<CheckAppointmentDetails> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primarySwatch: Colors.cyan,
-        iconTheme: const IconThemeData(color: Colors.black),
-        fontFamily: 'Roboto',
+        primaryColor: const Color.fromARGB(247, 84, 74, 158),
+        backgroundColor:const Color.fromARGB(247, 84, 74, 158) ,
+        iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
+        fontFamily: 'Poppins',
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(

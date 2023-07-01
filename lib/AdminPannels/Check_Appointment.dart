@@ -21,7 +21,7 @@ class _CheckAppointmentState extends State<CheckAppointment> with SingleTickerPr
           primaryColor: const Color.fromARGB(247, 84, 74, 158),
           backgroundColor: const Color.fromARGB(247, 84, 74, 158),
           iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
-          fontFamily: 'Roboto',
+          fontFamily: 'Poppins',
         ),
         debugShowCheckedModeBanner: false,
         home: Scaffold(

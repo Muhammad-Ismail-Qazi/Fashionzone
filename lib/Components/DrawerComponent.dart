@@ -45,7 +45,7 @@ class _MyCustomDrawerComponentState extends State<MyCustomDrawerComponent> {
               'Home',
               style: TextStyle(
                 color: Color.fromARGB(247, 84, 74, 158),
-                fontFamily: 'Roboto',
+                fontFamily: 'Poppins',
                 fontSize: 20,
               ),
             ),
@@ -70,7 +70,7 @@ class _MyCustomDrawerComponentState extends State<MyCustomDrawerComponent> {
               'Reels',
               style: TextStyle(
                 color: Color.fromARGB(247, 84, 74, 158) ,
-                fontFamily: 'Roboto',
+                fontFamily: 'Poppins',
                 fontWeight: FontWeight.normal,
                 fontSize: 20,
               ),
@@ -96,7 +96,7 @@ class _MyCustomDrawerComponentState extends State<MyCustomDrawerComponent> {
               'Camera',
               style: TextStyle(
                 color: Color.fromARGB(247, 84, 74, 158) ,
-                fontFamily: 'Roboto',
+                fontFamily: 'Poppins',
                 fontWeight: FontWeight.normal,
                 fontSize: 20,
               ),
@@ -122,7 +122,7 @@ class _MyCustomDrawerComponentState extends State<MyCustomDrawerComponent> {
               'Profile',
               style: TextStyle(
                 color:Color.fromARGB(247, 84, 74, 158) ,
-                fontFamily: 'Roboto',
+                fontFamily: 'Poppins',
                 fontWeight: FontWeight.normal,
                 fontSize: 20,
               ),
@@ -148,7 +148,7 @@ class _MyCustomDrawerComponentState extends State<MyCustomDrawerComponent> {
               'Logout',
               style: TextStyle(
                 color:Color.fromARGB(247, 84, 74, 158) ,
-                fontFamily: 'Roboto',
+                fontFamily: 'Poppins',
                 fontWeight: FontWeight.normal,
                 fontSize: 20,
               ),

@@ -23,7 +23,7 @@ class _SalonState extends State<Salon> {
       theme: ThemeData(
         primaryColor: const Color.fromARGB(247, 84, 74, 158),
         iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
-        fontFamily: 'Roboto',
+        fontFamily: 'Poppins',
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(

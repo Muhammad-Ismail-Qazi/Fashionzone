@@ -46,7 +46,7 @@ class _UploadVideosState extends State<UploadVideos> {
           backgroundColor: const Color.fromARGB(247, 84, 74, 158),
           iconTheme:
               const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
-          fontFamily: 'Roboto',
+          fontFamily: 'Poppins',
         ),
         debugShowCheckedModeBanner: false,
         home: Scaffold(
@@ -98,7 +98,7 @@ class _UploadVideosState extends State<UploadVideos> {
                             "Choose the video",
                             style: TextStyle(
                               fontSize: 16,
-                              fontFamily: 'Roboto',
+                              fontFamily: 'Poppins',
                               color: isHover ? Colors.black45 : Colors.white,
                             ),
                           ),
@@ -134,7 +134,7 @@ class _UploadVideosState extends State<UploadVideos> {
                                     filled: true,
                                     labelText: 'Title',
                                     labelStyle: TextStyle(
-                                        fontFamily: 'Roboto',
+                                        fontFamily: 'Poppins',
                                         fontSize: 15,
                                         color:
                                             Color.fromARGB(247, 84, 74, 158)),
@@ -154,7 +154,7 @@ class _UploadVideosState extends State<UploadVideos> {
                                     ),
                                     border: OutlineInputBorder()),
                                 style: const TextStyle(
-                                    fontFamily: 'Roboto', fontSize: 15),
+                                    fontFamily: 'Poppins', fontSize: 15),
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return 'Please enter the title of the video.';
@@ -179,7 +179,7 @@ class _UploadVideosState extends State<UploadVideos> {
                                     filled: true,
                                     labelText: 'Description',
                                     labelStyle: TextStyle(
-                                        fontFamily: 'Roboto',
+                                        fontFamily: 'Poppins',
                                         fontSize: 15,
                                         color:
                                             Color.fromARGB(247, 84, 74, 158)),
@@ -199,7 +199,7 @@ class _UploadVideosState extends State<UploadVideos> {
                                     ),
                                     border: OutlineInputBorder()),
                                 style: const TextStyle(
-                                    fontFamily: 'Roboto', fontSize: 15),
+                                    fontFamily: 'Poppins', fontSize: 15),
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return 'Please enter your email address.';
@@ -258,7 +258,7 @@ class _UploadVideosState extends State<UploadVideos> {
                             "Upload Video",
                             style: TextStyle(
                               fontSize: 16,
-                              fontFamily: 'Roboto',
+                              fontFamily: 'Poppins',
                               color: isHover ? Colors.black45 : Colors.white,
                             ),
                           ),
