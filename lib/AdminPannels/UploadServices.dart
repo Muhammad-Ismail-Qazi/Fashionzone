@@ -239,7 +239,7 @@ class _UploadServicesState extends State<UploadServices> {
             ),
           ),
         ),
-        bottomNavigationBar: const MyCustomBottomNavigationBar(),
+        // bottomNavigationBar: const MyCustomBottomNavigationBar(),
         // floatingActionButton: MouseRegion(
         //   onEnter: (_) {
         //     setState(() {

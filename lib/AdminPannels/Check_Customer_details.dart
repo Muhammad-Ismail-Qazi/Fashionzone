@@ -164,7 +164,7 @@ class _CheckAppointmentDetailsState extends State<CheckAppointmentDetails> {
             ),
           ),
         ),
-        bottomNavigationBar: const MyCustomBottomNavigationBar(),
+        // bottomNavigationBar: const MyCustomBottomNavigationBar(),
       ),
     );
   }

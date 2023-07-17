@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "166312255249",
-    "project_id": "fashionzone-ad2d3",
-    "storage_bucket": "fashionzone-ad2d3.appspot.com"
+    "project_number": "38967724508",
+    "project_id": "fashionzone-704bc",
+    "storage_bucket": "fashionzone-704bc.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:166312255249:android:f8db7edcc45dd77f8d36b0",
+        "mobilesdk_app_id": "1:38967724508:android:7ec00c57c2d8069321a719",
         "android_client_info": {
           "package_name": "com.example.fashionzone"
         }
       },
       "oauth_client": [
         {
-          "client_id": "166312255249-t92lbt8k9ai6hbj5r4no6hvp7bc1a9dg.apps.googleusercontent.com",
+          "client_id": "38967724508-aa0jvcecanulv3v00ighcisg3hrupd2c.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC3oyzCdBRe965Fylsa3R7cQ8vs8rQZUOg"
+          "current_key": "AIzaSyCnl1zd1L_M7P0nQqQmYb27U8JizeTursc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "166312255249-t92lbt8k9ai6hbj5r4no6hvp7bc1a9dg.apps.googleusercontent.com",
+              "client_id": "38967724508-aa0jvcecanulv3v00ighcisg3hrupd2c.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

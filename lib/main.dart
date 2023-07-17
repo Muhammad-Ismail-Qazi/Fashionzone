@@ -32,7 +32,7 @@ class Fashionzone extends StatelessWidget {
           iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
           fontFamily: 'Poppins',
         ),
-        home:  const SplashScreen(),
+        home:  const Booking(),
     );
   }
 }

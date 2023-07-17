@@ -50,7 +50,7 @@ class _MyCustomDrawerComponentState extends State<MyCustomDrawerComponent> {
               ),
             ),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const Customer_Dashboard(),));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const CustomerDashboard(),));
             },
             mouseCursor: MaterialStateMouseCursor.clickable,
           ),
@@ -93,7 +93,7 @@ class _MyCustomDrawerComponentState extends State<MyCustomDrawerComponent> {
                 ),
                 child: const Icon(Icons.camera_alt, color: Colors.white)),
             title: const Text(
-              'Camera',
+              'Filter',
               style: TextStyle(
                 color: Color.fromARGB(247, 84, 74, 158) ,
                 fontFamily: 'Poppins',
@@ -102,7 +102,7 @@ class _MyCustomDrawerComponentState extends State<MyCustomDrawerComponent> {
               ),
             ),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const AR(),));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AR(),));
             },
             mouseCursor: MaterialStateMouseCursor.clickable,
           ),

@@ -41,7 +41,7 @@ class ThankYou extends StatelessWidget {
           )
         ],
       ),
-      bottomNavigationBar: const MyCustomBottomNavigationBar(),
+      // bottomNavigationBar: const MyCustomBottomNavigationBar(),
     );
   }
 }

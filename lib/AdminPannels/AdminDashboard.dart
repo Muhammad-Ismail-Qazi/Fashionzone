@@ -209,55 +209,120 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            //Save button
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: GestureDetector(
-                                onTap: () {
-                                  // Navigate to another screen or perform an action
-                                  // Reset isHover after the button is clicked
-                                  setState(() {
-                                    isHover = false;
-                                  });
-                                },
-                                child: MouseRegion(
-                                  onHover: (event) {
-                                    setState(() {
-                                      isHover = true;
-                                    });
-                                  },
-                                  onExit: (event) {
-                                    setState(() {
-                                      isHover = false;
-                                    });
-                                  },
-                                  child: Card(
-                                    elevation: 5,
-                                    color: isHover
-                                        ? const Color.fromARGB(247, 255, 255,
-                                            255) // White background when hovering
-                                        : const Color.fromARGB(
-                                            247, 84, 74, 158), // Purple
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 6),
-                                      child: Text(
-                                        "Save",
-                                        style: TextStyle(
-                                          fontSize: 18,
+                            Row(
+                              children: [
+                                // star button
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width * 0.25,
+                                    decoration: const BoxDecoration(),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        // Navigate to another screen or perform an action
+                                        // Reset isHover after the button is clicked
+                                        setState(() {
+                                          isHover = false;
+                                        });
+                                      },
+                                      child: MouseRegion(
+                                        onHover: (event) {
+                                          setState(() {
+                                            isHover = true;
+                                          });
+                                        },
+                                        onExit: (event) {
+                                          setState(() {
+                                            isHover = false;
+                                          });
+                                        },
+                                        child: Card(
+                                          elevation: 5,
                                           color: isHover
-                                              ? Colors.black45
-                                              : Colors.white,
+                                              ? const Color.fromARGB(247, 255, 255, 255) // White background when hovering
+                                              : const Color.fromARGB(247, 84, 74, 158), // Purple
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(30),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.star,
+                                                  color: Colors.yellow,
+                                                ),
+                                                const SizedBox(width: 5),
+                                                Text(
+                                                  "4.5",
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    color: isHover ? Colors.black45 : Colors.white,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
+                                // register on google map
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.topRight,
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width * 0.3,
+                                      decoration: const BoxDecoration(),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          // Navigate to another screen or perform an action
+                                          // Reset isHover after the button is clicked
+                                          setState(() {
+                                            isHover = false;
+                                          });
+                                        },
+                                        child: MouseRegion(
+                                          onHover: (event) {
+                                            setState(() {
+                                              isHover = true;
+                                            });
+                                          },
+                                          onExit: (event) {
+                                            setState(() {
+                                              isHover = false;
+                                            });
+                                          },
+                                          child: Card(
+                                            elevation: 5,
+                                            color: isHover
+                                                ? const Color.fromARGB(247, 255, 255, 255) // White background when hovering
+                                                : const Color.fromARGB(247, 84, 74, 158), // Purple
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(30),
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                              child: Center(
+                                                child: Text(
+                                                  "Register ",
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    color: isHover ? Colors.black45 : Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
+
 
                             // Title
                             Row(
@@ -286,115 +351,108 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   MediaQuery.of(context).size.height * 0.001,
                             ),
                             // Subtitle
-
                             // space
                             SizedBox(
                               height: MediaQuery.of(context).size.height * 0.01,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // Rating
-                                GestureDetector(
-                                  onTap: () {
-                                    // Navigate to another screen or perform an action
-                                    // Reset isHover after the button is clicked
-                                    setState(() {
-                                      isHover = false;
-                                    });
-                                  },
-                                  child: MouseRegion(
-                                    onHover: (event) {
-                                      setState(() {
-                                        isHover = true;
-                                      });
-                                    },
-                                    onExit: (event) {
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  // Rating
+                                  GestureDetector(
+                                    onTap: () {
+                                      // Navigate to another screen or perform an action
+                                      // Reset isHover after the button is clicked
                                       setState(() {
                                         isHover = false;
                                       });
                                     },
-                                    child: Card(
-                                      elevation: 5,
-                                      color: isHover
-                                          ? const Color.fromARGB(247, 255, 255,
-                                              255) // White background when hovering
-                                          : const Color.fromARGB(
-                                              247, 84, 74, 158), // Purple
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(30),
+                                    child: MouseRegion(
+                                      onHover: (event) {
+                                        setState(() {
+                                          isHover = true;
+                                        });
+                                      },
+                                      onExit: (event) {
+                                        setState(() {
+                                          isHover = false;
+                                        });
+                                      },
+                                      child: Card(
+                                        elevation: 5,
+                                        color: isHover
+                                            ? const Color.fromARGB(247, 255, 255,
+                                                255) // White background when hovering
+                                            : const Color.fromARGB(
+                                                247, 84, 74, 158), // Purple
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(30),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15, vertical: 6),
+                                          child: Text(
+                                                "Manage employees",
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: isHover
+                                                      ? Colors.black45
+                                                      : Colors.white,
+                                                ),
+                                              ),
+                                        ),
                                       ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 6),
-                                        child: Row(
-                                          children: [
-                                            const Icon(
-                                              Icons.star,
-                                              color: Colors.yellow,
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Text(
-                                              "4.5",
-                                              style: TextStyle(
+                                    ),
+                                  ),
+                                  // check Appointments
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const CheckAppointment(),));
+                                      // Reset isHover after the button is clicked
+                                      setState(() {
+                                        isHover = false;
+                                      });
+                                    },
+                                    child: MouseRegion(
+                                      onHover: (event) {
+                                        setState(() {
+                                          isHover = true;
+                                        });
+                                      },
+                                      onExit: (event) {
+                                        setState(() {
+                                          isHover = false;
+                                        });
+                                      },
+                                      child: Card(
+                                        color: isHover
+                                            ? const Color.fromARGB(247, 255, 255,
+                                                255) // White background when hovering
+                                            : const Color.fromARGB(
+                                                247, 84, 74, 158),
+                                        elevation: 5,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(30),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15, vertical: 6),
+                                          child: Text(
+                                            "Check Appointments",
+                                            style: TextStyle(
                                                 fontSize: 18,
                                                 color: isHover
                                                     ? Colors.black45
-                                                    : Colors.white,
-                                              ),
-                                            ),
-                                          ],
+                                                    : Colors.white),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                // check Appointments
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const CheckAppointment(),));
-                                    // Reset isHover after the button is clicked
-                                    setState(() {
-                                      isHover = false;
-                                    });
-                                  },
-                                  child: MouseRegion(
-                                    onHover: (event) {
-                                      setState(() {
-                                        isHover = true;
-                                      });
-                                    },
-                                    onExit: (event) {
-                                      setState(() {
-                                        isHover = false;
-                                      });
-                                    },
-                                    child: Card(
-                                      color: isHover
-                                          ? const Color.fromARGB(247, 255, 255,
-                                              255) // White background when hovering
-                                          : const Color.fromARGB(
-                                              247, 84, 74, 158),
-                                      elevation: 5,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 6),
-                                        child: Text(
-                                          "Check Appointments",
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              color: isHover
-                                                  ? Colors.black45
-                                                  : Colors.white),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             // space
                             SizedBox(
@@ -703,7 +761,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
           ),
         ),
-        bottomNavigationBar: const MyCustomBottomNavigationBar(),
+        // bottomNavigationBar: const MyCustomBottomNavigationBar(),
       ),
     );
   }
@@ -727,7 +785,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ),
           actions: [
             ElevatedButton(
-              child: const Text("OK"),
+              child: const Text("Save"),
               onPressed: () {
                 // Use the salonName variable as needed
                 print('Salon Name: $salonName');

@@ -1,10 +1,11 @@
 import 'package:fashionzone/AdminPannels/AdminDashboard.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import '../CustomerPannels/CustomerDashboard.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
+// import '../CustomerPannels/CustomerDashboard.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 
+import '../CustomerPannels/CustomerDashboard.dart';
 import 'Signup.dart';
 
 class Login extends StatefulWidget {
@@ -19,7 +20,7 @@ class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
   final passwordController = TextEditingController();
   final emailController = TextEditingController();
-  FirebaseAuth auth = FirebaseAuth.instance;
+  // FirebaseAuth auth = FirebaseAuth.instance;
   userRole role = userRole.customer;
   bool isHover = false;
   bool isEyeOpen = true;
@@ -261,55 +262,54 @@ class _LoginState extends State<Login> {
                         ),
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
-
-                            auth.createUserWithEmailAndPassword(
-                                    email: emailController.text.toString(),
-                                    password:
-                                        passwordController.text.toString())
-                                .then((value) {
-                              // Account created successfully
-                              // Do something
-                              Fluttertoast.showToast(
-                                msg: "Account Successfully created!",
-                                backgroundColor:const  Color.fromARGB(247, 84, 74, 158),
-                                textColor: Colors.white,
+                            if (role == userRole.customer) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                  const CustomerDashboard(),
+                                ),
                               );
-                              if (role == userRole.customer) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                    const Customer_Dashboard(),
-                                  ),
-                                );
-                              }
-                              else if (role == userRole.admin) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const AdminDashboard(),
-                                  ),
-                                );
-                              }
-                              else {
-                                setState(() {
-                                  role =
-                                      userRole.customer; // Update the role here
-                                });
-                              }
-                                  
-                            })
-                                .onError((error, stackTrace) {
+                            }
+                            else if (role == userRole.admin) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const AdminDashboard(),
+                                ),
+                              );
+                            }
+                            else {
                               setState(() {
-                                isLoading=false;
+                                role =
+                                    userRole.customer; // Update the role here
                               });
-                              Fluttertoast.showToast(
-                                msg: error.toString(),
-                                backgroundColor: Colors.red,
-                                textColor: Colors.white,
-                              );
-                            });
-                        
+                            }
+                            // auth.createUserWithEmailAndPassword(
+                            //         email: emailController.text.toString(),
+                            //         password:
+                            //             passwordController.text.toString())
+                            //     .then((value) {
+                            //   Account created successfully comment
+                            //   Do somethingcomment
+                            //   Fluttertoast.showToast(
+                            //     msg: "Account Successfully created!",
+                            //     backgroundColor:const  Color.fromARGB(247, 84, 74, 158),
+                            //     textColor: Colors.white,
+                            //   );
+
+                            //
+                            // }).onError((error, stackTrace) {
+                            //   setState(() {
+                            //     isLoading=false;
+                            //   });
+                            //   Fluttertoast.showToast(
+                            //     msg: error.toString(),
+                            //     backgroundColor: Colors.red,
+                            //     textColor: Colors.white,
+                            //   );
+                            // });
+
 
                             // Reset isHover after the button is clicked
                             setState(() {

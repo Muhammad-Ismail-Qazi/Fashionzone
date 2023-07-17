@@ -92,6 +92,9 @@ class _MyCustomServicesComponentState extends State<MyCustomServicesComponent> {
               ),
             ),
           ),
+          const SizedBox(
+            height: 20,
+          )
         ],
       ),
     );

@@ -266,7 +266,7 @@ class _BookingState extends State<Booking> {
                                 return Theme(
                                   data: theme.copyWith(
                                     colorScheme: theme.colorScheme.copyWith(
-                                      primary: Color.fromARGB(247, 84, 74,
+                                      primary: const Color.fromARGB(247, 84, 74,
                                           158), // Set the color of the picker menu
                                     ),
                                   ),
@@ -380,7 +380,7 @@ class _BookingState extends State<Booking> {
             ),
           ),
         ),
-        bottomNavigationBar: const MyCustomBottomNavigationBar(),
+        // bottomNavigationBar: const MyCustomBottomNavigationBar(),
       ),
     );
   }

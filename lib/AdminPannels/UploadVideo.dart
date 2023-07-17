@@ -271,7 +271,7 @@ class _UploadVideosState extends State<UploadVideos> {
               ],
             ),
           ),
-          bottomNavigationBar: const MyCustomBottomNavigationBar(),
+          // bottomNavigationBar: const MyCustomBottomNavigationBar(),
           floatingActionButton: MouseRegion(
             onEnter: (_) {
               setState(() {

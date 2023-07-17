@@ -540,7 +540,7 @@ class _ProfileState extends State<Profile> {
             ),
           ),
         ),
-        bottomNavigationBar: const MyCustomBottomNavigationBar(),
+        // bottomNavigationBar: const MyCustomBottomNavigationBar(),
       ),
     );
   }

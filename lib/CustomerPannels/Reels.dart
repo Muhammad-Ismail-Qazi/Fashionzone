@@ -16,7 +16,10 @@ class Reels extends StatefulWidget {
 class _ReelsState extends State<Reels> {
   List<String> videoUrls = [
     // Add your video URLs here
-    'videos/promo.mp4',
+    'videos/vid1.mp4',
+    'videos/vid1.mp4',
+    'videos/vid1.mp4',
+    'videos/vid1.mp4',
     'videos/promo.mp4',
     'videos/promo.mp4',
   ];
@@ -63,7 +66,7 @@ class _ReelsState extends State<Reels> {
       chewieController.dispose();
       chewieController = ChewieController(
         videoPlayerController: videoPlayerController,
-        autoPlay: false,
+        autoPlay: true,
         looping: false,
         allowMuting: false,
         allowPlaybackSpeedChanging: false,
@@ -132,7 +135,7 @@ class _ReelsState extends State<Reels> {
               child: IconButton(
                 onPressed: playPreviousVideo,
                 icon: const Icon(Icons.navigate_before),
-                color: Colors.blue,
+                color: const Color.fromARGB(247, 84, 74, 158),
               ),
             ),
             Positioned(
@@ -154,7 +157,7 @@ class _ReelsState extends State<Reels> {
                       // Handle comment button press
                     },
                     icon: const Icon(Icons.comment),
-                    color: Colors.blue,
+                    color: Colors.white,
                   ),
                   IconButton(
                     iconSize: 30,
@@ -170,7 +173,7 @@ class _ReelsState extends State<Reels> {
           ],
         ),
       ),
-      bottomNavigationBar: const MyCustomBottomNavigationBar(),
+      // bottomNavigationBar: const MyCustomBottomNavigationBar(),
       floatingActionButton: FloatingActionButton(
         onPressed: playNextVideo,
         child: const Icon(
