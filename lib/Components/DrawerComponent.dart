@@ -1,6 +1,7 @@
 import 'package:fashionzone/CommonPannels/Login.dart';
 import 'package:fashionzone/CustomerPannels/CustomerDashboard.dart';
 import 'package:fashionzone/CommonPannels/Profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../CustomerPannels/Ar.dart';
@@ -14,6 +15,7 @@ class MyCustomDrawerComponent extends StatefulWidget {
 }
 
 class _MyCustomDrawerComponentState extends State<MyCustomDrawerComponent> {
+  FirebaseAuth auth=FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -154,7 +156,10 @@ class _MyCustomDrawerComponentState extends State<MyCustomDrawerComponent> {
               ),
             ),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const Login(),));
+              auth.signOut().then((value) {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const Login(),));
+              });
+
             },
             mouseCursor: MaterialStateMouseCursor.clickable,
           ),
