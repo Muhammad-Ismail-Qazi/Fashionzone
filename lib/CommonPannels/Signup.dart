@@ -1,7 +1,9 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'Login.dart';
 
@@ -12,7 +14,7 @@ class Signup extends StatefulWidget {
   State<Signup> createState() => _SignupState();
 }
 
-enum userRole { customer, admin }
+enum UserRole { customer, admin }
 
 class _SignupState extends State<Signup> {
   final formKey = GlobalKey<FormState>();
@@ -22,8 +24,11 @@ class _SignupState extends State<Signup> {
   final addressController = TextEditingController();
   final passwordController = TextEditingController();
   FirebaseAuth auth = FirebaseAuth.instance;
-  userRole role = userRole.customer;
+  UserRole role = UserRole.customer;
   bool isHover = false;
+  bool loading =false;
+  final databaseReference = FirebaseDatabase.instance.ref('Signup');
+
   @override
   void dispose() {
     nameController.dispose();
@@ -298,8 +303,8 @@ class _SignupState extends State<Signup> {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter a password.';
-                        } else if (value.length < 6) {
-                          return 'Password must be at least 6 characters long.';
+                        } else if (value.length < 8) {
+                          return 'Password must be at least 8 characters long.';
                         } else {
                           return null;
                         }
@@ -315,7 +320,7 @@ class _SignupState extends State<Signup> {
                     children: [
                       Radio(
                         activeColor: const Color.fromARGB(247, 84, 74, 158),
-                        value: userRole.customer,
+                        value: UserRole.customer,
                         groupValue: role,
                         onChanged: (_role) {
                           setState(() {
@@ -326,14 +331,13 @@ class _SignupState extends State<Signup> {
                       const SizedBox(width: 5),
                       const Expanded(
                         child: Text(
-                          "customer",
-                          style:
-                          TextStyle(fontSize: 16, fontFamily: 'Poppins'),
+                          "Customer",
+                          style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                         ),
                       ),
                       Radio(
                         activeColor: const Color.fromARGB(247, 84, 74, 158),
-                        value: userRole.admin,
+                        value: UserRole.admin,
                         groupValue: role,
                         onChanged: (_role) {
                           setState(() {
@@ -345,8 +349,7 @@ class _SignupState extends State<Signup> {
                       const Expanded(
                         child: Text(
                           "Admin",
-                          style:
-                          TextStyle(fontSize: 16, fontFamily: 'Poppins'),
+                          style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                         ),
                       ),
                     ],
@@ -366,7 +369,6 @@ class _SignupState extends State<Signup> {
                     ),
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const Login(),));
                         registerUser();
                       }
                     },
@@ -395,7 +397,6 @@ class _SignupState extends State<Signup> {
                           color: Color.fromARGB(247, 84, 74, 158),
                           fontFamily: 'Poppins',
                           fontSize: 14,
-
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
@@ -421,26 +422,40 @@ class _SignupState extends State<Signup> {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
         email: emailController.text.toString(),
         password: passwordController.text.toString(),
-
       );
       User? user = userCredential.user;
 
       if (user != null) {
-        print("if codition");
+        // Store user's data in Firestore
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'name': nameController.text.toString(),
+          'email': emailController.text.toString(),
+          'phone': phoneController.text.toString(),
+          'address': addressController.text.toString(),
+          'role': role == UserRole.admin ? 'admin' : 'customer',
+        });
 
-        // Additional user registration logic here (e.g., storing user data in Firestore)
-        Fluttertoast.showToast(msg: "Registration successful!",backgroundColor: const Color.fromARGB(247, 84, 74, 158) ,);
+        Fluttertoast.showToast(
+          msg: "Registration successful!",
+          backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+        );
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const Login(),));
         clearForm();
       } else {
-        print("else codition");
-        Fluttertoast.showToast(msg: "Registration failed. Please try again.",backgroundColor: Colors.red);
+        Fluttertoast.showToast(
+          msg: "Registration failed. Please try again.",
+          backgroundColor: Colors.red,
+        );
       }
     } catch (e) {
-      print("catch codition");
       print(e.toString());
-      Fluttertoast.showToast(msg: e.toString(), backgroundColor: Colors.red);
+      Fluttertoast.showToast(
+        msg: e.toString(),
+        backgroundColor: Colors.red,
+      );
     }
   }
+
 
   void clearForm() {
     nameController.clear();
