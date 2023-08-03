@@ -28,7 +28,10 @@ class _ProfileState extends State<Profile> {
   final ImagePicker _imagePicker = ImagePicker();
   PickedFile? _imageFile;
   bool isTextFieldEnabled = false;
-  firebase_storage.FirebaseStorage firebaseStorage=firebase_storage.FirebaseStorage.instance;
+  firebase_storage.FirebaseStorage firebaseStorage =
+      firebase_storage.FirebaseStorage.instance;
+  String? profilePictureURL; // Declare the variable here
+
   // bottom screen show
   void _showModalBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -105,6 +108,70 @@ class _ProfileState extends State<Profile> {
     setState(() {
       isTextFieldEnabled = true;
     });
+  }
+
+  // Function to update user profile data
+  void editProfile() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        // Get the user document reference in Firestore
+        DocumentReference<Map<String, dynamic>> userRef =
+            FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+        // Update the user data in Firestore
+        await userRef.update({
+          'name': nameController.text,
+          'email': emailController.text,
+          'phone': phoneController.text,
+          'address': addressController.text,
+        });
+
+        Fluttertoast.showToast(
+          msg: "Successfully updated your profile!",
+          backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+          textColor: Colors.white,
+        );
+      }
+    } catch (e) {
+      print('Error updating user data: $e');
+    }
+  }
+
+// Function to upload profile picture
+  Future<void> uploadProfilePicture() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null && _imageFile != null) {
+        // Get the reference to the user's profile picture in Firebase Storage
+        String fileName = 'profile_${user.uid}.jpg';
+        firebase_storage.Reference storageReference =
+            firebaseStorage.ref().child('profileImages').child(fileName);
+
+        // Upload the image file to Firebase Storage
+        await storageReference.putFile(File(_imageFile!.path));
+
+        // Get the URL of the uploaded image
+        String downloadURL = await storageReference.getDownloadURL();
+
+        // Update the profile picture URL in Firestore
+        DocumentReference<Map<String, dynamic>> userRef =
+            FirebaseFirestore.instance.collection('users').doc(user.uid);
+        await userRef.update({
+          'profilePicture': downloadURL,
+        });
+
+        Fluttertoast.showToast(
+          msg: "Successfully updated your profile picture!",
+          backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+          textColor: Colors.white,
+        );
+      }
+    } catch (e) {
+      print('Error uploading profile picture: $e');
+    }
   }
 
   @override
@@ -211,9 +278,12 @@ class _ProfileState extends State<Profile> {
                                             247, 84, 74, 158),
                                         radius: 70,
                                         backgroundImage: _imageFile == null
-                                            ? null
-                                            : FileImage(File(_imageFile!.path))
-                                                as ImageProvider,
+                                            ? (profilePictureURL != null
+                                            ? Image.network(
+                                            profilePictureURL!)
+                                            .image // Use Image.network
+                                            : null)
+                                            : FileImage(File(_imageFile!.path)),
                                       ),
                                     ),
                                     Positioned(
@@ -252,12 +322,14 @@ class _ProfileState extends State<Profile> {
                             userData['name'] ?? '',
                             style: const TextStyle(
                               fontSize: 20,
+                              fontFamily: 'Poppins',
                             ),
                           ),
                           Text(
                             userData['email'] ?? '',
                             style: const TextStyle(
                               fontSize: 16,
+                              fontFamily: 'Poppins',
                             ),
                           ),
                           const SizedBox(
@@ -272,6 +344,9 @@ class _ProfileState extends State<Profile> {
                               child: Center(
                                 child: Column(
                                   children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
                                     // full name
                                     SizedBox(
                                       height: 50,
@@ -498,60 +573,7 @@ class _ProfileState extends State<Profile> {
                                     ),
                                     // space
                                     const SizedBox(height: 20),
-                                    //password
-                                    SizedBox(
-                                      height: 50,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.86,
-                                      child: Material(
-                                        elevation: 5,
-                                        shadowColor: Colors.black,
-                                        child: TextFormField(
-                                            controller: passwordController,
-                                            enabled: isTextFieldEnabled,
-                                            keyboardType:
-                                                TextInputType.visiblePassword,
-                                            decoration: const InputDecoration(
-                                                fillColor: Colors.white,
-                                                filled: true,
-                                                labelText: 'Password',
-                                                labelStyle: TextStyle(
-                                                    fontFamily: 'Poppins',
-                                                    fontSize: 16,
-                                                    color: Color.fromARGB(
-                                                        247, 84, 74, 158)),
-                                                prefixIcon: Icon(
-                                                  Icons.password,
-                                                  color: Color.fromARGB(
-                                                      247, 84, 74, 158),
-                                                ),
-                                                enabledBorder:
-                                                    OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.white),
-                                                ),
-                                                focusedBorder:
-                                                    OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Color.fromARGB(
-                                                          247, 84, 74, 158),
-                                                      width: 1),
-                                                ),
-                                                border: OutlineInputBorder()),
-                                            style: const TextStyle(
-                                                fontFamily: 'Poppins',
-                                                fontSize: 15),
-                                            validator: (value) {
-                                              if (value!.isEmpty) {
-                                                return 'Please enter your password.';
-                                              } else if (value.length < 8) {
-                                                return 'Password should be at least 8 characters long.';
-                                              } else {
-                                                return null;
-                                              }
-                                            }),
-                                      ),
-                                    ),
+
                                     // space
                                     const SizedBox(height: 20),
                                     //radio button
@@ -598,6 +620,8 @@ class _ProfileState extends State<Profile> {
                                           onPressed: () {
                                             if (formKey.currentState!
                                                 .validate()) {
+                                              editProfile(); // Update user profile data
+                                              uploadProfilePicture(); // Upload the profile picture if it's changed
                                               Fluttertoast.showToast(
                                                 msg:
                                                     "Successfully Edit your profile !",
@@ -635,8 +659,7 @@ class _ProfileState extends State<Profile> {
                           ),
                         ],
                       );
-                    }
-                    else{
+                    } else {
                       // If no data or connection error, show a message or handle accordingly
                       return const Text('No user data available.');
                     }
