@@ -1,13 +1,20 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fashionzone/CommonPannels/Login.dart';
 import 'package:fashionzone/Components/AppBarComponent.dart';
 import 'package:fashionzone/Components/BottomNavigationBarComponent.dart';
 import 'package:fashionzone/Components/DrawerComponent.dart';
 import 'package:fashionzone/Components/GalleryComponent.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart ' as firebase_storage;
 
 import '../Components/AdminServicesComponent.dart';
-import 'Check_Appointment.dart';
+import 'CheckAppointment.dart';
 import 'UploadVideo.dart';
 import 'UploadServices.dart';
 
@@ -21,9 +28,27 @@ class AdminDashboard extends StatefulWidget {
 class _AdminDashboardState extends State<AdminDashboard> {
   bool isHover = false;
   final ImagePicker _imagePicker = ImagePicker();
-  PickedFile? _imageFile;
+  PickedFile? _coverPhotoFile;
+  PickedFile? _logoPhotoFile;
+  bool coverPhotoID = false;
   bool isTextFieldEnabled = false;
   bool textID = false;
+  final salonNameController = TextEditingController();
+  FirebaseAuth auth = FirebaseAuth.instance;
+  String? generatedDocId;
+  String? salonName;
+  String? coverPictureURL;
+  String? logoPictureURL;
+  late DocumentReference salonRef;
+  String? salonPictureURL; // Declare the variable here
+  firebase_storage.FirebaseStorage firebaseStorage =
+      firebase_storage.FirebaseStorage.instance;
+
+  void initState() {
+    super.initState();
+    fetchSalonData();
+  }
+
   // bottom screen show
   void _showModalBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -100,7 +125,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
   void takePhoto(ImageSource source) async {
     final pickedFile = await _imagePicker.getImage(source: source);
     setState(() {
-      _imageFile = pickedFile;
+      if (coverPhotoID == true) {
+        _coverPhotoFile = pickedFile;
+      } else {
+        _logoPhotoFile = pickedFile;
+      }
     });
   }
 
@@ -128,10 +157,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   Container(
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: _imageFile == null
-                            ? const AssetImage('images/background_img.png')
-                            : FileImage(File(_imageFile!.path))
-                                as ImageProvider,
+                        image: _coverPhotoFile == null
+                            ? (coverPictureURL != null
+                                ? Image.network(coverPictureURL!).image
+                                : const AssetImage(
+                                    'assets/placeholder_image.png'))
+                            : FileImage(File(_coverPhotoFile!.path)),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -141,12 +172,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     alignment: Alignment.topRight,
                     child: ElevatedButton(
                       onPressed: () {
+                        uploadPicture();
                         _showModalBottomSheet(context);
                         setState(() {
                           textID = true;
                         });
                         // Reset isHover after the button is clicked
                         setState(() {
+                          coverPhotoID = true;
                           isHover = false;
                         });
                       },
@@ -197,7 +230,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       width: double.infinity,
                       height: MediaQuery.of(context).size.height * 0.7,
                       decoration: const BoxDecoration(
-                        color: Color.fromARGB(240, 249, 249, 252),
+
+                        color: Color.fromARGB(240, 254, 254, 255),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(30),
                           topRight: Radius.circular(30),
@@ -215,7 +249,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 Align(
                                   alignment: Alignment.topLeft,
                                   child: Container(
-                                    width: MediaQuery.of(context).size.width * 0.25,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.25,
                                     decoration: const BoxDecoration(),
                                     child: GestureDetector(
                                       onTap: () {
@@ -239,13 +274,20 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                         child: Card(
                                           elevation: 5,
                                           color: isHover
-                                              ? const Color.fromARGB(247, 255, 255, 255) // White background when hovering
-                                              : const Color.fromARGB(247, 84, 74, 158), // Purple
+                                              ? const Color.fromARGB(
+                                                  247,
+                                                  255,
+                                                  255,
+                                                  255) // White background when hovering
+                                              : const Color.fromARGB(
+                                                  247, 84, 74, 158), // Purple
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(30),
+                                            borderRadius:
+                                                BorderRadius.circular(30),
                                           ),
                                           child: Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 14, vertical: 6),
                                             child: Row(
                                               children: [
                                                 const Icon(
@@ -257,7 +299,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                   "4.5",
                                                   style: TextStyle(
                                                     fontSize: 18,
-                                                    color: isHover ? Colors.black45 : Colors.white,
+                                                    color: isHover
+                                                        ? Colors.black45
+                                                        : Colors.white,
                                                   ),
                                                 ),
                                               ],
@@ -273,7 +317,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   child: Align(
                                     alignment: Alignment.topRight,
                                     child: Container(
-                                      width: MediaQuery.of(context).size.width * 0.3,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
                                       decoration: const BoxDecoration(),
                                       child: GestureDetector(
                                         onTap: () {
@@ -297,19 +342,30 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                           child: Card(
                                             elevation: 5,
                                             color: isHover
-                                                ? const Color.fromARGB(247, 255, 255, 255) // White background when hovering
-                                                : const Color.fromARGB(247, 84, 74, 158), // Purple
+                                                ? const Color.fromARGB(
+                                                    247,
+                                                    255,
+                                                    255,
+                                                    255) // White background when hovering
+                                                : const Color.fromARGB(
+                                                    247, 84, 74, 158), // Purple
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(30),
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
                                             ),
                                             child: Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 14,
+                                                      vertical: 6),
                                               child: Center(
                                                 child: Text(
                                                   "Register ",
                                                   style: TextStyle(
                                                     fontSize: 18,
-                                                    color: isHover ? Colors.black45 : Colors.white,
+                                                    color: isHover
+                                                        ? Colors.black45
+                                                        : Colors.white,
                                                   ),
                                                 ),
                                               ),
@@ -323,18 +379,23 @@ class _AdminDashboardState extends State<AdminDashboard> {
                               ],
                             ),
 
-
                             // Title
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text(
-                                  'Gents Salon',
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                    color: Colors.black45,
-                                  ),
-                                ),
+                                salonName == null
+                                    ? const Text("Salon Name",
+                                        style: TextStyle(
+                                          fontSize: 25,
+                                          color: Colors.black45,
+                                        ))
+                                    : Text(
+                                        salonName!.toString(),
+                                        style: const TextStyle(
+                                          fontSize: 25,
+                                          color: Colors.black45,
+                                        ),
+                                      ),
                                 IconButton(
                                   icon: const Icon(Icons.edit),
                                   onPressed: () {
@@ -383,25 +444,29 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                       child: Card(
                                         elevation: 5,
                                         color: isHover
-                                            ? const Color.fromARGB(247, 255, 255,
+                                            ? const Color.fromARGB(
+                                                247,
+                                                255,
+                                                255,
                                                 255) // White background when hovering
                                             : const Color.fromARGB(
                                                 247, 84, 74, 158), // Purple
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(30),
+                                          borderRadius:
+                                              BorderRadius.circular(30),
                                         ),
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 15, vertical: 6),
                                           child: Text(
-                                                "Manage employees",
-                                                style: TextStyle(
-                                                  fontSize: 18,
-                                                  color: isHover
-                                                      ? Colors.black45
-                                                      : Colors.white,
-                                                ),
-                                              ),
+                                            "Manage employees",
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: isHover
+                                                  ? Colors.black45
+                                                  : Colors.white,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -409,7 +474,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   // check Appointments
                                   GestureDetector(
                                     onTap: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const CheckAppointment(),));
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const CheckAppointment(),
+                                          ));
                                       // Reset isHover after the button is clicked
                                       setState(() {
                                         isHover = false;
@@ -428,13 +498,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                       },
                                       child: Card(
                                         color: isHover
-                                            ? const Color.fromARGB(247, 255, 255,
+                                            ? const Color.fromARGB(
+                                                247,
+                                                255,
+                                                255,
                                                 255) // White background when hovering
                                             : const Color.fromARGB(
                                                 247, 84, 74, 158),
                                         elevation: 5,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(30),
+                                          borderRadius:
+                                              BorderRadius.circular(30),
                                         ),
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
@@ -604,9 +678,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 const Text(
                                   "Gallery",
                                   style: TextStyle(
-                                    fontSize: 18,
-                                    fontFamily: 'Poppins'
-                                  ),
+                                      fontSize: 18, fontFamily: 'Poppins'),
                                 ),
                                 const Spacer(),
                                 GestureDetector(
@@ -694,8 +766,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 ],
                               ),
                             ),
-
-
                           ],
                         ),
                       ),
@@ -703,33 +773,35 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ),
                   // the Logo
                   Positioned(
-                    top: MediaQuery.of(context).size.height * 0.3 - kToolbarHeight, // Adjusted for the app bar,
-                    left: (MediaQuery.of(context).size.width * 0.5) - (MediaQuery.of(context).size.width * 0.25 / 2),
-                    right: (MediaQuery.of(context).size.width * 0.5) - (MediaQuery.of(context).size.width * 0.25 / 2),
+                    top: MediaQuery.of(context).size.height * 0.3 -
+                        kToolbarHeight,
+                    left: (MediaQuery.of(context).size.width * 0.5) -
+                        (MediaQuery.of(context).size.width * 0.25 / 2),
+                    right: (MediaQuery.of(context).size.width * 0.5) -
+                        (MediaQuery.of(context).size.width * 0.25 / 2),
                     child: Stack(
                       children: [
                         Material(
                           elevation: 5,
-                          borderRadius: const BorderRadius.all(Radius.circular(20)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20)),
                           child: Container(
                             width: MediaQuery.of(context).size.width * 0.25,
                             height: MediaQuery.of(context).size.height * 0.125,
                             decoration: const BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.all(Radius.circular(20)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20)),
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
-                              child: _imageFile == null
-                                  ? Image.asset(
-                                'images/logo0.jpeg',
-                                fit: BoxFit.fill,
-                              )
-                                  : Image.file(
-                                File(_imageFile!.path),
-                                fit: BoxFit.fill,
-                              ),
+                              child: _logoPhotoFile == null
+                                  ? (logoPictureURL != null
+                                  ? Image.network(logoPictureURL!, fit: BoxFit.fill,)
+                                  : Image.asset('assets/placeholder_image.png'))
+                                  : Image.file(File(_logoPhotoFile!.path)),
                             ),
+
                           ),
                         ),
                         Positioned(
@@ -737,9 +809,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           right: -12,
                           child: GestureDetector(
                             onTap: () {
-                              // Add your logic for profile picture change functionality here
+                              uploadPicture();
+                              // Add your logic for log picture change functionality here
                               _showModalBottomSheet(context);
                               textID = false;
+                              setState(() {
+                                coverPhotoID = false;
+                              });
                             },
                             child: const CircleAvatar(
                               backgroundColor: Colors.white,
@@ -755,7 +831,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       ],
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -767,8 +842,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   Future<void> openDialogToOpen(BuildContext context) async {
-    String salonName = '';
-
     await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -779,16 +852,22 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ),
           title: const Text("Salon Name"),
           content: TextField(
+            controller: salonNameController,
+            style: const TextStyle(fontFamily: 'Poppins'),
             onChanged: (value) {
               salonName = value;
             },
           ),
           actions: [
             ElevatedButton(
-              child: const Text("Save"),
-              onPressed: () {
-                // Use the salonName variable as needed
-                print('Salon Name: $salonName');
+              autofocus: true,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+              ),
+              child:
+                  const Text("Save", style: TextStyle(fontFamily: 'Poppins')),
+              onPressed: () async {
+                registerSalonName();
                 Navigator.of(context).pop(); // Close the dialog
               },
             ),
@@ -798,5 +877,111 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
+  void registerSalonName() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance.collection('salons').doc(user.uid).set({
+        'name': salonNameController.text.toString(),
+      });
+    }
+  }
 
+  Future<void> fetchSalonData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      // Check if user is not null
+      try {
+        DocumentSnapshot<Map<String, dynamic>> salonDataSnapshot =
+            await FirebaseFirestore.instance
+                .collection('salons')
+                .doc(user.uid)
+                .get();
+        if (salonDataSnapshot.exists) {
+          Map<String, dynamic> salonData = salonDataSnapshot.data()!;
+          setState(() {
+            salonName = salonData['name'] ?? '';
+            salonNameController.text = salonData['name'] ?? '';
+            coverPictureURL = salonData['coverPicture'] ?? '';
+            logoPictureURL = salonData['logoPicture'] ?? '';
+          });
+        }
+      } catch (e) {
+        print('Error fetching salon data: $e');
+        // Handle the error as needed
+      }
+    }
+  }
+
+  // Future<void> updateSalonInfo(String adminUID, String salonName, String logoURL, String coverPhotoURL) async {
+  //   try {
+  //     await FirebaseFirestore.instance.collection('salons').doc(adminUID).update({
+  //       'name': salonName,
+  //       'logo': logoURL,
+  //       'coverPhoto': coverPhotoURL,
+  //       // Update other salon details here
+  //     });
+  //
+  //     // Show success message to admin
+  //   } catch (e) {
+  //     // Show error message to admin
+  //   }
+  // }
+// Function to upload  picture
+  Future<void> uploadPicture() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null && (_coverPhotoFile != null || _logoPhotoFile != null)) {
+        // Upload cover photo if available
+        if (_coverPhotoFile != null) {
+          String coverFileName = 'cover_${user.uid}.jpg';
+          firebase_storage.Reference coverStorageReference =
+              firebaseStorage.ref().child('salonImages').child(coverFileName);
+          await coverStorageReference.putFile(File(_coverPhotoFile!.path));
+
+          String coverDownloadURL =
+              await coverStorageReference.getDownloadURL();
+          // Handle the cover photo URL as needed
+          salonPictureURL = coverDownloadURL;
+          DocumentReference<Map<String, dynamic>> salonRef =
+              FirebaseFirestore.instance.collection('salons').doc(user.uid);
+          await salonRef.update({
+            'coverPicture': salonPictureURL,
+          });
+          Fluttertoast.showToast(
+            msg: "Successfully updated your cover picture!",
+            backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+            textColor: Colors.white,
+          );
+        }
+
+        // Upload logo photo if available
+        if (_logoPhotoFile != null) {
+          String logoFileName = 'logo_${user.uid}.jpg';
+          firebase_storage.Reference logoStorageReference =
+              firebaseStorage.ref().child('salonImages').child(logoFileName);
+          await logoStorageReference.putFile(File(_logoPhotoFile!.path));
+
+          String logoDownloadURL = await logoStorageReference.getDownloadURL();
+          // Handle the logo photo URL as needed
+          salonPictureURL = logoDownloadURL;
+
+          DocumentReference<Map<String, dynamic>> salonRef =
+              FirebaseFirestore.instance.collection('salons').doc(user.uid);
+          await salonRef.update({
+            'logoPicture': salonPictureURL,
+          });
+          Fluttertoast.showToast(
+            msg: "Successfully updated your logo picture!",
+            backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+            textColor: Colors.white,
+          );
+        }
+
+      }
+    } catch (e) {
+      print('Error uploading picture: $e');
+      // Handle the error as needed
+    }
+  }
 }
