@@ -1,21 +1,12 @@
-import 'package:fashionzone/AdminPannels/Check_Appointment.dart';
-import 'package:fashionzone/AdminPannels/UploadVideo.dart';
 import 'package:fashionzone/AdminPannels/UploadServices.dart';
-import 'package:fashionzone/CommonPannels/Login.dart';
 import 'package:fashionzone/CommonPannels/SplashScreen.dart';
-import 'package:fashionzone/CustomerPannels/Ar.dart';
-import 'package:fashionzone/CustomerPannels/Booking.dart';
-import 'package:fashionzone/CustomerPannels/CustomerDashboard.dart';
-import 'package:fashionzone/CommonPannels/Profile.dart';
-import 'package:fashionzone/CustomerPannels/Salon.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import 'AdminPannels/AdminDashboard.dart';
 
 void main() {
-//   WidgetsFlutterBinding.ensureInitialized();
-// Firebase.initializeApp();
+  WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp();
   runApp(const Fashionzone());
 }
 
@@ -32,7 +23,7 @@ class Fashionzone extends StatelessWidget {
           iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
           fontFamily: 'Poppins',
         ),
-        home:  const Booking(),
+        home:   const SplashScreen(),
     );
   }
 }
