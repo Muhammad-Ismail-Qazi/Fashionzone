@@ -2,11 +2,15 @@ import 'package:fashionzone/AdminPannels/UploadServices.dart';
 import 'package:fashionzone/CommonPannels/SplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/rendering.dart';
+
+import 'CommonPannels/Signup.dart';
 
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp();
+  // debugPaintSizeEnabled = true;
   runApp(const Fashionzone());
 }
 
@@ -23,7 +27,7 @@ class Fashionzone extends StatelessWidget {
           iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
           fontFamily: 'Poppins',
         ),
-        home:   const SplashScreen(),
+        home: const SplashScreen(),
     );
   }
 }
