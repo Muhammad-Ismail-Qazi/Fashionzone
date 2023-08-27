@@ -1,10 +1,9 @@
-import 'package:fashionzone/AdminPannels/UploadServices.dart';
+import 'package:fashionzone/AdminPannels/UploadVideo.dart';
 import 'package:fashionzone/CommonPannels/SplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/rendering.dart';
 
-import 'CommonPannels/Signup.dart';
 
 
 void main() {
