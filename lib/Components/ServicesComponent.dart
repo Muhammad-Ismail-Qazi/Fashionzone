@@ -1,29 +1,31 @@
 import 'package:flutter/material.dart';
 
-class MyCustomServicesComponent extends StatefulWidget {
+class MyCustomCustomerServicesComponent extends StatefulWidget {
   final String servicesImagePath;
-  final String price;
-  bool selection = false;
+  final String servicePrice;
+  final String serviceName;
 
-  MyCustomServicesComponent({
+
+  MyCustomCustomerServicesComponent({
     Key? key,
     required this.servicesImagePath,
-    required this.price,
-    required this.selection,
+    required this.servicePrice,
+    required this.serviceName,
+
+
   }) : super(key: key);
 
   @override
-  State<MyCustomServicesComponent> createState() =>
-      _MyCustomServicesComponentState();
+  State<MyCustomCustomerServicesComponent> createState() =>
+      _MyCustomCustomerServicesComponentState();
 }
 
-class _MyCustomServicesComponentState extends State<MyCustomServicesComponent> {
-
+class _MyCustomCustomerServicesComponentState extends State<MyCustomCustomerServicesComponent> {
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.15,
+      height: MediaQuery.of(context).size.height * 0.13,
       child: Stack(
         children: [
           Padding(
@@ -42,23 +44,12 @@ class _MyCustomServicesComponentState extends State<MyCustomServicesComponent> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        widget.servicesImagePath,
+                      child: Image(
+                        image: NetworkImage(widget.servicesImagePath),
                         fit: BoxFit.cover,
                       ),
-                    ),
-                  ),
-                  Transform.scale(
-                    scale: 1.5,
-                    child: Checkbox(
-                      value: widget.selection,
-                      activeColor: const Color.fromARGB(247, 84, 74, 158),
-                      onChanged: (value) {
-                        setState(() {
-                        widget.selection=! widget.selection;
-                        });
-                      },
-                    ),
+                    )
+
                   ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
@@ -82,19 +73,27 @@ class _MyCustomServicesComponentState extends State<MyCustomServicesComponent> {
               ),
             ),
           ),
+          Positioned(
+            top: 10, // Adjust the top position as needed
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Text(
+                widget.serviceName,
+                style: const TextStyle(color: Colors.white, fontSize: 18),
+              ),
+            ),
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Transform.translate(
               offset: const Offset(90, -10),
               child: Text(
-                widget.price,
+                widget.servicePrice,
                 style: const TextStyle(color: Colors.white, fontSize: 20),
               ),
             ),
           ),
-          const SizedBox(
-            height: 20,
-          )
         ],
       ),
     );
