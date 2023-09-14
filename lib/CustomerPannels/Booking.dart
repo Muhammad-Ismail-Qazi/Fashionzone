@@ -1,19 +1,37 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashionzone/Components/BottomNavigationBarComponent.dart';
 import 'package:fashionzone/Components/NearYouComponent.dart';
+import 'package:fashionzone/CustomerPannels/CustomerDashboard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../Components/AppBarComponent.dart';
 import '../Components/DrawerComponent.dart';
 import 'Thanks.dart';
 
 class Booking extends StatefulWidget {
-  const Booking({Key? key}) : super(key: key);
+  final List<Service> selectedServices;
+
+  const Booking({Key? key, required this.selectedServices}) : super(key: key);
 
   @override
   State<Booking> createState() => _BookingState();
+}
+
+// service helper class
+class Service {
+  final String name;
+  final String price;
+  final String imageFile;
+  final String userId;
+
+  Service(
+      {required this.name,
+        required this.price,
+        required this.imageFile,
+        required this.userId});
 }
 
 class _BookingState extends State<Booking> {
@@ -23,16 +41,25 @@ class _BookingState extends State<Booking> {
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
   final timeController = TextEditingController();
+  double totalPrice = 0.0;
 
   @override
   void initState() {
     super.initState();
     fetchAndSetUserData();
+    totalPrice = calculateTotalPrice(widget.selectedServices);
+  }
+
+  double calculateTotalPrice(List<Service> services) {
+    double total = 0.0;
+    for (final service in services) {
+      total += double.parse(service.price);
+    }
+    return total;
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -59,42 +86,43 @@ class _BookingState extends State<Booking> {
                       elevation: 5,
                       shadowColor: Colors.black,
                       child: TextFormField(
-                          controller: nameController,
-                          keyboardType: TextInputType.name,
-                          decoration: const InputDecoration(
-                              fillColor: Colors.white,
-                              filled: true,
-                              labelText: 'Full Name',
-                              labelStyle: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 16,
+                        controller: nameController,
+                        keyboardType: TextInputType.name,
+                        decoration: const InputDecoration(
+                          fillColor: Colors.white,
+                          filled: true,
+                          labelText: 'Full Name',
+                          labelStyle: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 16,
+                            color: Color.fromARGB(247, 84, 74, 158),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.person,
+                            color: Color.fromARGB(247, 84, 74, 158),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
                                 color: Color.fromARGB(247, 84, 74, 158),
-                              ),
-                              prefixIcon: Icon(
-                                Icons.person,
-                                color: Color.fromARGB(247, 84, 74, 158),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(247, 84, 74, 158),
-                                    width: 1),
-                              ),
-                              border: OutlineInputBorder()),
-                          style: const TextStyle(
-                              fontFamily: 'Poppins', fontSize: 16),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter your full name.';
-                            } else if (!RegExp(r'^[A-Za-z\s]+$')
-                                .hasMatch(value)) {
-                              return 'Invalid name format. Please enter a valid name.';
-                            } else {
-                              return null;
-                            }
-                          }),
+                                width: 1),
+                          ),
+                          border: OutlineInputBorder(),
+                        ),
+                        style: const TextStyle(
+                            fontFamily: 'Poppins', fontSize: 16),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your full name.';
+                          } else if (!RegExp(r'^[A-Za-z\s]+$').hasMatch(value)) {
+                            return 'Invalid name format. Please enter a valid name.';
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
                     ),
                   ),
                   //space
@@ -104,56 +132,49 @@ class _BookingState extends State<Booking> {
                   //email
                   SizedBox(
                     height: 50,
-                    width: MediaQuery.of(context).size.width *
-                        0.86,
+                    width: MediaQuery.of(context).size.width * 0.86,
                     child: Material(
                       elevation: 5,
                       shadowColor: Colors.black,
                       child: TextFormField(
-                          controller: emailController,
-                          keyboardType:
-                          TextInputType.emailAddress,
-                          decoration: const InputDecoration(
-                              fillColor: Colors.white,
-                              filled: true,
-                              labelText: 'Email',
-                              labelStyle: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 16,
-                                  color: Color.fromARGB(
-                                      247, 84, 74, 158)),
-                              prefixIcon: Icon(
-                                Icons.email,
-                                color: Color.fromARGB(
-                                    247, 84, 74, 158),
-                              ),
-                              enabledBorder:
-                              OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.white),
-                              ),
-                              focusedBorder:
-                              OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(
-                                        247, 84, 74, 158),
-                                    width: 1),
-                              ),
-                              border: OutlineInputBorder()),
-                          style: const TextStyle(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: const InputDecoration(
+                          fillColor: Colors.white,
+                          filled: true,
+                          labelText: 'Email',
+                          labelStyle: TextStyle(
                               fontFamily: 'Poppins',
-                              fontSize: 16),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter your email address.';
-                            } else if (!RegExp(
-                                r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-                                .hasMatch(value)) {
-                              return 'Invalid email address format. Please enter a valid email address.';
-                            } else {
-                              return null;
-                            }
-                          }),
+                              fontSize: 16,
+                              color: Color.fromARGB(247, 84, 74, 158)),
+                          prefixIcon: Icon(
+                            Icons.email,
+                            color: Color.fromARGB(247, 84, 74, 158),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color.fromARGB(247, 84, 74, 158),
+                                width: 1),
+                          ),
+                          border: OutlineInputBorder(),
+                        ),
+                        style: const TextStyle(
+                            fontFamily: 'Poppins', fontSize: 16),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your email address.';
+                          } else if (!RegExp(
+                              r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                              .hasMatch(value)) {
+                            return 'Invalid email address format. Please enter a valid email address.';
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
                     ),
                   ),
                   // space
@@ -166,42 +187,43 @@ class _BookingState extends State<Booking> {
                       elevation: 4,
                       shadowColor: Colors.black,
                       child: TextFormField(
-                          controller: phoneController,
-                          keyboardType: TextInputType.phone,
-                          decoration: const InputDecoration(
-                              fillColor: Colors.white,
-                              filled: true,
-                              labelText: 'Phone',
-                              labelStyle: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 16,
+                        controller: phoneController,
+                        keyboardType: TextInputType.phone,
+                        decoration: const InputDecoration(
+                          fillColor: Colors.white,
+                          filled: true,
+                          labelText: 'Phone',
+                          labelStyle: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 16,
+                            color: Color.fromARGB(247, 84, 74, 158),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.phone,
+                            color: Color.fromARGB(247, 84, 74, 158),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
                                 color: Color.fromARGB(247, 84, 74, 158),
-                              ),
-                              prefixIcon: Icon(
-                                Icons.phone,
-                                color: Color.fromARGB(247, 84, 74, 158),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(247, 84, 74, 158),
-                                    width: 1),
-                              ),
-                              border: OutlineInputBorder()),
-                          style: const TextStyle(
-                              fontFamily: 'Poppins', fontSize: 16),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter your phone number.';
-                            } else if (!RegExp(r'^\+92\d{10}$')
-                                .hasMatch(value)) {
-                              return 'Invalid format. Please enter a valid  format +92xxxxxxxxxx.';
-                            } else {
-                              return null;
-                            }
-                          }),
+                                width: 1),
+                          ),
+                          border: OutlineInputBorder(),
+                        ),
+                        style: const TextStyle(
+                            fontFamily: 'Poppins', fontSize: 16),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your phone number.';
+                          } else if (!RegExp(r'^\+92\d{10}$').hasMatch(value)) {
+                            return 'Invalid format. Please enter a valid  format +92xxxxxxxxxx.';
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
                     ),
                   ),
                   //space
@@ -217,38 +239,40 @@ class _BookingState extends State<Booking> {
                       shadowColor: Colors.black,
                       child: TextFormField(
                         controller: addressController,
-                          keyboardType: TextInputType.streetAddress,
-                          decoration: const InputDecoration(
-                              fillColor: Colors.white,
-                              filled: true,
-                              labelText: 'Address',
-                              labelStyle: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 16,
+                        keyboardType: TextInputType.streetAddress,
+                        decoration: const InputDecoration(
+                          fillColor: Colors.white,
+                          filled: true,
+                          labelText: 'Address',
+                          labelStyle: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 16,
+                            color: Color.fromARGB(247, 84, 74, 158),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.location_city,
+                            color: Color.fromARGB(247, 84, 74, 158),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
                                 color: Color.fromARGB(247, 84, 74, 158),
-                              ),
-                              prefixIcon: Icon(
-                                Icons.location_city,
-                                color: Color.fromARGB(247, 84, 74, 158),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Color.fromARGB(247, 84, 74, 158),
-                                    width: 1),
-                              ),
-                              border: OutlineInputBorder()),
-                          style: const TextStyle(
-                              fontFamily: 'Poppins', fontSize: 16),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter your street address.';
-                            } else {
-                              return null;
-                            }
-                          }),
+                                width: 1),
+                          ),
+                          border: OutlineInputBorder(),
+                        ),
+                        style: const TextStyle(
+                            fontFamily: 'Poppins', fontSize: 16),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your street address.';
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
                     ),
                   ),
                   //space
@@ -295,14 +319,13 @@ class _BookingState extends State<Booking> {
                             initialDate: DateTime.now(),
                             firstDate: DateTime.now(),
                             lastDate:
-                                DateTime.now().add(const Duration(days: 7)),
+                            DateTime.now().add(const Duration(days: 7)),
                             builder: (BuildContext context, Widget? child) {
                               return Theme(
                                 data: theme.copyWith(
                                   colorScheme: theme.colorScheme.copyWith(
                                     primary:
-                                        const Color.fromARGB(247, 84, 74, 158),
-                                    // Set the color of the picker menu
+                                    const Color.fromARGB(247, 84, 74, 158),
                                   ),
                                 ),
                                 child: child!,
@@ -318,7 +341,7 @@ class _BookingState extends State<Booking> {
                                   data: theme.copyWith(
                                     colorScheme: theme.colorScheme.copyWith(
                                       primary: const Color.fromARGB(247, 84, 74,
-                                          158), // Set the color of the picker menu
+                                          158),
                                     ),
                                   ),
                                   child: child!,
@@ -335,9 +358,9 @@ class _BookingState extends State<Booking> {
                               );
 
                               final DateFormat formatter =
-                                  DateFormat('dd/MM/yyyy hh:mm a');
+                              DateFormat('dd/MM/yyyy hh:mm a');
                               final String formattedDateTime =
-                                  formatter.format(combinedDateTime);
+                              formatter.format(combinedDateTime);
 
                               setState(() {
                                 timeController.text = formattedDateTime;
@@ -348,7 +371,7 @@ class _BookingState extends State<Booking> {
                         style: const TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 16,
-                            color: Colors.black), // Set the text color
+                            color: Colors.black),
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'Please Select the date and time.';
@@ -371,42 +394,13 @@ class _BookingState extends State<Booking> {
                   SizedBox(
                     height: 50,
                     width: MediaQuery.of(context).size.width * 0.86,
-                    child:ElevatedButton(
+                    child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         elevation: 5,
-                        backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+                        backgroundColor:
+                        const Color.fromARGB(247, 84, 74, 158),
                       ),
-                      onPressed: () async {
-                        if (formKey.currentState!.validate()) {
-                          // Get the current user
-                          User? user = FirebaseAuth.instance.currentUser;
-
-                          if (user != null) {
-                            // Create a reference to the Firestore collection for bookings
-                            CollectionReference bookings = FirebaseFirestore.instance.collection('bookings');
-
-                            // Generate a unique booking id (you can use a package like 'uuid' for this)
-                            String bookingId = UniqueKey().toString();
-
-                            // Get the selected date and time from the controller
-                            String selectedDateTime = timeController.text;
-
-                            // Create a new booking document
-                            await bookings.doc(bookingId).set({
-                              'booking_id': bookingId,
-                              'date_time': selectedDateTime,
-                              'user_id': user.uid,
-                              'service_id': 'your_service_id_here', // Replace with your actual service id
-                            });
-
-                            // Navigate to the thank you screen or perform any other actions
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const ThankYou()),
-                            );
-                          }
-                        }
-                      },
+                      onPressed: _reserveSeat,
                       child: const Text(
                         "Reserve your seat",
                         style: TextStyle(
@@ -416,43 +410,100 @@ class _BookingState extends State<Booking> {
                         ),
                       ),
                     ),
-
                   ),
                   // Total price
-                  const Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: Text("Total price: 600",
-                        style: TextStyle(fontSize: 30,fontFamily: 'Poppins')),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Text("Total price: $totalPrice",
+                        style: const TextStyle(fontSize: 30, fontFamily: 'Poppins')),
                   ),
-
+                  Container(
+                    height: 165,
+                    child: Scrollbar(
+                      thickness: 5,
+                      interactive: true,
+                      radius: const Radius.circular(5),
+                      thumbVisibility: true,
+                      trackVisibility: true,
+                      child: ListView.builder(
+                        itemCount: widget.selectedServices.length,
+                        itemBuilder: (context, index) {
+                          final service = widget.selectedServices[index];
+                          return Material(
+                            elevation: 5,
+                            child: ListTile(
+                              minVerticalPadding: 20,
+                              contentPadding: const EdgeInsets.all(0),
+                              leading: CircleAvatar(
+                                backgroundImage: NetworkImage(service.imageFile),
+                                radius: 40,
+                              ),
+                              title: Padding(
+                                padding: const EdgeInsets.only(left: 14.0),
+                                child: Text(
+                                  service.name,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                              ),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(left: 14.0),
+                                child: Text(
+                                  service.price,
+                                  style: const TextStyle(fontSize: 14, color: Colors.black54),
+                                ),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      if (widget.selectedServices.contains(service)) {
+                                        setState(() {
+                                          totalPrice -= double.parse(service.price);
+                                          widget.selectedServices.remove(service);
+                                        });
+                                      } else if (widget.selectedServices.isEmpty) {
+                                        setState(() {
+                                          totalPrice = 0.0;
+                                        });
+                                      }
+                                    },
+                                    icon: const Icon(Icons.delete),
+                                    color: Colors.red,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
           ),
         ),
-        // bottomNavigationBar: const MyCustomBottomNavigationBar(),
       ),
     );
   }
 
   void fetchAndSetUserData() async {
     try {
-      // Get the current user first
       User? user = FirebaseAuth.instance.currentUser;
-      // Now check if the user is available or not
       if (user != null) {
-        // Fetch the user data from Firestore using the user's UID
         DocumentSnapshot<Map<String, dynamic>> userDataSnapshot =
         await FirebaseFirestore.instance
-            .collection('users') // 'users' is your collection name
+            .collection('users')
             .doc(user.uid)
             .get();
 
         if (userDataSnapshot.exists) {
-          // Extract the user data from the snapshot
           Map<String, dynamic> userData = userDataSnapshot.data()!;
-
-          // Set the fetched data in the text fields
           setState(() {
             nameController.text = userData['name'] ?? '';
             emailController.text = userData['email'] ?? '';
@@ -462,8 +513,67 @@ class _BookingState extends State<Booking> {
         }
       }
     } catch (e) {
-      // Handle any errors that occur during fetching the data
       print('Error fetching user data: $e');
     }
   }
+
+  void _reserveSeat() async {
+    if (widget.selectedServices.isEmpty) {
+      Fluttertoast.showToast(msg: 'No service selected :-)');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const CustomerDashboard()),
+      );
+    } else {
+      if (formKey.currentState!.validate()) {
+        // Get the current user
+        User? user = FirebaseAuth.instance.currentUser;
+
+        if (user != null) {
+          // Create a reference to the Firestore collection for bookings
+          CollectionReference bookings =
+          FirebaseFirestore.instance.collection('bookings');
+
+          // Get the selected date and time from the controller
+          String selectedDateTime = timeController.text;
+
+          // Retrieve the service IDs for selected services
+          List<String> serviceIds = await getServiceIds(widget.selectedServices);
+
+          // Create a new booking document with an automatically generated ID
+          await bookings.add({
+            'date_time': selectedDateTime,
+            'user_id': user.uid,
+            'totalPrice': totalPrice,
+            'service_ids': serviceIds, // Use service IDs instead of toString()
+          });
+
+          // Navigate to the thank you screen or perform any other actions
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ThankYou()),
+          );
+        }
+      }
+    }
+  }
+
+  Future<List<String>> getServiceIds(List<Service> services) async {
+    List<String> serviceIds = [];
+    for (final service in services) {
+      // Assuming there's a 'services' collection in Firestore with documents having 'name' field
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('services')
+          .where('name', isEqualTo: service.name)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Get the first document's ID as the service ID (assuming service names are unique)
+        String serviceId = querySnapshot.docs.first.id;
+        serviceIds.add(serviceId);
+      }
+    }
+    return serviceIds;
+  }
+
 }
