@@ -1,8 +1,7 @@
-import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../CustomerPannels/CustomerDashboard.dart';
 import 'Login.dart';
-
-
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -12,25 +11,40 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    checkLoginStatus();
+  }
+
+  // Function to check if the user is logged in
+  void checkLoginStatus() async {
+    await Future.delayed(const Duration(seconds: 5)); // Simulate some delay for the splash screen
+
+    User? user = auth.currentUser;
+    if (user != null) {
+      print("User already logged in");
+      // User is already logged in, navigate to the CustomerDashboard
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const CustomerDashboard()));
+    } else {
+      // User is not logged in, navigate to the Login screen
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const Login()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-
-    return  MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SizedBox(
-        height: MediaQuery.of(context).size.height*0.15,
-        width: MediaQuery.of(context).size.width*0.15,
-        child: Scaffold(
-          backgroundColor: const Color.fromARGB(224, 281, 249, 232),
-          body: AnimatedSplashScreen(
-            splash: const Image(image: AssetImage('images/logo.png')),
-            nextScreen: const Login(),
-            splashTransition: SplashTransition.scaleTransition,
-            animationDuration: const Duration(seconds: 2),
-
-            splashIconSize: 150,
-
-          ),
+      home: Scaffold(
+        backgroundColor: const Color.fromARGB(240, 249, 249, 252),
+        body: Center(
+          child: Container(
+            height: 150,
+              width: 150,
+              child: Image(image: AssetImage('images/logo.png'))),
         ),
       ),
     );
