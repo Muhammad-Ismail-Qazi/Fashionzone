@@ -1,4 +1,6 @@
 import 'package:fashionzone/AdminPannels/AdminDashboard.dart';
+import 'package:fashionzone/CommonPannels/ForgotPassword.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -22,7 +24,7 @@ class _LoginState extends State<Login> {
   final emailController = TextEditingController();
   FirebaseAuth auth = FirebaseAuth.instance;
   UserRole role = UserRole.customer;
-  bool isHover = false;
+
   bool isEyeOpen = true;
   bool isLoading = false;
 
@@ -92,7 +94,7 @@ class _LoginState extends State<Login> {
                         if (value!.isEmpty) {
                           return 'Please enter your email address.';
                         } else if (!RegExp(
-                            r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                                r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
                             .hasMatch(value)) {
                           return 'Invalid email address format.';
                         } else {
@@ -137,9 +139,7 @@ class _LoginState extends State<Login> {
                             });
                           },
                           child: Icon(
-                            isEyeOpen
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                            isEyeOpen ? Icons.visibility : Icons.visibility_off,
                             color: const Color.fromARGB(247, 84, 74, 158),
                           ),
                         ),
@@ -181,7 +181,11 @@ class _LoginState extends State<Login> {
                       onTap: () {
                         // Implement the logic for handling the "Forgot Password" action
                         // This could include showing a password reset dialog, navigating to a password reset screen, etc.
-                        // You can add your own code here.
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ForgotPassword(),
+                            ));
                       },
                       child: const Text(
                         'Forgot Password?',
@@ -203,42 +207,29 @@ class _LoginState extends State<Login> {
                 SizedBox(
                   height: 50,
                   width: MediaQuery.of(context).size.width * 0.86,
-                  child: MouseRegion(
-                    onHover: (event) {
-                      setState(() {
-                        isHover = true;
-                      });
-                    },
-                    onExit: (event) {
-                      setState(() {
-                        isHover = false;
-                      });
-                    },
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 5,
-                        backgroundColor: isHover
-                            ? const Color.fromARGB(247, 255, 255,
-                            255) // White background when hovering
-                            : const Color.fromARGB(
-                            247, 84, 74, 158), // Purple background when not hovering
-                      ),
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          login();
-                        }
-                      },
-                      child: Text(
-                        isLoading ? 'Logging in...' : 'Login',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: 'Poppins',
-                          color: isHover
-                              ? Colors.black45
-                              : Colors.white, // black45 text when not hovering, white text when hovering
-                        ),
-                      ),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 5,
+                      backgroundColor:  const Color.fromARGB(247, 84, 74,
+                              158), // Purple background when not hovering
                     ),
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        FocusScope.of(context).unfocus();
+                        login();
+
+                      }
+                    },
+                    child: isLoading
+                        ? const CircularProgressIndicator( color: Colors.white,)
+                        : const Text(
+                            'Login',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'Poppins',
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
                 // don't have an account
@@ -258,8 +249,6 @@ class _LoginState extends State<Login> {
                           style: const TextStyle(
                             color: Color.fromARGB(247, 84, 74, 158),
                           ),
-                          // Handle the login action here
-                          // Add the `onTap` callback to handle the tap on "Login"
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               Navigator.push(
@@ -351,7 +340,9 @@ class _LoginState extends State<Login> {
         isLoading = false;
       });
     } catch (e) {
-      print(e.toString());
+      if (kDebugMode) {
+        print(e.toString());
+      }
       Fluttertoast.showToast(
         msg: e.toString(),
         backgroundColor: Colors.red,

@@ -1,11 +1,25 @@
-
 import 'package:fashionzone/Components/AppBarComponent.dart';
 import 'package:fashionzone/Components/BottomNavigationBarComponent.dart';
 import 'package:fashionzone/Components/DrawerComponent.dart';
 import 'package:flutter/material.dart';
 
 class CheckAppointmentDetails extends StatefulWidget {
-  const CheckAppointmentDetails({Key? key}) : super(key: key);
+  final String? customerName;
+  final String? appointmentSlot;
+  final String? serviceId;
+  final String? contactInformation;
+  final String? status;
+  final String? imageURL;
+
+  const CheckAppointmentDetails({
+    Key? key,
+    this.customerName,
+    this.appointmentSlot,
+    this.serviceId,
+    this.contactInformation,
+    this.status,
+    this.imageURL,
+  }) : super(key: key);
 
   @override
   State<CheckAppointmentDetails> createState() => _CheckAppointmentDetailsState();
@@ -17,13 +31,13 @@ class _CheckAppointmentDetailsState extends State<CheckAppointmentDetails> {
     return MaterialApp(
       theme: ThemeData(
         primaryColor: const Color.fromARGB(247, 84, 74, 158),
-        backgroundColor:const Color.fromARGB(247, 84, 74, 158) ,
+        backgroundColor: const Color.fromARGB(247, 84, 74, 158),
         iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
         fontFamily: 'Poppins',
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: const MyCustomAppBarComponent(),
+        appBar: const MyCustomAppBarComponent(appBarTitle: 'Check Customer Details'),
         drawer: const MyCustomDrawerComponent(),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -37,39 +51,42 @@ class _CheckAppointmentDetailsState extends State<CheckAppointmentDetails> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 80.0,
-                    backgroundImage: AssetImage('images/ismail.jpg'),
+                    backgroundImage: widget.imageURL != null
+                        ? NetworkImage(widget.imageURL!)
+                        : const AssetImage('assets/default_avatar.png') as ImageProvider<Object>,
                   ),
+
                   const SizedBox(height: 16.0),
-                  const Row(
-                    children:  [
-                      Icon(Icons.person, color: Colors.black),
-                      SizedBox(width: 8.0),
-                      Text(
+                  Row(
+                    children: [
+                      const Icon(Icons.person, color: Colors.black),
+                      const SizedBox(width: 8.0),
+                      const Text(
                         'Customer Name:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
                       ),
-                      SizedBox(width: 8.0),
+                      const SizedBox(width: 8.0),
                       Text(
-                        'Muhammad Ismail',
-                        style: TextStyle(fontSize: 16.0),
+                        widget.customerName.toString(),
+                        style: const TextStyle(fontSize: 16.0, fontFamily: 'Poppins'),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16.0),
-                  const Row(
+                   Row(
                     children: [
-                      Icon(Icons.calendar_today, color: Colors.black),
-                      SizedBox(width: 8.0),
-                      Text(
+                      const Icon(Icons.calendar_today, color: Colors.black),
+                      const SizedBox(width: 8.0),
+                      const Text(
                         'Appointment Slot:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
                       ),
-                      SizedBox(width: 8.0),
+                      const SizedBox(width: 8.0),
                       Text(
-                        '2/3/2023 1:00 am',
-                        style: TextStyle(fontSize: 16.0),
+                       widget.appointmentSlot.toString(),
+                        style: const TextStyle(fontSize: 16.0, fontFamily: 'Poppins'),
                       ),
                     ],
                   ),
@@ -80,44 +97,44 @@ class _CheckAppointmentDetailsState extends State<CheckAppointmentDetails> {
                       SizedBox(width: 8.0),
                       Text(
                         'Service:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
                       ),
                       SizedBox(width: 8.0),
                       Text(
-                        'Hair, Color, Massage',
-                        style: TextStyle(fontSize: 16.0),
+                        'widget.serviceId ?? N/A',
+                        style: TextStyle(fontSize: 16.0, fontFamily: 'Poppins'),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16.0),
-                  const Row(
+                   Row(
                     children: [
-                      Icon(Icons.phone, color: Colors.black),
-                      SizedBox(width: 8.0),
-                      Text(
+                      const Icon(Icons.phone, color: Colors.black),
+                      const SizedBox(width: 8.0),
+                      const Text(
                         'Contact Information:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
                       ),
-                      SizedBox(width: 8.0),
+                      const SizedBox(width: 8.0),
                       Text(
-                        '+923414142798',
-                        style: TextStyle(fontSize: 16.0),
+                        widget.contactInformation ?? 'N/A',
+                        style: const TextStyle(fontSize: 16.0, fontFamily: 'Poppins'),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16.0),
-                  const Row(
+                   Row(
                     children: [
-                      Icon(Icons.info, color: Colors.black),
-                      SizedBox(width: 8.0),
-                      Text(
+                      const Icon(Icons.info, color: Colors.black),
+                      const SizedBox(width: 8.0),
+                      const Text(
                         'Appointment Status:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
                       ),
-                      SizedBox(width: 8.0),
+                      const SizedBox(width: 8.0),
                       Text(
-                        'pending',
-                        style: TextStyle(fontSize: 16.0),
+                        widget.status.toString() ,
+                        style: const TextStyle(fontSize: 16.0, fontFamily: 'Poppins'),
                       ),
                     ],
                   ),
@@ -130,7 +147,7 @@ class _CheckAppointmentDetailsState extends State<CheckAppointmentDetails> {
                         onPressed: () {
                           // Perform action - Confirm Appointment
                         },
-                        icon: Icon(Icons.check),
+                        icon: const Icon(Icons.check),
                         style: ButtonStyle(
                           padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero),
                         ),
@@ -143,7 +160,7 @@ class _CheckAppointmentDetailsState extends State<CheckAppointmentDetails> {
                         onPressed: () {
                           // Perform action - Cancel Appointment
                         },
-                        icon: Icon(Icons.cancel),
+                        icon: const Icon(Icons.cancel),
                         color: Colors.red,
                         iconSize: 50.0,
                       ),
@@ -152,7 +169,7 @@ class _CheckAppointmentDetailsState extends State<CheckAppointmentDetails> {
                         onPressed: () {
                           // Perform action - Mark as Completed
                         },
-                        icon: Icon(Icons.done_all),
+                        icon: const Icon(Icons.done_all),
                         color: Colors.green,
                         iconSize: 50.0,
                       ),

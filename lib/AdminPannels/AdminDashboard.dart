@@ -1,20 +1,21 @@
+
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fashionzone/CommonPannels/Login.dart';
 import 'package:fashionzone/Components/AppBarComponent.dart';
-import 'package:fashionzone/Components/BottomNavigationBarComponent.dart';
 import 'package:fashionzone/Components/DrawerComponent.dart';
 import 'package:fashionzone/Components/GalleryComponent.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_storage/firebase_storage.dart ' as firebase_storage;
 
 import '../Components/AdminServicesComponent.dart';
 import 'CheckAppointment.dart';
+import 'GoogleMap.dart';
 import 'UploadVideo.dart';
 import 'UploadServices.dart';
 
@@ -26,7 +27,6 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  bool isHover = false;
   final ImagePicker _imagePicker = ImagePicker();
   PickedFile? _coverPhotoFile;
   PickedFile? _logoPhotoFile;
@@ -44,9 +44,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
   firebase_storage.FirebaseStorage firebaseStorage =
       firebase_storage.FirebaseStorage.instance;
 
+  List<Map<String, dynamic>> fetchedServices = [];
+  List<Map<String, dynamic>> fetchedVideos = [];
+  User? user = FirebaseAuth.instance.currentUser;
+  String? salonID;
+
+  @override
   void initState() {
     super.initState();
     fetchSalonData();
+    fetchServicesData();
+    fetchVideosData();
   }
 
   // bottom screen show
@@ -144,7 +152,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: const MyCustomAppBarComponent(),
+        appBar: const MyCustomAppBarComponent(appBarTitle: 'Admin Dashboard'),
         drawer: const MyCustomDrawerComponent(),
         body: Padding(
           padding: const EdgeInsets.only(bottom: 14.0),
@@ -180,14 +188,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         // Reset isHover after the button is clicked
                         setState(() {
                           coverPhotoID = true;
-                          isHover = false;
                         });
                       },
                       style: ElevatedButton.styleFrom(
                         elevation: 5,
-                        backgroundColor: isHover
-                            ? Colors.white
-                            : const Color.fromARGB(247, 84, 74, 158),
+                        backgroundColor: const Color.fromARGB(247, 84, 74, 158),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -198,20 +203,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           return SizedBox(
                             height: 32,
                             width: buttonWidth,
-                            child: Row(
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
                                   Icons.upload_outlined,
-                                  color:
-                                      isHover ? Colors.black45 : Colors.white,
+                                  color: Colors.white,
                                 ),
-                                const SizedBox(width: 5),
+                                SizedBox(width: 5),
                                 Text(
                                   'Upload Cover Photo',
                                   style: TextStyle(
-                                    color:
-                                        isHover ? Colors.black45 : Colors.white,
+                                    color: Colors.white,
                                     fontSize: 16,
                                   ),
                                 ),
@@ -230,7 +233,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       width: double.infinity,
                       height: MediaQuery.of(context).size.height * 0.7,
                       decoration: const BoxDecoration(
-
                         color: Color.fromARGB(240, 254, 254, 255),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(30),
@@ -243,140 +245,46 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Row(
-                              children: [
-                                // star button
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.25,
-                                    decoration: const BoxDecoration(),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        // Navigate to another screen or perform an action
-                                        // Reset isHover after the button is clicked
-                                        setState(() {
-                                          isHover = false;
-                                        });
-                                      },
-                                      child: MouseRegion(
-                                        onHover: (event) {
-                                          setState(() {
-                                            isHover = true;
-                                          });
-                                        },
-                                        onExit: (event) {
-                                          setState(() {
-                                            isHover = false;
-                                          });
-                                        },
-                                        child: Card(
-                                          elevation: 5,
-                                          color: isHover
-                                              ? const Color.fromARGB(
-                                                  247,
-                                                  255,
-                                                  255,
-                                                  255) // White background when hovering
-                                              : const Color.fromARGB(
-                                                  247, 84, 74, 158), // Purple
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(30),
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.25,
+                                decoration: const BoxDecoration(),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    // Navigate to another screen or perform an action
+                                    // Reset isHover after the button is clicked
+                                  },
+                                  child: Card(
+                                    elevation: 5,
+                                    color: const Color.fromARGB(
+                                        247, 84, 74, 158), // Purple
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 14, vertical: 6),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.star,
+                                            color: Colors.yellow,
                                           ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 14, vertical: 6),
-                                            child: Row(
-                                              children: [
-                                                const Icon(
-                                                  Icons.star,
-                                                  color: Colors.yellow,
-                                                ),
-                                                const SizedBox(width: 5),
-                                                Text(
-                                                  "4.5",
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    color: isHover
-                                                        ? Colors.black45
-                                                        : Colors.white,
-                                                  ),
-                                                ),
-                                              ],
+                                          SizedBox(width: 5),
+                                          Text(
+                                            "4.5",
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white,
                                             ),
                                           ),
-                                        ),
+                                        ],
                                       ),
                                     ),
                                   ),
                                 ),
-                                // register on google map
-                                Expanded(
-                                  child: Align(
-                                    alignment: Alignment.topRight,
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.3,
-                                      decoration: const BoxDecoration(),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          // Navigate to another screen or perform an action
-                                          // Reset isHover after the button is clicked
-                                          setState(() {
-                                            isHover = false;
-                                          });
-                                        },
-                                        child: MouseRegion(
-                                          onHover: (event) {
-                                            setState(() {
-                                              isHover = true;
-                                            });
-                                          },
-                                          onExit: (event) {
-                                            setState(() {
-                                              isHover = false;
-                                            });
-                                          },
-                                          child: Card(
-                                            elevation: 5,
-                                            color: isHover
-                                                ? const Color.fromARGB(
-                                                    247,
-                                                    255,
-                                                    255,
-                                                    255) // White background when hovering
-                                                : const Color.fromARGB(
-                                                    247, 84, 74, 158), // Purple
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                            ),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 14,
-                                                      vertical: 6),
-                                              child: Center(
-                                                child: Text(
-                                                  "Register ",
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    color: isHover
-                                                        ? Colors.black45
-                                                        : Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
 
                             // Title
@@ -416,117 +324,63 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             SizedBox(
                               height: MediaQuery.of(context).size.height * 0.01,
                             ),
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // Rating
-                                  GestureDetector(
-                                    onTap: () {
-                                      // Navigate to another screen or perform an action
-                                      // Reset isHover after the button is clicked
-                                      setState(() {
-                                        isHover = false;
-                                      });
-                                    },
-                                    child: MouseRegion(
-                                      onHover: (event) {
-                                        setState(() {
-                                          isHover = true;
-                                        });
-                                      },
-                                      onExit: (event) {
-                                        setState(() {
-                                          isHover = false;
-                                        });
-                                      },
-                                      child: Card(
-                                        elevation: 5,
-                                        color: isHover
-                                            ? const Color.fromARGB(
-                                                247,
-                                                255,
-                                                255,
-                                                255) // White background when hovering
-                                            : const Color.fromARGB(
-                                                247, 84, 74, 158), // Purple
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 15, vertical: 6),
-                                          child: Text(
-                                            "Manage employees",
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              color: isHover
-                                                  ? Colors.black45
-                                                  : Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                            Row(
+                              children: [
+                                // google map
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 5,
+                                    backgroundColor:
+                                        const Color.fromARGB(247, 84, 74, 158),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
                                     ),
                                   ),
-                                  // check Appointments
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const CheckAppointment(),
-                                          ));
-                                      // Reset isHover after the button is clicked
-                                      setState(() {
-                                        isHover = false;
-                                      });
-                                    },
-                                    child: MouseRegion(
-                                      onHover: (event) {
-                                        setState(() {
-                                          isHover = true;
-                                        });
-                                      },
-                                      onExit: (event) {
-                                        setState(() {
-                                          isHover = false;
-                                        });
-                                      },
-                                      child: Card(
-                                        color: isHover
-                                            ? const Color.fromARGB(
-                                                247,
-                                                255,
-                                                255,
-                                                255) // White background when hovering
-                                            : const Color.fromARGB(
-                                                247, 84, 74, 158),
-                                        elevation: 5,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 15, vertical: 6),
-                                          child: Text(
-                                            "Check Appointments",
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                color: isHover
-                                                    ? Colors.black45
-                                                    : Colors.white),
-                                          ),
-                                        ),
-                                      ),
+                                  icon: const Icon(CupertinoIcons.map,
+                                      color: Colors.red),
+                                  onPressed: () {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) =>  GoogleMaps()));
+
+                                  },
+                                  label: const Text(
+                                    "Google Map",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                // check Appointments
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 5,
+                                    backgroundColor:
+                                        const Color.fromARGB(247, 84, 74, 158),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                  ),
+                                  icon: const Icon(Icons.list_alt_outlined),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CheckAppointment(),
+                                        ));
+                                  },
+                                  label: const Text(
+                                    "Appointments",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
                             // space
                             SizedBox(
@@ -539,62 +393,34 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   // upload video button
-                                  MouseRegion(
-                                    onHover: (event) {
-                                      setState(() {
-                                        isHover = true;
-                                      });
-                                    },
-                                    onExit: (event) {
-                                      setState(() {
-                                        isHover = false;
-                                      });
-                                    },
-                                    child: ElevatedButton.icon(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const UploadVideos(),
-                                          ),
-                                        );
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 5,
-                                        backgroundColor: isHover
-                                            ? const Color.fromARGB(
-                                                247, 255, 255, 255)
-                                            : const Color.fromARGB(
-                                                247, 84, 74, 158),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const UploadVideos(),
                                         ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 5,
+                                      backgroundColor: const Color.fromARGB(
+                                          247, 84, 74, 158),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
                                       ),
-                                      icon: Icon(
-                                        Icons.upload_outlined,
-                                        color: isHover
-                                            ? Colors.black45
-                                            : Colors.white,
-                                      ),
-                                      label: SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.05,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.29,
-                                        child: Center(
-                                          child: Text(
-                                            'Upload video',
-                                            style: TextStyle(
-                                              color: isHover
-                                                  ? Colors.black45
-                                                  : Colors.white,
-                                              fontSize: 18,
-                                            ),
-                                          ),
+                                    ),
+                                    icon: const Icon(
+                                      Icons.upload_outlined,
+                                      color: Colors.white,
+                                    ),
+                                    label: const Center(
+                                      child: Text(
+                                        'Upload video',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
                                         ),
                                       ),
                                     ),
@@ -605,62 +431,34 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                         0.01,
                                   ), // Add spacing between buttons
                                   // upload services button
-                                  MouseRegion(
-                                    onHover: (event) {
-                                      setState(() {
-                                        isHover = true;
-                                      });
-                                    },
-                                    onExit: (event) {
-                                      setState(() {
-                                        isHover = false;
-                                      });
-                                    },
-                                    child: ElevatedButton.icon(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const UploadServices(),
-                                          ),
-                                        );
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 5,
-                                        backgroundColor: isHover
-                                            ? const Color.fromARGB(
-                                                247, 255, 255, 255)
-                                            : const Color.fromARGB(
-                                                247, 84, 74, 158),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const UploadServices(),
                                         ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 5,
+                                      backgroundColor: const Color.fromARGB(
+                                          247, 84, 74, 158),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
                                       ),
-                                      icon: Icon(
-                                        Icons.upload_outlined,
-                                        color: isHover
-                                            ? Colors.black45
-                                            : Colors.white,
-                                      ),
-                                      label: SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.05,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.35,
-                                        child: Center(
-                                          child: Text(
-                                            'Upload services',
-                                            style: TextStyle(
-                                              color: isHover
-                                                  ? Colors.black45
-                                                  : Colors.white,
-                                              fontSize: 18,
-                                            ),
-                                          ),
+                                    ),
+                                    icon: const Icon(
+                                      Icons.upload_outlined,
+                                      color: Colors.white,
+                                    ),
+                                    label: const Center(
+                                      child: Text(
+                                        'Upload services',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
                                         ),
                                       ),
                                     ),
@@ -697,27 +495,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             // Gallery
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
-                              child: SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.15,
-                                child: const Row(
-                                  children: [
-                                    MyCustomGalleryComponent(
-                                      galleryImagePath: 'images/gallery1.jpg',
-                                    ),
-                                    MyCustomGalleryComponent(
-                                      galleryImagePath: 'images/gallery2.jpg',
-                                    ),
-                                    MyCustomGalleryComponent(
-                                      galleryImagePath: 'images/gallery3.jpg',
-                                    ),
-                                    MyCustomGalleryComponent(
-                                      galleryImagePath: 'images/gallery4.jpg',
-                                    ),
-                                  ],
-                                ),
+                              child: Row(
+                                children: fetchedVideos.map((videoData) {
+                                  return MyCustomGalleryComponent(
+                                    galleryVideoPath:
+                                        videoData['videoUrl'].toString(),
+                                  );
+                                }).toList(),
                               ),
                             ),
+
                             // space
                             SizedBox(
                               height: MediaQuery.of(context).size.height * 0.01,
@@ -750,20 +537,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
-                                children: [
-                                  MyCustomAdminServicesComponent(
-                                    servicesImagePath: 'images/services1.jpg',
-                                    price: '300',
-                                  ),
-                                  MyCustomAdminServicesComponent(
-                                    servicesImagePath: 'images/services2.jpg',
-                                    price: "250",
-                                  ),
-                                  MyCustomAdminServicesComponent(
-                                    servicesImagePath: 'images/services3.jpg',
-                                    price: '150',
-                                  ),
-                                ],
+                                children: fetchedServices.map((serviceData) {
+                                  return MyCustomAdminServicesComponent(
+                                    servicesImagePath:
+                                        serviceData['imageURL'].toString(),
+                                    serviceName: serviceData['name'].toString(),
+                                    price: serviceData['price'].toString(),
+                                  );
+                                }).toList(),
                               ),
                             ),
                           ],
@@ -797,11 +578,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                               borderRadius: BorderRadius.circular(20),
                               child: _logoPhotoFile == null
                                   ? (logoPictureURL != null
-                                  ? Image.network(logoPictureURL!, fit: BoxFit.fill,)
-                                  : Image.asset('assets/placeholder_image.png'))
+                                      ? Image.network(
+                                          logoPictureURL!,
+                                          fit: BoxFit.fill,
+                                        )
+                                      : Image.asset(
+                                          'assets/placeholder_image.png'))
                                   : Image.file(File(_logoPhotoFile!.path)),
                             ),
-
                           ),
                         ),
                         Positioned(
@@ -822,7 +606,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                               radius: 20, // Set the radius for the camera icon
                               child: Icon(
                                 Icons.camera_alt,
-                                color: Colors.black,
+                                color: Color.fromARGB(247, 84, 74, 158),
                                 size: 25, // Set the size of the camera icon
                               ),
                             ),
@@ -882,6 +666,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     if (user != null) {
       await FirebaseFirestore.instance.collection('salons').doc(user.uid).set({
         'name': salonNameController.text.toString(),
+        'userID': user.uid,
       });
     }
   }
@@ -903,6 +688,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             salonNameController.text = salonData['name'] ?? '';
             coverPictureURL = salonData['coverPicture'] ?? '';
             logoPictureURL = salonData['logoPicture'] ?? '';
+            salonID = user.uid;
           });
         }
       } catch (e) {
@@ -912,26 +698,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
     }
   }
 
-  // Future<void> updateSalonInfo(String adminUID, String salonName, String logoURL, String coverPhotoURL) async {
-  //   try {
-  //     await FirebaseFirestore.instance.collection('salons').doc(adminUID).update({
-  //       'name': salonName,
-  //       'logo': logoURL,
-  //       'coverPhoto': coverPhotoURL,
-  //       // Update other salon details here
-  //     });
-  //
-  //     // Show success message to admin
-  //   } catch (e) {
-  //     // Show error message to admin
-  //   }
-  // }
 // Function to upload  picture
   Future<void> uploadPicture() async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
 
-      if (user != null && (_coverPhotoFile != null || _logoPhotoFile != null)) {
+      if (user != null && (_coverPhotoFile != null && _logoPhotoFile != null)) {
         // Upload cover photo if available
         if (_coverPhotoFile != null) {
           String coverFileName = 'cover_${user.uid}.jpg';
@@ -977,11 +749,76 @@ class _AdminDashboardState extends State<AdminDashboard> {
             textColor: Colors.white,
           );
         }
-
       }
     } catch (e) {
       print('Error uploading picture: $e');
       // Handle the error as needed
+    }
+  }
+
+  Future<void> fetchServicesData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      // Handle the case when the user is not authenticated
+      return;
+    }
+
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('services')
+              .where('userID', isEqualTo: user.uid) // Filter by the user's UID
+              .get();
+
+      List<Map<String, dynamic>> servicesData =
+          querySnapshot.docs.map((doc) => doc.data()).toList();
+
+      setState(() {
+        fetchedServices = servicesData;
+      });
+    } catch (e) {
+      print("Error: $e");
+      Fluttertoast.showToast(
+        msg: e.toString(),
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        gravity: ToastGravity.BOTTOM,
+      );
+    }
+  }
+
+  Future<void> fetchVideosData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      // Handle the case when the user is not authenticated
+      return;
+    }
+
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('videos')
+              .where('userID', isEqualTo: user.uid) // Filter by the user's UID
+              .get();
+
+      List<Map<String, dynamic>> videosData =
+          querySnapshot.docs.map((doc) => doc.data()).toList();
+
+      setState(() {
+        fetchedVideos = videosData;
+      });
+
+      // Display a success toast message when data is fetched
+      Fluttertoast.showToast(
+          msg: "Videos data fetched successfully!",
+          textColor: const Color.fromARGB(247, 84, 74, 158));
+    } catch (e) {
+      print("Error fetching videos data: $e");
+      // Display an error toast message with a red background
+      Fluttertoast.showToast(
+          msg: "Error fetching videos data: $e", textColor: Colors.red);
     }
   }
 }

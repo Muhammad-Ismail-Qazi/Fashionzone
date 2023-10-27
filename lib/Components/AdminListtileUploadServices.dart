@@ -1,21 +1,30 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-class MyCustomListTileComponent extends StatefulWidget {
+class MyCustomListTileAdminComponent extends StatefulWidget {
   String servicesName;
-  int price;
-
-  MyCustomListTileComponent({
+  String price;
+  String imageFile;
+  // Define a callback function for deleting a service
+  final VoidCallback onDelete;
+  final VoidCallback onEdit;
+  MyCustomListTileAdminComponent({
     Key? key,
     required this.servicesName,
     required this.price,
+    required this.imageFile,
+    required this.onDelete, // Pass the callback function
+    required this.onEdit, required id,
   }) : super(key: key);
 
   @override
-  State<MyCustomListTileComponent> createState() =>
-      _MyCustomListTileComponentState();
+  State<MyCustomListTileAdminComponent> createState() =>
+      _MyCustomListTileAdminComponentState();
 }
 
-class _MyCustomListTileComponentState extends State<MyCustomListTileComponent> {
+class _MyCustomListTileAdminComponentState extends State<MyCustomListTileAdminComponent> {
   bool selection = false;
 
   @override
@@ -25,6 +34,10 @@ class _MyCustomListTileComponentState extends State<MyCustomListTileComponent> {
       child: ListTile(
         minVerticalPadding: 20,
         contentPadding: const EdgeInsets.all(0),
+        leading:   CircleAvatar(
+          backgroundImage: NetworkImage(widget.imageFile),
+          radius: 40,
+        ),
         title: Padding(
           padding: const EdgeInsets.only(left: 14.0),
           child: Text(
@@ -35,7 +48,7 @@ class _MyCustomListTileComponentState extends State<MyCustomListTileComponent> {
         subtitle: Padding(
           padding: const EdgeInsets.only(left: 14.0),
           child: Text(
-            'Price: ${widget.price}',
+            widget.price,
             style: const TextStyle(fontSize: 14, color: Colors.black54),
           ),
         ),
@@ -45,6 +58,7 @@ class _MyCustomListTileComponentState extends State<MyCustomListTileComponent> {
             IconButton(
               onPressed: () {
                 // Add functionality for editing the service here
+                widget.onEdit();
               },
               icon: const Icon(Icons.edit),
               color: const Color.fromARGB(247, 84, 74, 158),
@@ -52,6 +66,8 @@ class _MyCustomListTileComponentState extends State<MyCustomListTileComponent> {
             IconButton(
               onPressed: () {
                 // Add functionality for deleting the service here
+                widget.onDelete();
+
               },
               icon: const Icon(Icons.delete),
               color: Colors.red,

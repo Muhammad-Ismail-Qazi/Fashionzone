@@ -1,26 +1,31 @@
 import 'package:flutter/material.dart';
+
 import '../CustomerPannels/Salon.dart';
 
-class MyCustomCard_Component extends StatefulWidget {
-  final String salonImagePath;
+class MyCustomCardComponent extends StatefulWidget {
+  final String salonCoverImagePath;
   final String stars;
   final String salonLogoPath;
   final String salonName;
+  final String owner;
+  // final String salonId;
 
-  MyCustomCard_Component({
+  MyCustomCardComponent({
     Key? key,
-    required this.salonImagePath,
+    required this.salonCoverImagePath,
     required this.salonLogoPath,
     required this.salonName,
     required this.stars,
+    required this.owner,
+    // required this.salonId,
   }) : super(key: key);
 
   @override
-  State<MyCustomCard_Component> createState() =>
-      _MyCustomCard_ComponentState();
+  State<MyCustomCardComponent> createState() => _MyCustomCardComponentState();
 }
 
-class _MyCustomCard_ComponentState extends State<MyCustomCard_Component> {
+class _MyCustomCardComponentState extends State<MyCustomCardComponent> {
+
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
@@ -28,52 +33,42 @@ class _MyCustomCard_ComponentState extends State<MyCustomCard_Component> {
 
     return Padding(
       padding: EdgeInsets.all(screenWidth * 0.03),
-      child: Container(  // properties of a whole
-        decoration:  BoxDecoration(
-          borderRadius: BorderRadius.circular(screenWidth*0.05),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(screenWidth * 0.05),
         ),
         width: screenWidth * 0.7,
         height: screenWidth * 0.67,
-        child: GestureDetector(
-          onTap: () {
-            // Navigate to the desired page
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Salon()),
-            );
-          },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(screenWidth*0.05),
-            child: Material(
-              elevation: 5,
-              child: Container(
-                decoration:   BoxDecoration(
-                  borderRadius: BorderRadius.circular(screenWidth*0.05),
-                  
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    stops: const [0.0, 0.999],
-                    colors: [
-
-                      const Color.fromARGB(247, 84, 74, 158),
-                      Colors.black.withOpacity(0.000001),
-                    ],
-                  ),
-
-                  ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(screenWidth * 0.05),
+          child: Material(
+            elevation: 5,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(screenWidth * 0.05),
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  stops: const [0.1, 0.5],
+                  colors: [
+                    const Color.fromARGB(247, 84, 74, 158),
+                    Colors.black.withOpacity(0.000001),
+                  ],
+                ),
+              ),
+              child: SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsets.all(screenWidth * 0.03),// padding between image and card
+                  padding: EdgeInsets.all(screenWidth * 0.03),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                  Stack(
+                      Stack(
                         children: [
                           ClipRRect(
                             borderRadius:
-                            BorderRadius.circular(screenWidth * 0.05),
-                            child: Image(
-                              image: AssetImage(widget.salonImagePath),
+                                BorderRadius.circular(screenWidth * 0.05),
+                            child: Image.network(
+                              widget.salonCoverImagePath,
                               height: screenHeight * 0.2,
                               width: double.infinity,
                               fit: BoxFit.fill,
@@ -85,18 +80,23 @@ class _MyCustomCard_ComponentState extends State<MyCustomCard_Component> {
                             child: Container(
                               padding: EdgeInsets.all(screenWidth * 0.02),
                               decoration: BoxDecoration(
-                                borderRadius:
-                                BorderRadius.circular(20),
-                                color: const  Color.fromARGB(247, 84, 74, 158) ,
+                                borderRadius: BorderRadius.circular(20),
+                                color: const Color.fromARGB(247, 84, 74, 158),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.star, color: Colors.yellow),
-                                  const SizedBox(width: 5,),
-                                  Text(widget.stars,style: const TextStyle(fontSize: 16,color: Colors.white),),
+                                  const Icon(Icons.star,
+                                      color: Colors.yellow),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    widget.stars,
+                                    style: const TextStyle(
+                                        fontSize: 16, color: Colors.white),
+                                  ),
                                 ],
                               ),
-
                             ),
                           ),
                         ],
@@ -106,11 +106,13 @@ class _MyCustomCard_ComponentState extends State<MyCustomCard_Component> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: const Color.fromARGB(255, 108, 1, 171),),
+                              color: const Color.fromARGB(255, 108, 1, 171),
+                            ),
                           ),
                           child: CircleAvatar(
                             radius: screenWidth * 0.1,
-                            backgroundImage: AssetImage(widget.salonLogoPath),
+                            backgroundImage:
+                                NetworkImage(widget.salonLogoPath),
                             backgroundColor: Colors.white,
                           ),
                         ),
@@ -119,19 +121,29 @@ class _MyCustomCard_ComponentState extends State<MyCustomCard_Component> {
                           style: TextStyle(
                             fontSize: screenWidth * 0.05,
                             fontFamily: 'Poppins',
-                            color: Colors.white
+                            color: Colors.white,
                           ),
                         ),
-                        subtitle: const Text("Hair, clean, cut",style: TextStyle(color: Colors.white)),
+                        subtitle: Text(widget.owner,
+                            style: const TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
                 ),
-                ),
               ),
-          ),
+            ),
           ),
         ),
+      ),
     );
   }
+
+  void navigateToSalon(BuildContext context, String salonId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Salon(salonId: salonId)),
+    );
+  }
+
+
 }

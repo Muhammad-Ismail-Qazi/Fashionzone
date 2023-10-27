@@ -1,6 +1,5 @@
 import 'package:camera/camera.dart';
-import 'package:carousel_slider/carousel_options.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+
 import 'package:fashionzone/Components/AppBarComponent.dart';
 import 'package:flutter/material.dart';
 
@@ -15,11 +14,19 @@ class _ARState extends State<AR> {
   List<CameraDescription>? cameras;
   CameraController? cameraController;
   int selectedCameraIndex = 0;
+  int selectedFilterIndex = -1; // Default: No filter selected
+
+
 
   @override
   void initState() {
     super.initState();
     initCamera();
+  }
+  @override
+  void dispose() {
+    cameraController?.dispose();
+    super.dispose();
   }
 
   Future<void> initCamera() async {
@@ -62,10 +69,10 @@ class _ARState extends State<AR> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Enter Text'),
+          title: const Text('Enter Text'),
           content: TextField(
             controller: textController,
-            decoration: InputDecoration(hintText: 'Type your text here...'),
+            decoration: const InputDecoration(hintText: 'Type your text here...'),
           ),
           actions: [
             TextButton(
@@ -99,17 +106,22 @@ class _ARState extends State<AR> {
     print('Save icon pressed');
   }
 
-  void applyFilter(String filterName) {
+  void applyFilter(int index, String filterName) {
     // Apply the selected filter
     print('Filter selected: $filterName');
+
+    setState(() {
+      selectedFilterIndex = index; // Set the selected filter index
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: const MyCustomAppBarComponent(),
+        appBar: const MyCustomAppBarComponent(appBarTitle: 'Filters'),
         drawer: const MyCustomDrawerComponent(),
         body: Stack(
           children: [
@@ -165,22 +177,22 @@ class _ARState extends State<AR> {
               ),
             ),
             // Circular indicator to take picture
-            Positioned(
-              bottom: 40,
-              left: MediaQuery.of(context).size.width / 2 - 50,
-              child: GestureDetector(
-                onTap: takePicture,
-                child: Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                    color: Colors.transparent,
-                  ),
-                ),
-              ),
-            ),
+            // Positioned(
+            //   bottom: 40,
+            //   left: MediaQuery.of(context).size.width / 2 - 50,
+            //   child: GestureDetector(
+            //     onTap: takePicture,
+            //     child: Container(
+            //       width: 80,
+            //       height: 80,
+            //       decoration: BoxDecoration(
+            //         shape: BoxShape.circle,
+            //         border: Border.all(color: Colors.white, width: 2),
+            //         color: Colors.transparent,
+            //       ),
+            //     ),
+            //   ),
+            // ),
             // filters
             Positioned(
               bottom: 0,
@@ -194,29 +206,29 @@ class _ARState extends State<AR> {
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
                     children: [
-                      _buildFilterItem('Quiff', 'images/logo.png'),
+                      _buildFilterItem(0,'Quiff', 'images/logo.png'),
                       const SizedBox(width: 16),
-                      _buildFilterItem('French crop', 'images/logo.png'),
+                      _buildFilterItem(1,'French crop', 'images/logo.png'),
                       const SizedBox(width: 16),
-                      _buildFilterItem('High fade', 'images/logo.png'),
+                      _buildFilterItem(2,'High fade', 'images/logo.png'),
                       const SizedBox(width: 16),
-                      _buildFilterItem('Crew cut', 'images/logo.png'),
+                      _buildFilterItem(3,'Crew cut', 'images/logo.png'),
                       const SizedBox(width: 16),
-                      _buildFilterItem('Buzz cut', 'images/logo.png'),
+                      _buildFilterItem(4,'Buzz cut', 'images/logo.png'),
                       const SizedBox(width: 16),
-                      _buildFilterItem('Spiky', 'images/logo.png'),
+                      _buildFilterItem(5,'Spiky', 'images/logo.png'),
                       const SizedBox(width: 16),
-                      _buildFilterItem('Quiff', 'images/logo.png'),
+                      _buildFilterItem(6,'Quiff', 'images/logo.png'),
                       const SizedBox(width: 16),
-                      _buildFilterItem('French crop', 'images/logo.png'),
+                      _buildFilterItem(7,'French crop', 'images/logo.png'),
                       const SizedBox(width: 16),
-                      _buildFilterItem('High fade', 'images/logo.png'),
+                      _buildFilterItem(8,'High fade', 'images/logo.png'),
                       const SizedBox(width: 16),
-                      _buildFilterItem('Crew cut', 'images/logo.png'),
+                      _buildFilterItem(9,'Crew cut', 'images/logo.png'),
                       const SizedBox(width: 16),
-                      _buildFilterItem('Buzz cut', 'images/logo.png'),
+                      _buildFilterItem(10,'Buzz cut', 'images/logo.png'),
                       const SizedBox(width: 16),
-                      _buildFilterItem('Spiky', 'images/logo.png'),
+                      _buildFilterItem(11,'Spiky', 'images/logo.png'),
                     ],
                   ),
                 ),
@@ -229,15 +241,18 @@ class _ARState extends State<AR> {
     );
   }
 
-  Widget _buildFilterItem(String filterName, String imagePath) {
+  Widget _buildFilterItem(int index, String filterName, String imagePath) {
+    final isSelected = index == selectedFilterIndex;
+
     return GestureDetector(
-      onTap: () => applyFilter(filterName),
+      onTap: () => applyFilter(index, filterName),
       child: Column(
         children: [
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white, width: 1),
+              color: isSelected ? Colors.blue : Colors.transparent, // Apply background color if selected
             ),
             child: CircleAvatar(
               backgroundColor: Colors.transparent,
@@ -248,9 +263,9 @@ class _ARState extends State<AR> {
           const SizedBox(height: 16),
           Text(
             filterName,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Poppins',
-              color: Colors.white,
+              color: isSelected ? Colors.blue : Colors.white,
               fontSize: 16,
             ),
           ),
@@ -259,9 +274,6 @@ class _ARState extends State<AR> {
     );
   }
 
-  @override
-  void dispose() {
-    cameraController?.dispose();
-    super.dispose();
-  }
+
+
 }

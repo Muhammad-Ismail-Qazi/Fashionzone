@@ -10,7 +10,7 @@ class ThankYou extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:const   Color.fromARGB(247, 245, 237, 237),
-      appBar: const MyCustomAppBarComponent(),
+      appBar: const MyCustomAppBarComponent(appBarTitle: 'Good Bye :)'),
       drawer: const MyCustomDrawerComponent(),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashionzone/Components/AppBarComponent.dart';
-import 'package:fashionzone/Components/BottomNavigationBarComponent.dart';
 import 'package:fashionzone/Components/DrawerComponent.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -24,7 +24,7 @@ class _ProfileState extends State<Profile> {
   final addressController = TextEditingController();
   final passwordController = TextEditingController();
   bool isEditable = false;
-  bool isHover = false;
+
   final ImagePicker _imagePicker = ImagePicker();
   PickedFile? _imageFile;
   bool isTextFieldEnabled = false;
@@ -135,7 +135,9 @@ class _ProfileState extends State<Profile> {
         );
       }
     } catch (e) {
-      print('Error updating user data: $e');
+      if (kDebugMode) {
+        print('Error updating user data: $e');
+      }
     }
   }
 
@@ -155,6 +157,7 @@ class _ProfileState extends State<Profile> {
 
         // Get the URL of the uploaded image
         String downloadURL = await storageReference.getDownloadURL();
+        profilePictureURL = downloadURL;
 
         // Update the profile picture URL in Firestore
         DocumentReference<Map<String, dynamic>> userRef =
@@ -206,22 +209,26 @@ class _ProfileState extends State<Profile> {
             addressController.text = userData['address'] ?? '';
             passwordController.text =
                 textshow = ("Sorry:) we can't show your password ");
+            profilePictureURL = userData['profilePicture'] ?? '';
           });
         }
       }
     } catch (e) {
       // Handle any errors that occur during fetching the data
-      print('Error fetching user data: $e');
+      if (kDebugMode) {
+        print('Error fetching user data: $e');
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    print(profilePictureURL);
     final screenHeight = MediaQuery.of(context).size.height;
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
-          appBar: const MyCustomAppBarComponent(),
+          appBar: const MyCustomAppBarComponent(appBarTitle: 'Profile'),
           drawer: const MyCustomDrawerComponent(),
           body: Padding(
             padding: const EdgeInsets.only(bottom: 14.0),
@@ -230,7 +237,7 @@ class _ProfileState extends State<Profile> {
                   // StreamBuilder to listen for changes in Firestore data
                   stream: FirebaseFirestore.instance
                       .collection('users')
-                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .doc(FirebaseAuth.instance.currentUser?.uid)
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -273,19 +280,22 @@ class _ProfileState extends State<Profile> {
                                 child: Stack(
                                   children: [
                                     SizedBox(
-                                      child: CircleAvatar(
-                                        backgroundColor: const Color.fromARGB(
-                                            247, 84, 74, 158),
-                                        radius: 70,
-                                        backgroundImage: _imageFile == null
-                                            ? (profilePictureURL != null
-                                            ? Image.network(
-                                            profilePictureURL!)
-                                            .image // Use Image.network
-                                            : null)
-                                            : FileImage(File(_imageFile!.path)),
-                                      ),
-                                    ),
+                                        child: CircleAvatar(
+                                      backgroundColor: const Color.fromARGB(
+                                          247, 84, 74, 158),
+                                      radius: 70,
+                                      backgroundImage: _imageFile == null
+                                          ? (profilePictureURL != null
+                                              ? Image.network(
+                                                      profilePictureURL!)
+                                                  .image
+                                              : const AssetImage(
+                                                  'assets/placeholder_image.png'))
+                                          : _imageFile != null
+                                              ? FileImage(
+                                                  File(_imageFile!.path))
+                                              : null,
+                                    )),
                                     Positioned(
                                       bottom: 0,
                                       right: 0,
@@ -573,7 +583,6 @@ class _ProfileState extends State<Profile> {
                                     ),
                                     // space
                                     const SizedBox(height: 20),
-
                                     // space
                                     const SizedBox(height: 20),
                                     //radio button
@@ -591,60 +600,37 @@ class _ProfileState extends State<Profile> {
                                       height: 50,
                                       width: MediaQuery.of(context).size.width *
                                           0.86,
-                                      child: MouseRegion(
-                                        onHover: (event) {
-                                          setState(() {
-                                            isHover = true;
-                                          });
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          elevation: 5,
+                                          backgroundColor: const Color.fromARGB(
+                                              247,
+                                              84,
+                                              74,
+                                              158), // Purple background when not hovering
+                                        ),
+                                        onPressed: () {
+                                          if (formKey.currentState!
+                                              .validate()) {
+                                            editProfile(); // Update user profile data
+                                            uploadProfilePicture(); // Upload the profile picture if it's changed
+                                            Fluttertoast.showToast(
+                                              msg:
+                                                  "Successfully Edit your profile !",
+                                              backgroundColor:
+                                                  const Color.fromARGB(
+                                                      247, 84, 74, 158),
+                                              textColor: Colors.white,
+                                            );
+                                          }
                                         },
-                                        onExit: (event) {
-                                          setState(() {
-                                            isHover = false;
-                                          });
-                                        },
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            elevation: 5,
-                                            backgroundColor: isHover
-                                                ? const Color.fromARGB(
-                                                    247,
-                                                    255,
-                                                    255,
-                                                    255) // White background when hovering
-                                                : const Color.fromARGB(
-                                                    247,
-                                                    84,
-                                                    74,
-                                                    158), // Purple background when not hovering
-                                          ),
-                                          onPressed: () {
-                                            if (formKey.currentState!
-                                                .validate()) {
-                                              editProfile(); // Update user profile data
-                                              uploadProfilePicture(); // Upload the profile picture if it's changed
-                                              Fluttertoast.showToast(
-                                                msg:
-                                                    "Successfully Edit your profile !",
-                                                backgroundColor:
-                                                    const Color.fromARGB(
-                                                        247, 84, 74, 158),
-                                                textColor: Colors.white,
-                                              );
-                                            }
-                                            setState(() {
-                                              isHover = false;
-                                            });
-                                          },
-                                          child: Text(
-                                            "Edit Profile",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontFamily: 'Poppins',
-                                              color: isHover
-                                                  ? Colors.black45
-                                                  : Colors
-                                                      .white, // black45 text when not hovering, white text when hovering
-                                            ),
+                                        child: const Text(
+                                          "Edit Profile",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontFamily: 'Poppins',
+                                            color: Colors
+                                                .white, // black45 text when not hovering, white text when hovering
                                           ),
                                         ),
                                       ),

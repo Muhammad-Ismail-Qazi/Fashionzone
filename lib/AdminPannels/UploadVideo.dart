@@ -1,297 +1,449 @@
 import 'dart:io';
-import 'package:fashionzone/AdminPannels/AdminDashboard.dart';
-import 'package:fashionzone/Components/AppBarComponent.dart';
-import 'package:fashionzone/Components/BottomNavigationBarComponent.dart';
-import 'package:fashionzone/Components/DrawerComponent.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart%20';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-
-// import 'package:image_picker/image_picker.dart';
-// import 'package:video_player/video_player.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:video_player/video_player.dart';
+import '../Components/AppBarComponent.dart';
+import '../Components/DrawerComponent.dart';
 
 class UploadVideos extends StatefulWidget {
-  const UploadVideos({super.key});
+  const UploadVideos({Key? key}) : super(key: key);
 
   @override
   _UploadVideosState createState() => _UploadVideosState();
 }
 
 class _UploadVideosState extends State<UploadVideos> {
-  bool isHover = false;
-  final formKey = GlobalKey<FormState>();
-  File? _videoFile; // A file to store the selected video
-  // final ImagePicker _picker = ImagePicker(); // An instance of ImagePicker
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  File? _videoFile;
+  final ImagePicker _picker = ImagePicker();
+  VideoPlayerController? _videoPlayerController;
+  late Future<void> _initializeVideoPlayerFuture;
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
+  bool _isSelectingVideo = false;
+  bool _isUploadingVideo = false;
+  int totalVideos = 0;
+  int uploadedVideos = 0;
+  double uploadProgress = 0;
+  String uploadStatus = '';
 
-  // A method to get a video from the gallery
-  // Future<void> getVideoFromGallery() async {
-  //   // Use the pickVideo method to get a video from the gallery
-  //   final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
-  //
-  //   // Check if the video is not null
-  //   if (video != null) {
-  //     // Set the _videoFile to the selected video
-  //     setState(() {
-  //       _videoFile = File(video.path);
-  //     });
-  //   }
-  // }
+
+
+  @override
+  void dispose() {
+    _videoPlayerController?.dispose();
+    super.dispose();
+  }
+
+// take video from gallery
+  Future<void> getVideoFromGallery() async {
+    setState(() {
+      _isSelectingVideo = true;
+    });
+
+    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+
+    setState(() {
+      _isSelectingVideo = false;
+    });
+
+    if (video != null) {
+      setState(() {
+        _videoFile = File(video.path);
+        _videoPlayerController = VideoPlayerController.file(_videoFile!);
+        _initializeVideoPlayerFuture = _videoPlayerController!.initialize();
+      });
+    }
+  }
+
+
+  void playPauseVideo() {
+    if (_videoPlayerController!.value.isPlaying) {
+      _videoPlayerController!.pause();
+    } else {
+      _videoPlayerController?.play();
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    final titleController = TextEditingController();
-    final descriptionController = TextEditingController();
+
     return MaterialApp(
-        theme: ThemeData(
-          primaryColor: const Color.fromARGB(247, 84, 74, 158),
-          backgroundColor: const Color.fromARGB(247, 84, 74, 158),
-          iconTheme:
-              const IconThemeData(color: Color.fromARGB(247, 84, 74, 158)),
-          fontFamily: 'Poppins',
-        ),
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          backgroundColor: const Color.fromARGB(168, 192, 216, 212),
-          appBar: const MyCustomAppBarComponent(),
-          drawer: const MyCustomDrawerComponent(),
-          body: SafeArea(
+      theme: ThemeData(
+        primaryColor: const Color.fromARGB(247, 84, 74, 168),
+        backgroundColor: const Color.fromARGB(247, 84, 74, 168),
+        iconTheme: const IconThemeData(color: Color.fromARGB(247, 84, 74, 168)),
+        fontFamily: 'Poppins',
+      ),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: CupertinoColors.white,
+        appBar: const MyCustomAppBarComponent(appBarTitle: 'Upload Video'),
+        drawer: const MyCustomDrawerComponent(),
+        body: SingleChildScrollView(
+          child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // A button to get a video from the gallery
-                SizedBox(
-                  height: 60,
-                  width: 390,
-                  child: MouseRegion(
-                    onHover: (event) {
-                      setState(() {
-                        isHover = true;
-                      });
-                    },
-                    onExit: (event) {
-                      setState(() {
-                        isHover = false;
-                      });
-                    },
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 5,
-                        backgroundColor: isHover
-                            ? const Color.fromARGB(247, 255, 255,
-                                255) // White background when hovering
-                            : const Color.fromARGB(247, 84, 74,
-                                158), // Purple background when not hovering
-                      ),
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          // Perform an action when the button is pressed and the form is valid
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.video_library,
-                            color: isHover ? Colors.black45 : Colors.white,
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            "Choose the video",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: 'Poppins',
-                              color: isHover ? Colors.black45 : Colors.white,
+                Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: Container(
+                    height: 200,
+                    width: MediaQuery.of(context).size.width * 0.92,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          color: const Color.fromARGB(247, 84, 74, 168)),
+                    ),
+                    child: GestureDetector(
+                      onTap: playPauseVideo,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Stack(
+                          children: [
+                            _videoFile == null
+                                ? Center(
+                                    child: Icon(
+                                      Icons.video_collection_outlined,
+                                      size: MediaQuery.of(context).size.width *
+                                          0.20,
+                                    ),
+                                  )
+                                : Stack(
+                                  // this is the bottom red line
+                                  alignment: Alignment.bottomCenter,
+                                  children: [
+                                    SizedBox(
+                                      height: 230,
+                                      width: double.infinity,
+                                      child: VideoPlayer(
+                                          _videoPlayerController!),
+                                    ),
+                                    VideoProgressIndicator(
+                                      _videoPlayerController!,
+                                      allowScrubbing: true,
+                                      padding: const EdgeInsets.all(10),
+                                      colors: const VideoProgressColors(backgroundColor: Colors.white,),
+
+                                    ),
+                                  ],
+                                ),
+                            Positioned(
+                              child: Center(
+                                child: GestureDetector(
+                                  onTap: playPauseVideo,
+                                  child: Icon(
+                                    _videoFile == null
+                                        ? null
+                                        : _videoPlayerController
+                                                    ?.value.isPlaying ??
+                                                false
+                                            ? Icons.pause
+                                            : Icons.play_arrow,
+                                    size: MediaQuery.of(context).size.width *
+                                        0.16,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-                // A widget to display the selected video
-                _videoFile != null
-                    ? const SizedBox(
-                        height: 300,
-                        width: 300,
-                        // child: VideoPlayer(_videoFile as VideoPlayerController),
-                      )
-                    : const Text('No video selected',
-                        style: TextStyle(color: Colors.white, fontSize: 16)),
-                //Title of the video
-                Form(
-                    key: formKey,
-                    child: Column(
+                SizedBox(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.92,
+                  child:ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 5,
+                      backgroundColor: const Color.fromARGB(247, 84, 74, 168),
+                    ),
+                    onPressed: () {
+                      if (!_isSelectingVideo) {
+                        getVideoFromGallery();
+                      }
+                    },
+                    child: _isSelectingVideo
+                        ? const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    )
+                        : const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Material(
-                            elevation: 5,
-                            shadowColor: Colors.black,
-                            child: TextFormField(
-                                controller: titleController,
-                                keyboardType: TextInputType.text,
-                                decoration: const InputDecoration(
-                                    fillColor: Colors.white,
-                                    filled: true,
-                                    labelText: 'Title',
-                                    labelStyle: TextStyle(
-                                        fontFamily: 'Poppins',
-                                        fontSize: 15,
-                                        color:
-                                            Color.fromARGB(247, 84, 74, 158)),
-                                    prefixIcon: Icon(
-                                      Icons.title,
-                                      color: Color.fromARGB(247, 84, 74, 158),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.white),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color:
-                                              Color.fromARGB(247, 84, 74, 158),
-                                          width: 3),
-                                    ),
-                                    border: OutlineInputBorder()),
-                                style: const TextStyle(
-                                    fontFamily: 'Poppins', fontSize: 15),
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter the title of the video.';
-                                  } else if (value.length > 100) {
-                                    return 'Maximum character limit is 100';
-                                  }
-
-                                  return null;
-                                }),
-                          ),
+                        Icon(
+                          Icons.video_library,
+                          color: Colors.white,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Material(
-                            elevation: 5,
-                            shadowColor: Colors.black,
-                            child: TextFormField(
-                                controller: descriptionController,
-                                keyboardType: TextInputType.text,
-                                decoration: const InputDecoration(
-                                    fillColor: Colors.white,
-                                    filled: true,
-                                    labelText: 'Description',
-                                    labelStyle: TextStyle(
-                                        fontFamily: 'Poppins',
-                                        fontSize: 15,
-                                        color:
-                                            Color.fromARGB(247, 84, 74, 158)),
-                                    prefixIcon: Icon(
-                                      Icons.description,
-                                      color: Color.fromARGB(247, 84, 74, 158),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.white),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color:
-                                              Color.fromARGB(247, 84, 74, 158),
-                                          width: 3),
-                                    ),
-                                    border: OutlineInputBorder()),
-                                style: const TextStyle(
-                                    fontFamily: 'Poppins', fontSize: 15),
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Please enter your email address.';
-                                  } else if (value.length > 200) {
-                                    return 'Maximum description limit is 200';
-                                  }
-
-                                  return null;
-                                }),
+                        SizedBox(width: 5),
+                        Text(
+                          "Choose the video",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'Poppins',
+                            color: Colors.white,
                           ),
                         ),
                       ],
-                    )),
+                    ),
+                  ),
 
-                //Description of the video
-
+                ),
+                Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      // Title of the video
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: SizedBox(
+                          height: 50,
+                          width: MediaQuery.of(context).size.width * 0.92,
+                          child: Material(
+                            elevation: 5,
+                            shadowColor: Colors.black,
+                            child: TextFormField(
+                              controller: titleController,
+                              keyboardType: TextInputType.text,
+                              decoration: const InputDecoration(
+                                fillColor: Colors.white,
+                                filled: true,
+                                labelText: 'Title',
+                                labelStyle: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 16,
+                                  color: Color.fromARGB(247, 84, 74, 168),
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.title,
+                                  color: Color.fromARGB(247, 84, 74, 168),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(247, 84, 74, 168),
+                                    width: 3,
+                                  ),
+                                ),
+                                border: OutlineInputBorder(),
+                              ),
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 16,
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Please enter the title of the video.';
+                                } else if (value.length > 100) {
+                                  return 'Maximum character limit is 100';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Description of the video
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: SizedBox(
+                          height: 50,
+                          width: MediaQuery.of(context).size.width * 0.92,
+                          child: Material(
+                            elevation: 5,
+                            shadowColor: Colors.black,
+                            child: TextFormField(
+                              controller: descriptionController,
+                              keyboardType: TextInputType.text,
+                              decoration: const InputDecoration(
+                                fillColor: Colors.white,
+                                filled: true,
+                                labelText: 'Description',
+                                labelStyle: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 16,
+                                  color: Color.fromARGB(247, 84, 74, 168),
+                                ),
+                                prefixIcon: Icon(
+                                  Icons.description,
+                                  color: Color.fromARGB(247, 84, 74, 168),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(247, 84, 74, 168),
+                                    width: 3,
+                                  ),
+                                ),
+                                border: OutlineInputBorder(),
+                              ),
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 16,
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Please enter the description of the video.';
+                                } else if (value.length > 200) {
+                                  return 'Maximum description limit is 200';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(
                   height: 20,
                 ),
                 SizedBox(
-                  height: 60,
-                  width: 390,
-                  child: MouseRegion(
-                    onHover: (event) {
-                      setState(() {
-                        isHover = true;
-                      });
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.92,
+                  child:ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 5,
+                      backgroundColor: const Color.fromARGB(247, 84, 74, 168),
+                    ),
+                    onPressed: () {
+                      if (!_isUploadingVideo && formKey.currentState!.validate()) {
+                        FocusScope.of(context).unfocus();
+                        uploadVideos(_videoFile!, titleController.text, descriptionController.text);
+                      }
                     },
-                    onExit: (event) {
-                      setState(() {
-                        isHover = false;
-                      });
-                    },
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 5,
-                        backgroundColor: isHover
-                            ? const Color.fromARGB(247, 255, 255,
-                                255) // White background when hovering
-                            : const Color.fromARGB(247, 84, 74, 158), // Purple background when not hovering
-                      ),
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          // Perform an action when the button is pressed and the form is valid
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.upload_outlined,
-                            color: isHover ? Colors.black45 : Colors.white,
+                    child: _isUploadingVideo
+                        ? const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    )
+                        : const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.upload_outlined,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "Upload Video",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'Poppins',
+                            color: Colors.white,
                           ),
-                          const SizedBox(width: 5),
-                          Text(
-                            "Upload Video",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: 'Poppins',
-                              color: isHover ? Colors.black45 : Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
 
+                ),
+                Text(
+                  uploadStatus,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                    color: Colors.black,
+                  ),
+                ),
               ],
             ),
           ),
-          // bottomNavigationBar: const MyCustomBottomNavigationBar(),
-          floatingActionButton: MouseRegion(
-            onEnter: (_) {
-              setState(() {
-                isHover = true;
-              });
-            },
-            onExit: (_) {
-              setState(() {
-                isHover = false;
-              });
-            },
-            child: FloatingActionButton(
-              backgroundColor: isHover ? Colors.white : const Color.fromARGB(247, 84, 74, 158),
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const AdminDashboard(),));
-              },
-              child: const Icon(Icons.arrow_forward),
-            ),
-          ),
-
-        ));
+        ),
+      ),
+    );
   }
+
+  Future<void> uploadVideos(File videoFile, String title, String description) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    try {
+      setState(() {
+        _isUploadingVideo = true;
+        uploadStatus = 'Uploading...';
+      });
+
+      final storage = FirebaseStorage.instance;
+      final storageRef = storage.ref().child('videos/${DateTime.now()}.mp4');
+      final uploadTask = storageRef.putFile(videoFile);
+
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        setState(() {
+          uploadProgress = snapshot.bytesTransferred / snapshot.totalBytes;
+          uploadStatus = 'Uploading ${((uploadProgress * 100).toStringAsFixed(2))}%';
+        });
+      });
+
+      await uploadTask.whenComplete(() {
+        setState(() {
+          uploadedVideos++;
+          uploadStatus = 'Uploaded $uploadedVideos out of $totalVideos videos';
+        });
+      });
+
+      final downloadUrl = await storageRef.getDownloadURL();
+
+      final videoData = {
+        'title': title,
+        'description': description,
+        'videoUrl': downloadUrl,
+        'userID':user?.uid,
+      };
+
+      final DocumentReference documentReference =await FirebaseFirestore.instance.collection('videos').add(videoData);
+
+      final String videosId = documentReference.id;
+      DocumentReference<Map<String, dynamic>> userRef =
+      FirebaseFirestore.instance.collection('salons').doc(user?.uid);
+
+      await userRef.update({
+        'videosId': FieldValue.arrayUnion([videosId]),
+      });
+
+
+      // Show success toast
+      Fluttertoast.showToast(
+        msg: 'Video uploaded successfully.',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: const Color.fromARGB(247, 84, 74, 168),
+        textColor: Colors.white,
+      );
+
+      setState(() {
+        titleController.clear();
+        descriptionController.clear();
+        _videoFile = null;
+        _isUploadingVideo = false;
+        uploadProgress = 0;
+        uploadStatus = '';
+      });
+    } catch (error) {
+      print(error);
+      setState(() {
+        _isUploadingVideo = false;
+        uploadStatus = 'Upload failed';
+      });
+      // Show error toast
+      Fluttertoast.showToast(
+        msg: 'Error uploading video: $error',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      throw error;
+    }
+  }
+
 }

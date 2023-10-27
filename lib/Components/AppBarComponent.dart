@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 class MyCustomAppBarComponent extends StatefulWidget implements PreferredSizeWidget {
-  const MyCustomAppBarComponent({Key? key}) : super(key: key);
+  final  String appBarTitle;
+  const MyCustomAppBarComponent({Key? key, required this.appBarTitle }) : super(key: key);
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   _MyCustomAppBarComponentState createState() => _MyCustomAppBarComponentState();
@@ -16,10 +17,10 @@ class _MyCustomAppBarComponentState extends State<MyCustomAppBarComponent> {
       backgroundColor:const Color.fromARGB(247, 84, 74, 158),
       shadowColor: Colors.black,
       elevation: 5,
-      title: const Center(
+      title:  Center(
         child: Text(
-          "FASHIONZONE",
-          style: TextStyle(
+          widget.appBarTitle,
+          style: const TextStyle(
             color: Colors.white,
             fontFamily: 'Poppins',
             fontSize: 24,

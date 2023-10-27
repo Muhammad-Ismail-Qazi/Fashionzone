@@ -1,9 +1,11 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashionzone/Components/BottomNavigationBarComponent.dart';
+import 'package:fashionzone/CustomerPannels/TrackRoutes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import '../Components/AppBarComponent.dart';
 import '../Components/DrawerComponent.dart';
 import '../Components/GalleryComponent.dart';
@@ -12,7 +14,7 @@ import 'Booking.dart';
 
 class Salon extends StatefulWidget {
   final String salonId;
-  const Salon({Key? key,required this.salonId}) : super(key: key);
+  const Salon({Key? key, required this.salonId}) : super(key: key);
 
   @override
   State<Salon> createState() => _SalonState();
@@ -25,20 +27,30 @@ class _SalonState extends State<Salon> {
   String? userName;
   List<Map<String, dynamic>> fetchedServices = [];
   List<Map<String, dynamic>> fetchedVideos = [];
-  String? serviceName ;
-  String? servicePrice ;
+  String? serviceName;
+  String? servicePrice;
   String? servicePictureURL;
-  bool isChecked = false; // Initialize isChecked in the parent widget
+  bool isChecked = false;
+  List<Service> selectedServices = [];
 
   void initState() {
     super.initState();
-
     fetchServicesData();
     fetchVideosData();
     fetchSalonData(widget.salonId);
     fetchSalonOwnerName(widget.salonId);
     // Print the salon ID when the widget is initialized
     print('Salon ID: ${widget.salonId}');
+  }
+
+  void toggleServiceSelection(Service service, bool isSelected) {
+    setState(() {
+      if (isSelected) {
+        selectedServices.add(service);
+      } else {
+        selectedServices.remove(service);
+      }
+    });
   }
 
   @override
@@ -51,8 +63,7 @@ class _SalonState extends State<Salon> {
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar:
-            const MyCustomAppBarComponent(appBarTitle: 'Check Salon Details'),
+        appBar: const MyCustomAppBarComponent(appBarTitle: 'Salon Details'),
         drawer: const MyCustomDrawerComponent(),
         body: SingleChildScrollView(
           child: SizedBox(
@@ -60,7 +71,7 @@ class _SalonState extends State<Salon> {
             child: Stack(
               children: [
                 Container(
-                  decoration:  BoxDecoration(
+                  decoration: BoxDecoration(
                     image: DecorationImage(
                       image: Image.network(coverPictureURL ?? '').image,
                       fit: BoxFit.cover,
@@ -89,7 +100,7 @@ class _SalonState extends State<Salon> {
                               height: MediaQuery.of(context).size.height * 0.05,
                             ),
                             // Title
-                             Text(
+                            Text(
                               salonName.toString(),
                               style: const TextStyle(
                                 fontSize: 30,
@@ -100,7 +111,7 @@ class _SalonState extends State<Salon> {
                               height: MediaQuery.of(context).size.height * 0.01,
                             ),
                             // Subtitle
-                             Text(
+                            Text(
                               userName.toString(),
                               style: const TextStyle(
                                 fontSize: 14,
@@ -114,61 +125,50 @@ class _SalonState extends State<Salon> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 // Rating
-                                Card(
-                                  elevation: 5,
-                                  color: const Color.fromARGB(
-                                      247, 84, 74, 158), // Purple
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 6),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.star,
-                                          color: Colors.yellow,
-                                        ),
-                                        SizedBox(width: 5),
-                                        Text(
-                                          "4.5",
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
+                                ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 5,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      backgroundColor: const Color.fromARGB(
+                                          247, 84, 74, 158),
                                     ),
-                                  ),
-                                ),
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.star,
+                                        color: Colors.yellow),
+                                    label: const Text(
+                                      "4.5",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                      ),
+                                    )),
                                 // Location
-                                Card(
-                                  color: const Color.fromARGB(247, 84, 74, 158),
-                                  elevation: 5,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 6),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.map,
-                                          color: Colors.red,
-                                        ),
-                                        SizedBox(width: 5),
-                                        Text(
-                                          "View on Google Map",
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.white),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                const SizedBox(
+                                  width: 10,
                                 ),
+                                ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 5,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30)),
+                                      backgroundColor: const Color.fromARGB(
+                                          247, 84, 74, 158),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) =>  RoutesTracking(salonID:widget.salonId ),));
+                                    },
+                                    icon: const Icon(Icons.map_outlined,
+                                        color: Colors.red),
+                                    label: const Text(
+                                      "View on google map",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                      ),
+                                    )),
                               ],
                             ),
                             const SizedBox(
@@ -178,33 +178,30 @@ class _SalonState extends State<Salon> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromARGB(247, 84, 74, 158),
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 6, horizontal: 30),
+                                  ),
                                   onPressed: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const Booking(),
+                                        builder: (context) => Booking(
+                                            selectedServices: selectedServices,
+                                            salonId: widget.salonId),
                                       ),
                                     );
                                   },
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 5,
-                                    backgroundColor:
-                                        const Color.fromARGB(247, 84, 74, 158),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                  ),
-                                  child: const SizedBox(
-                                    height: 40,
-                                    width: 150,
-                                    child: Center(
-                                      child: Text(
-                                        'Book Now',
-                                        style: TextStyle(
-                                            fontSize: 20, color: Colors.white),
-                                      ),
-                                    ),
-                                  ),
+                                  child: const Text('Book Now',
+                                      style: TextStyle(
+                                          fontFamily: 'Poppins', fontSize: 20)),
+                                  // ... Existing button properties ...
                                 ),
                               ],
                             ),
@@ -240,7 +237,8 @@ class _SalonState extends State<Salon> {
                               child: Row(
                                 children: fetchedVideos.map((videoData) {
                                   return MyCustomGalleryComponent(
-                                    galleryVideoPath:  videoData['videoUrl'].toString(),
+                                    galleryVideoPath:
+                                        videoData['videoUrl'].toString(),
                                   );
                                 }).toList(),
                               ),
@@ -276,11 +274,24 @@ class _SalonState extends State<Salon> {
                               scrollDirection: Axis.horizontal,
                               child: Row(
                                 children: fetchedServices.map((serviceData) {
+                                  final service = Service(
+                                    name: serviceData['name'].toString(),
+                                    price: serviceData['price'].toString(),
+                                    imageFile:
+                                        serviceData['imageURL'].toString(),
+                                    userId: serviceData['userID'].toString(),
+                                    salonId: widget.salonId,
+                                  );
                                   return MyCustomCustomerServicesComponent(
-                                    // Pass the isChecked value
-                                    servicesImagePath: serviceData['imageURL'].toString(),
-                                    servicePrice: serviceData['price'].toString(),
+                                    servicesImagePath:
+                                        serviceData['imageURL'].toString(),
+                                    servicePrice:
+                                        serviceData['price'].toString(),
                                     serviceName: serviceData['name'].toString(),
+                                    onServiceSelected: (isSelected) {
+                                      toggleServiceSelection(
+                                          service, isSelected);
+                                    },
                                   );
                                 }).toList(),
                               ),
@@ -298,26 +309,23 @@ class _SalonState extends State<Salon> {
                     elevation: 5,
                     borderRadius: const BorderRadius.all(Radius.circular(20)),
                     child: Container(
-                      width: MediaQuery.of(context).size.width * 0.25,
-                      height: MediaQuery.of(context).size.height * 0.125,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Image(
-                          image: NetworkImage(logoPictureURL ?? ''),
-                          width: MediaQuery.of(context).size.width * 0.25,
-                          height: MediaQuery.of(context).size.height * 0.125,
-                          fit: BoxFit.cover, // Adjust this as needed
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        height: MediaQuery.of(context).size.height * 0.125,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
                         ),
-                      )
-
-                    ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image(
+                            image: NetworkImage(logoPictureURL ?? ''),
+                            width: MediaQuery.of(context).size.width * 0.25,
+                            height: MediaQuery.of(context).size.height * 0.125,
+                            fit: BoxFit.cover, // Adjust this as needed
+                          ),
+                        )),
                   ),
                 ),
-
               ],
             ),
           ),
@@ -327,14 +335,17 @@ class _SalonState extends State<Salon> {
       ),
     );
   }
+
   Future<void> fetchSalonData(String salonId) async {
     try {
-      DocumentSnapshot salonDataSnapshot =
-      await FirebaseFirestore.instance.collection('salons').doc(salonId).get();
+      DocumentSnapshot salonDataSnapshot = await FirebaseFirestore.instance
+          .collection('salons')
+          .doc(salonId)
+          .get();
 
       if (salonDataSnapshot.exists) {
         Map<String, dynamic> salonData =
-        salonDataSnapshot.data() as Map<String, dynamic>;
+            salonDataSnapshot.data() as Map<String, dynamic>;
         setState(() {
           salonName = salonData['name'] ?? '';
           coverPictureURL = salonData['coverPicture'] ?? '';
@@ -350,13 +361,15 @@ class _SalonState extends State<Salon> {
   Future<void> fetchSalonOwnerName(String salonId) async {
     try {
       // Fetch the salon document to get the owner's UID
-      DocumentSnapshot salonDataSnapshot =
-      await FirebaseFirestore.instance.collection('salons').doc(salonId).get();
+      DocumentSnapshot salonDataSnapshot = await FirebaseFirestore.instance
+          .collection('salons')
+          .doc(salonId)
+          .get();
 
       if (salonDataSnapshot.exists) {
         // The salon ID is also the user ID
         String ownerUid = salonId;
-        print("Owner UID: $ownerUid");
+        // print("Owner UID: $ownerUid");
 
         // Query the "users" collection based on the owner's UID
         DocumentSnapshot ownerDataSnapshot = await FirebaseFirestore.instance
@@ -366,7 +379,7 @@ class _SalonState extends State<Salon> {
 
         if (ownerDataSnapshot.exists) {
           Map<String, dynamic> ownerData =
-          ownerDataSnapshot.data() as Map<String, dynamic>;
+              ownerDataSnapshot.data() as Map<String, dynamic>;
           setState(() {
             userName = ownerData['name'] ?? '';
           });
@@ -378,25 +391,26 @@ class _SalonState extends State<Salon> {
     }
   }
 
-
   Future<void> fetchServicesData() async {
     try {
-      print("Fetching services for salon ID: ${widget.salonId}");
+      // print("Fetching services for salon ID: ${widget.salonId}");
 
-      QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
-          .collection('services')
-          .where('userID', isEqualTo: widget.salonId)
-          .get();
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('services')
+              .where('userID', isEqualTo: widget.salonId)
+              .get();
 
-      List<Map<String, dynamic>> servicesData = querySnapshot.docs.map((doc) => doc.data()).toList();
+      List<Map<String, dynamic>> servicesData =
+          querySnapshot.docs.map((doc) => doc.data()).toList();
 
       setState(() {
         fetchedServices = servicesData;
       });
 
-      print("Service Data: $fetchedServices");
+      // print("Service Data: $fetchedServices");
     } catch (e) {
-      print("Error fetching services data: $e");
+      // print("Error fetching services data: $e");
       Fluttertoast.showToast(
         msg: e.toString(),
         backgroundColor: Colors.red,
@@ -408,25 +422,20 @@ class _SalonState extends State<Salon> {
 
   Future<void> fetchVideosData() async {
     try {
-      print("Fetching videos for salon ID: ${widget.salonId}");
+      // print("Fetching videos for salon ID: ${widget.salonId}");
 
-      QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
-          .collection('videos')
-          .where('userID', isEqualTo: widget.salonId)
-          .get();
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('videos')
+              .where('userID', isEqualTo: widget.salonId)
+              .get();
 
-      List<Map<String, dynamic>> videosData = querySnapshot.docs.map((doc) => doc.data()).toList();
+      List<Map<String, dynamic>> videosData =
+          querySnapshot.docs.map((doc) => doc.data()).toList();
 
       setState(() {
         fetchedVideos = videosData;
       });
-
-      print("Videos Data: $fetchedVideos");
-
-      Fluttertoast.showToast(
-        msg: "Videos data fetched successfully!",
-        textColor: const Color.fromARGB(247, 84, 74, 158),
-      );
     } catch (e) {
       print("Error fetching videos data: $e");
       Fluttertoast.showToast(
@@ -435,6 +444,4 @@ class _SalonState extends State<Salon> {
       );
     }
   }
-
-
 }

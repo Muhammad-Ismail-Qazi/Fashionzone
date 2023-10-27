@@ -1,18 +1,18 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MyCustomCustomerServicesComponent extends StatefulWidget {
   final String servicesImagePath;
   final String servicePrice;
   final String serviceName;
+  final Function(bool isSelected) onServiceSelected;
 
-
-  MyCustomCustomerServicesComponent({
+  const MyCustomCustomerServicesComponent({
     Key? key,
     required this.servicesImagePath,
     required this.servicePrice,
     required this.serviceName,
-
-
+    required this.onServiceSelected,
   }) : super(key: key);
 
   @override
@@ -20,7 +20,9 @@ class MyCustomCustomerServicesComponent extends StatefulWidget {
       _MyCustomCustomerServicesComponentState();
 }
 
-class _MyCustomCustomerServicesComponentState extends State<MyCustomCustomerServicesComponent> {
+class _MyCustomCustomerServicesComponentState
+    extends State<MyCustomCustomerServicesComponent> {
+  bool isSelected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +50,7 @@ class _MyCustomCustomerServicesComponentState extends State<MyCustomCustomerServ
                         image: NetworkImage(widget.servicesImagePath),
                         fit: BoxFit.cover,
                       ),
-                    )
-
+                    ),
                   ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
@@ -73,24 +74,48 @@ class _MyCustomCustomerServicesComponentState extends State<MyCustomCustomerServ
               ),
             ),
           ),
+          // Price (Top Center)
           Positioned(
-            top: 10, // Adjust the top position as needed
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Text(
-                widget.serviceName,
-                style: const TextStyle(color: Colors.white, fontSize: 18),
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
+            top: 15,
+            right: 50,
+            left: 80,
             child: Transform.translate(
-              offset: const Offset(90, -10),
+              offset: const Offset(0, -10),
               child: Text(
                 widget.servicePrice,
                 style: const TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+          ),
+          // Name (Bottom Center)
+          Positioned(
+            bottom: 10,
+            left: 100/2,
+            right: 100/2,
+            child: Text(
+              widget.serviceName,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
+          // Add the "+" icon button with circular background to the top right corner
+          Positioned(
+            top: 5,
+            right: 18,
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+              child: Center(
+                child: IconButton(
+                  icon: isSelected
+                      ? const Icon(Icons.minimize, color: Colors.white, size: 20)
+                      : const Icon(Icons.add, color: Colors.white, size: 20),
+                  onPressed: () {
+                    setState(() {
+                      isSelected = !isSelected;
+                    });
+                    widget.onServiceSelected(isSelected);
+                  },
+                ),
               ),
             ),
           ),

@@ -1,10 +1,11 @@
-import 'package:carousel_slider/carousel_slider.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../Components/AppBarComponent.dart';
-import '../Components/BottomNavigationBarComponent.dart';
 import '../Components/DrawerComponent.dart';
 import '../Components/NearYouComponent.dart';
 import '../Components/TopSalonComponent.dart';
+import 'Salon.dart';
 
 class CustomerDashboard extends StatefulWidget {
   const CustomerDashboard({Key? key}) : super(key: key);
@@ -14,7 +15,23 @@ class CustomerDashboard extends StatefulWidget {
 }
 
 class _CustomerDashboardState extends State<CustomerDashboard> {
+  String? salonName;
+  String? coverPictureURL;
+  String? logoPictureURL;
+  String? userName;
+  bool isLoading = true; // Track whether data is being fetched
+  List<Map<String, dynamic>> salonList = [];
+  List<String> salonIds = []; // Create a list to store salon IDs
+  String? salonIdGet;
+  String? salonIdPass;
+  // String? userIdGet;
+
   @override
+  void initState() {
+    super.initState();
+    fetchSalonData();
+  }
+
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
@@ -25,7 +42,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: const Color.fromARGB(240, 249, 249, 252),
-        appBar: const MyCustomAppBarComponent(),
+        appBar: const MyCustomAppBarComponent(appBarTitle: 'Customer Dashboard'),
         drawer: const MyCustomDrawerComponent(),
         body: SingleChildScrollView(
           child: Column(
@@ -95,47 +112,34 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                   ),
                 ),
               ),
-
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    // salon that are famous
-                    MyCustomCard_Component(
-                      salonImagePath: 'images/topsalon1.jpeg',
-                      salonLogoPath: 'images/logo.png',
-                      salonName: 'BeautyXone',
-                      stars: '4.5',
-                    ),
-                    MyCustomCard_Component(
-                        salonImagePath: 'images/topsalon2.jpeg',
-                        salonName: 'Style',
-                        salonLogoPath: 'images/logo1.jpeg',
-                        stars: '4.3'),
-                    MyCustomCard_Component(
-                      salonImagePath: 'images/topsalon1.jpeg',
-                      salonLogoPath: 'images/logo.png',
-                      salonName: 'BeautyXone',
-                      stars: '4.5',
-                    ),
-                    MyCustomCard_Component(
-                        salonImagePath: 'images/topsalon2.jpeg',
-                        salonName: 'Style',
-                        salonLogoPath: 'images/logo1.jpeg',
-                        stars: '4.3'),
-                    MyCustomCard_Component(
-                        salonImagePath: 'images/topsalon3.jpeg',
-                        salonName: 'Beauty Balon',
-                        stars: '4.0',
-                        salonLogoPath: 'images/logo2.jpeg'),
-                    MyCustomCard_Component(
-                        salonImagePath: 'images/topsalon3.jpeg',
-                        salonName: 'Beauty Balon',
-                        stars: '4.0',
-                        salonLogoPath: 'images/logo2.jpeg'),
-                  ],
+              // Salon Cards (conditionally rendered based on data availability)
+              if (isLoading)
+                const CircularProgressIndicator(
+                  backgroundColor: Color.fromARGB(247, 84, 74, 158),
+                )
+              else
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: salonList.map((salonData) {
+                      return GestureDetector(
+                        onTap:(){
+                          salonIdPass= salonData['userID'];
+                          // print("IDS before the navigater "+salonIdPass.toString());
+                          navigateToSalon(salonIdPass!);
+                        },
+                        child: MyCustomCardComponent(
+                          salonCoverImagePath: salonData['coverPicture'] ?? '', // Provide a default value
+                          salonLogoPath: salonData['logoPicture'] ?? '', // Provide a default value
+                          salonName: salonData['name'] ?? '', // Provide a default value
+                          stars: '4.5',
+                          owner: salonData['owner'] ?? '', // Use the owner's name from salonData
+                          // salonId: salonIdGet.toString(),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
-              ),
 
               const Row(
                 children: [
@@ -182,15 +186,6 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                     MyCustomListTileComponent(
                         listTileLogoPath: 'images/logo1.jpeg',
                         listTileSalonName: 'FashionZone'),
-                    MyCustomListTileComponent(
-                        listTileSalonName: 'BeautyTime',
-                        listTileLogoPath: 'images/logo2.jpeg'),
-                    MyCustomListTileComponent(
-                        listTileLogoPath: 'images/logo.png',
-                        listTileSalonName: 'StyleXone'),
-                    MyCustomListTileComponent(
-                        listTileLogoPath: 'images/logo1.jpeg',
-                        listTileSalonName: 'FashionZone'),
                   ],
                 ),
               ),
@@ -201,4 +196,67 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       ),
     );
   }
+  Future<void> fetchSalonData() async {
+    try {
+      // Fetch data for all salons
+      QuerySnapshot salonQuerySnapshot = // when we have to fetch multiple documents we use QuerySnapshot
+      await FirebaseFirestore.instance.collection('salons').get();
+
+      // Check if there is at least one salon
+      if (salonQuerySnapshot.docs.isNotEmpty) {
+        // Fetch salon data and owner names concurrently
+        List<Map<String, dynamic>> salonDataList = await Future.wait(
+          salonQuerySnapshot.docs.map((salonDocument) async {
+            final salonData = salonDocument.data() as Map<String, dynamic>;
+
+            // Fetch the owner's name based on the salon's userID
+            final String? ownerUserId = salonData['userID'];
+
+            if (ownerUserId != null) {
+              final DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(ownerUserId)
+                  .get();
+
+              if (userSnapshot.exists) {
+                final userData = userSnapshot.data() as Map<String, dynamic>;
+                final String ownerName = userData['name'] ?? '';
+                salonData['owner'] = ownerName; // Add owner name to salon data
+
+                // Add salonIdGet to the list
+                salonIdGet = salonDocument.id;
+                // userIdGet = userSnapshot.id;
+                salonIds.add(salonIdGet!);
+
+              }
+            }
+            return salonData;
+          }),
+        );
+
+        setState(() {
+          salonList = salonDataList; // Assign the fetched data to salonList
+          isLoading = false; // Data has been fetched, set isLoading to false
+        });
+
+        // Now, you have the salon IDs in the salonIds list
+        // You can use salonIds for further processing
+        // print('Salon IDS store in list : $salonIds');
+      }
+    } catch (e) {
+      print('Error fetching salon data: $e');
+      // Handle the error as needed
+    }
+  }
+
+
+  void navigateToSalon(String  salonIdPass) {
+
+    // print("this is the ids in navigater: "+salonIdPass.toString());
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Salon(salonId: salonIdPass.toString())),
+    );
+  }
+
 }

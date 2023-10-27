@@ -1,9 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.ACCEPT_HANDOVER"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <!-- For fine-grained (GPS) location access -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- For coarse-grained (network-based) location access -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <application
         android:label="fashionzone"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyC5WwVhfdBloWcVzKYOVFAqKRzZoAC4DfU"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,5 +40,8 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="high_importance_channel" />
     </application>
 </manifest>

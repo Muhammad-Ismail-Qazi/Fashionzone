@@ -1,10 +1,12 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../CustomerPannels/Booking.dart';
 import 'Login.dart';
 
 class Signup extends StatefulWidget {
@@ -27,7 +29,7 @@ class _SignupState extends State<Signup> {
   UserRole role = UserRole.customer;
   bool isHover = false;
   bool loading =false;
-  final databaseReference = FirebaseDatabase.instance.ref('Signup');
+
 
   @override
   void dispose() {
@@ -271,7 +273,7 @@ class _SignupState extends State<Signup> {
                     shadowColor: Colors.black,
                     child: TextFormField(
                       controller: passwordController,
-                      obscureText: true,
+                      obscureText: false,
                       decoration: const InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
@@ -369,7 +371,7 @@ class _SignupState extends State<Signup> {
                     ),
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
-                        registerUser();
+                        registerUser(context);
                       }
                     },
                     child: const Text(
@@ -417,15 +419,21 @@ class _SignupState extends State<Signup> {
     );
   }
 
-  Future<void> registerUser() async {
+
+
+
+  Future<void> registerUser(BuildContext context) async {
     try {
-      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text.toString(),
         password: passwordController.text.toString(),
       );
       User? user = userCredential.user;
 
       if (user != null) {
+        // Get the user's device ID
+        String deviceId = await getDeviceId();
+
         // Store user's data in Firestore
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'name': nameController.text.toString(),
@@ -435,11 +443,18 @@ class _SignupState extends State<Signup> {
           'role': role == UserRole.admin ? 'admin' : 'customer',
         });
 
+        // Store device ID and user ID in a separate collection
+        await FirebaseFirestore.instance.collection('userDevices').add({
+          'userId': user.uid,
+          'deviceId': deviceId,
+        });
+
+
         Fluttertoast.showToast(
           msg: "Registration successful!",
           backgroundColor: const Color.fromARGB(247, 84, 74, 158),
         );
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const Login(),));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
         clearForm();
       } else {
         Fluttertoast.showToast(
@@ -447,14 +462,37 @@ class _SignupState extends State<Signup> {
           backgroundColor: Colors.red,
         );
       }
-    } catch (e) {
-      print(e.toString());
+    } catch (exception) {
+      if (kDebugMode) {
+        print(exception.toString());
+      }
       Fluttertoast.showToast(
-        msg: e.toString(),
+        msg: exception.toString(),
         backgroundColor: Colors.red,
       );
     }
   }
+
+  Future<String> getDeviceId() async {
+    String deviceId = "";
+    FirebaseMessaging message = FirebaseMessaging.instance;
+    try {
+      String? token= await message.getToken();
+      if (token != null) {
+        deviceId = token;
+        if (kDebugMode) {
+          print("The device id or token is $deviceId");
+        }
+      }
+    } catch (exception) {
+      if (kDebugMode) {
+        print("Error getting device ID: $exception");
+      }
+    }
+
+    return deviceId;
+  }
+
 
 
   void clearForm() {

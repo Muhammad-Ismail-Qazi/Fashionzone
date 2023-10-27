@@ -16,7 +16,7 @@ class _MyCustomListTileComponentState extends State<MyCustomListTileComponent> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context,MaterialPageRoute(builder:(context) => const Salon(),));
+        // Navigator.push(context,MaterialPageRoute(builder:(context) => const Salon(),));
       },
       child: Column(
         children: [

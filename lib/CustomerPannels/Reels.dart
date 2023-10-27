@@ -1,4 +1,5 @@
 import 'package:chewie/chewie.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashionzone/Components/AppBarComponent.dart';
 import 'package:fashionzone/Components/BottomNavigationBarComponent.dart';
 import 'package:fashionzone/Components/DrawerComponent.dart';
@@ -9,20 +10,11 @@ class Reels extends StatefulWidget {
   const Reels({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _ReelsState createState() => _ReelsState();
 }
 
 class _ReelsState extends State<Reels> {
-  List<String> videoUrls = [
-    // Add your video URLs here
-    'videos/vid1.mp4',
-    'videos/vid1.mp4',
-    'videos/vid1.mp4',
-    'videos/vid1.mp4',
-    'videos/promo.mp4',
-    'videos/promo.mp4',
-  ];
+  List<Map<String, dynamic>> videosData = []; // Store fetched video data here
 
   int currentIndex = 0;
   late VideoPlayerController videoPlayerController;
@@ -31,7 +23,7 @@ class _ReelsState extends State<Reels> {
   @override
   void initState() {
     super.initState();
-    initializeVideoPlayer();
+    fetchVideos();
   }
 
   @override
@@ -42,8 +34,9 @@ class _ReelsState extends State<Reels> {
   }
 
   void initializeVideoPlayer() {
+    // Use video URL from videosData at the currentIndex
     videoPlayerController =
-        VideoPlayerController.asset(videoUrls[currentIndex]);
+        VideoPlayerController.network(videosData[currentIndex]['videoUrl']);
     chewieController = ChewieController(
       videoPlayerController: videoPlayerController,
       autoPlay: false,
@@ -58,23 +51,10 @@ class _ReelsState extends State<Reels> {
   }
 
   void playNextVideo() {
-    if (currentIndex < videoUrls.length - 1) {
+    if (currentIndex < videosData.length - 1) {
       currentIndex++;
       videoPlayerController.pause();
-      videoPlayerController =
-          VideoPlayerController.asset(videoUrls[currentIndex]);
-      chewieController.dispose();
-      chewieController = ChewieController(
-        videoPlayerController: videoPlayerController,
-        autoPlay: true,
-        looping: false,
-        allowMuting: false,
-        allowPlaybackSpeedChanging: false,
-        allowedScreenSleep: false,
-      );
-      videoPlayerController.initialize().then((_) {
-        setState(() {});
-      });
+      initializeVideoPlayer();
     }
   }
 
@@ -82,104 +62,90 @@ class _ReelsState extends State<Reels> {
     if (currentIndex > 0) {
       currentIndex--;
       videoPlayerController.pause();
-      videoPlayerController =
-          VideoPlayerController.asset(videoUrls[currentIndex]);
-      chewieController.dispose();
-      chewieController = ChewieController(
-        videoPlayerController: videoPlayerController,
-        autoPlay: false,
-        looping: false,
-        allowMuting: false,
-        allowPlaybackSpeedChanging: false,
-        allowedScreenSleep: false,
-      );
-      videoPlayerController.initialize().then((_) {
-        setState(() {});
-      });
+      initializeVideoPlayer();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MyCustomAppBarComponent(),
+      appBar: const MyCustomAppBarComponent(appBarTitle: 'Reels'),
       drawer: const MyCustomDrawerComponent(),
-      body: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: Stack(
+      body: videosData.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : GestureDetector(
+        onTap: () {
+          // Play the video when tapped
+          if (videoPlayerController.value.isPlaying) {
+            videoPlayerController.pause();
+          } else {
+            videoPlayerController.play();
+          }
+        },
+        child: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: AspectRatio(
+            aspectRatio:
+            videoPlayerController.value.aspectRatio,
+            child: Chewie(
+              controller: chewieController,
+            ),
+          ),
+        ),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(left: 40.0, bottom: 50),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            GestureDetector(
-              onTap: () {
-                // Play the video when tapped
-                if (videoPlayerController.value.isPlaying) {
-                  videoPlayerController.pause();
-                } else {
-                  videoPlayerController.play();
-                }
-              },
-              child: SizedBox(
-                width: double.infinity,
-                height: double.infinity,
-                child: AspectRatio(
-                  aspectRatio: videoPlayerController.value.aspectRatio,
-                  child: Chewie(
-                    controller: chewieController,
-                  ),
-                ),
+            FloatingActionButton(
+              backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+              onPressed: playPreviousVideo,
+              child: const Icon(
+                Icons.navigate_before,
               ),
             ),
-            Positioned(
-              bottom: 70,
-              left: 20,
-              child: IconButton(
-                onPressed: playPreviousVideo,
-                icon: const Icon(Icons.navigate_before),
-                color: const Color.fromARGB(247, 84, 74, 158),
-              ),
-            ),
-            Positioned(
-              top: 470,
-              left: 350,
-              child: Column(
-                children: [
-                  IconButton(
-                    iconSize: 30,
-                    onPressed: () {
-                      // Handle love button press
-                    },
-                    icon: const Icon(Icons.favorite),
-                    color: Colors.red,
-                  ),
-                  IconButton(
-                    iconSize: 30,
-                    onPressed: () {
-                      // Handle comment button press
-                    },
-                    icon: const Icon(Icons.comment),
-                    color: Colors.white,
-                  ),
-                  IconButton(
-                    iconSize: 30,
-                    onPressed: () {
-                      // Handle share button press
-                    },
-                    icon: const Icon(Icons.share),
-                    color: Colors.white,
-                  ),
-                ],
+            FloatingActionButton(
+              backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+              onPressed: playNextVideo,
+              child: const Icon(
+                Icons.navigate_next,
               ),
             ),
           ],
         ),
       ),
-      // bottomNavigationBar: const MyCustomBottomNavigationBar(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: playNextVideo,
-        child: const Icon(
-          Icons.navigate_next,
-        ),
-      ),
     );
+  }
+
+  void fetchVideos() {
+    FirebaseFirestore.instance.collection('videos').get().then((querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs) {
+          String description = doc['description'];
+          String title = doc['title'];
+          String userID = doc['userID'];
+          String videoUrl = doc['videoUrl'];
+
+          print("title $title");
+
+          // Add the video data to the list
+          videosData.add({
+            'title': title,
+            'description': description,
+            'userID': userID,
+            'videoUrl': videoUrl,
+          });
+          print("vidoes data : $videosData");
+
+          // If this is the first video in the list, initialize the player
+          if (videosData.length == 1) {
+            initializeVideoPlayer();
+          }
+        }
+        setState(() {});
+      }
+    });
   }
 }
