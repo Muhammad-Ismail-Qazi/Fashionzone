@@ -76,6 +76,40 @@ class _UploadServicesState extends State<UploadServices> {
                       const EdgeInsets.only(top: 14.0, left: 14.0, right: 14.0),
                   child: Column(
                     children: [
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Go back functionality
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    12.0), // Adjust the value for roundness
+                              ),
+                              primary: const Color.fromARGB(247, 84, 74, 168),
+                            ),
+                            child: const SizedBox(
+                              height: 20,
+                              width: 10,
+                              child: Icon(
+                                Icons.arrow_back_ios,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20,),
+                          const Text("Explore Our Offerings",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  fontFamily: 'Poppins',
+                                  color: Colors.black54)),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       // top two field and button of add
                       Form(
                         autovalidateMode: AutovalidateMode.onUserInteraction,
