@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class Reels extends StatefulWidget {
-  const Reels({super.key});
+  const Reels({Key? key}) : super(key: key);
 
   @override
   _ReelsState createState() => _ReelsState();
@@ -71,49 +71,83 @@ class _ReelsState extends State<Reels> {
     return Scaffold(
       appBar: const MyCustomAppBarComponent(appBarTitle: 'Reels'),
       drawer: const MyCustomDrawerComponent(),
-      body: videosData.isEmpty
-          ? Center(child: CircularProgressIndicator())
-          : GestureDetector(
-        onTap: () {
-          // Play the video when tapped
-          if (videoPlayerController.value.isPlaying) {
-            videoPlayerController.pause();
-          } else {
-            videoPlayerController.play();
-          }
-        },
-        child: SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-          child: AspectRatio(
-            aspectRatio:
-            videoPlayerController.value.aspectRatio,
-            child: Chewie(
-              controller: chewieController,
+      body: Stack(
+        children: [
+          videosData.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : GestureDetector(
+            onTap: () {
+              // Play the video when tapped
+              if (videoPlayerController.value.isPlaying) {
+                videoPlayerController.pause();
+              } else {
+                videoPlayerController.play();
+              }
+            },
+            child: SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: AspectRatio(
+                aspectRatio:
+                videoPlayerController.value.aspectRatio,
+                child: Chewie(
+                  controller: chewieController,
+                ),
+              ),
             ),
           ),
-        ),
+          Positioned(
+            left: 16.0,
+            bottom: 16.0,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    videosData[currentIndex]['title'],
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    videosData[currentIndex]['description'],
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(left: 40.0, bottom: 50),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            FloatingActionButton(
-              backgroundColor: const Color.fromARGB(247, 84, 74, 158),
-              onPressed: playPreviousVideo,
-              child: const Icon(
-                Icons.navigate_before,
+      floatingActionButton: Align(
+        alignment: Alignment.center,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 18.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              FloatingActionButton(
+                backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+                onPressed: playPreviousVideo,
+                child: const Icon(
+                  Icons.navigate_before,
+                ),
               ),
-            ),
-            FloatingActionButton(
-              backgroundColor: const Color.fromARGB(247, 84, 74, 158),
-              onPressed: playNextVideo,
-              child: const Icon(
-                Icons.navigate_next,
+              FloatingActionButton(
+                backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+                onPressed: playNextVideo,
+                child: const Icon(
+                  Icons.navigate_next,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -137,7 +171,7 @@ class _ReelsState extends State<Reels> {
             'userID': userID,
             'videoUrl': videoUrl,
           });
-          print("vidoes data : $videosData");
+
 
           // If this is the first video in the list, initialize the player
           if (videosData.length == 1) {

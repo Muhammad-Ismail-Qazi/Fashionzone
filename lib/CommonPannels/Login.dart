@@ -37,140 +37,119 @@ class _LoginState extends State<Login> {
         autovalidateMode: AutovalidateMode.onUserInteraction,
         key: formKey,
         child: SingleChildScrollView(
-          child: Center(
+          child: Padding(
+            padding: EdgeInsets.only(
+                right: 14.0, left: 14.0, top: screenHeight * 0.2),
             child: Column(
               children: [
-                //Top logo
-                Padding(
-                  padding: EdgeInsets.only(top: screenHeight * 0.1),
-                  child: SizedBox(
-                    child: Image(
-                      image: const AssetImage('images/logo.png'),
-                      height: MediaQuery.of(context).size.height * 0.25,
-                      width: MediaQuery.of(context).size.width * 0.25,
-                    ),
-                  ),
-                ),
-
-                //email
-                SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width * 0.86,
-                  child: Material(
-                    elevation: 5,
-                    shadowColor: Colors.black45,
-                    child: TextFormField(
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        labelText: 'Email',
-                        labelStyle: TextStyle(
+                const Text("Welcome back!",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        fontFamily: 'Poppins',
+                        color: Colors.black54)),
+                SizedBox(height: screenHeight * 0.01),
+                const CircleAvatar(
+                  radius: 50,
+                  child: Text("Login",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
                           fontFamily: 'Poppins',
-                          fontSize: 16,
-                          color: Color.fromARGB(247, 84, 74, 158),
-                        ),
-                        prefixIcon: Icon(
-                          Icons.email,
-                          color: Color.fromARGB(247, 84, 74, 158),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromARGB(247, 84, 74, 158),
-                            width: 1,
-                          ),
-                        ),
-                        border: OutlineInputBorder(),
-                      ),
-                      style: const TextStyle(
+                          color: Colors.black54)),
+                ),
+                SizedBox(height: screenHeight * 0.02),
+                //email
+                Material(
+                  elevation: 5,
+                  shadowColor: Colors.black45,
+                  child: TextFormField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      fillColor: Colors.white,
+                      filled: true,
+                      labelText: 'Email',
+                      labelStyle: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 16,
+                        color: Color.fromARGB(247, 84, 74, 158),
                       ),
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Please enter your email address.';
-                        } else if (!RegExp(
-                                r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-                            .hasMatch(value)) {
-                          return 'Invalid email address format.';
-                        } else {
-                          return null;
-                        }
-                      },
+                      prefixIcon: Icon(
+                        Icons.email,
+                        color: Color.fromARGB(247, 84, 74, 158),
+                      ),
                     ),
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter your email address.';
+                      } else if (!RegExp(
+                              r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                          .hasMatch(value)) {
+                        return 'Invalid email address format.';
+                      } else {
+                        return null;
+                      }
+                    },
                   ),
                 ),
                 // space
-                const SizedBox(
-                  height: 20,
+                SizedBox(
+                  height: screenHeight * 0.02,
                 ),
                 // password
-                SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width * 0.86,
-                  child: Material(
-                    elevation: 5,
-                    shadowColor: Colors.black45,
-                    child: TextFormField(
-                      obscureText: isEyeOpen,
-                      controller: passwordController,
-                      keyboardType: TextInputType.visiblePassword,
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        labelText: 'Password',
-                        labelStyle: const TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 16,
-                          color: Color.fromARGB(247, 84, 74, 158),
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.person,
-                          color: Color.fromARGB(247, 84, 74, 158),
-                        ),
-                        suffixIcon: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              isEyeOpen = !isEyeOpen;
-                            });
-                          },
-                          child: Icon(
-                            isEyeOpen ? Icons.visibility : Icons.visibility_off,
-                            color: const Color.fromARGB(247, 84, 74, 158),
-                          ),
-                        ),
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromARGB(247, 84, 74, 158),
-                            width: 1,
-                          ),
-                        ),
-                        border: const OutlineInputBorder(),
-                      ),
-                      style: const TextStyle(
+                Material(
+                  elevation: 5,
+                  shadowColor: Colors.black45,
+                  child: TextFormField(
+                    obscureText: isEyeOpen,
+                    controller: passwordController,
+                    keyboardType: TextInputType.visiblePassword,
+                    decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      filled: true,
+                      labelText: 'Password',
+                      labelStyle: const TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 16,
+                        color: Color.fromARGB(247, 84, 74, 158),
                       ),
-                      validator: (value) {
-                        if (value != null && value.length < 8) {
-                          return 'Enter min 8 characters.';
-                        } else {
-                          return null;
-                        }
-                      },
+                      prefixIcon: const Icon(
+                        Icons.person,
+                        color: Color.fromARGB(247, 84, 74, 158),
+                      ),
+                      suffixIcon: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isEyeOpen = !isEyeOpen;
+                          });
+                        },
+                        child: Icon(
+                          isEyeOpen ? Icons.visibility : Icons.visibility_off,
+                          color: const Color.fromARGB(247, 84, 74, 158),
+                        ),
+                      ),
                     ),
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
+                    ),
+                    validator: (value) {
+                      if (value != null && value.length < 8) {
+                        return 'Enter min 8 characters.';
+                      } else {
+                        return null;
+                      }
+                    },
                   ),
                 ),
                 // forgot password
-                const SizedBox(
-                  height: 10,
+                SizedBox(
+                  height: screenHeight * 0.01,
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(
@@ -200,8 +179,8 @@ class _LoginState extends State<Login> {
                   ),
                 ),
                 //space
-                const SizedBox(
-                  height: 30,
+                SizedBox(
+                  height: screenHeight * 0.02,
                 ),
                 //Login button
                 SizedBox(
@@ -210,18 +189,19 @@ class _LoginState extends State<Login> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       elevation: 5,
-                      backgroundColor:  const Color.fromARGB(247, 84, 74,
-                              158), // Purple background when not hovering
+                      backgroundColor: const Color.fromARGB(247, 84, 74,
+                          158), // Purple background when not hovering
                     ),
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
                         FocusScope.of(context).unfocus();
                         login();
-
                       }
                     },
                     child: isLoading
-                        ? const CircularProgressIndicator( color: Colors.white,)
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
                         : const Text(
                             'Login',
                             style: TextStyle(

@@ -28,8 +28,7 @@ class _SignupState extends State<Signup> {
   FirebaseAuth auth = FirebaseAuth.instance;
   UserRole role = UserRole.customer;
   bool isHover = false;
-  bool loading =false;
-
+  bool loading = false;
 
   @override
   void dispose() {
@@ -50,23 +49,20 @@ class _SignupState extends State<Signup> {
         autovalidateMode: AutovalidateMode.onUserInteraction,
         key: formKey,
         child: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(top: screenHeight * 0.1),
-                  child: SizedBox(
-                    child: Image(
-                      image: const AssetImage('images/logo.png'),
-                      height: MediaQuery.of(context).size.height * 0.25,
-                      width: MediaQuery.of(context).size.width * 0.25,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width * 0.86,
-                  child: Material(
+          child: Padding(
+            padding: EdgeInsets.only(
+                right: 14.0, left: 14.0, top: screenHeight * 0.2),
+            child: Center(
+              child: Column(
+                children: [
+                  const Text("Welcome To Fashionzone",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          fontFamily: 'Poppins',
+                          color: Colors.black54)),
+                  SizedBox(height: screenHeight * 0.02),
+                  Material(
                     elevation: 5,
                     shadowColor: Colors.black,
                     child: TextFormField(
@@ -85,16 +81,6 @@ class _SignupState extends State<Signup> {
                           Icons.person,
                           color: Color.fromARGB(247, 84, 74, 158),
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromARGB(247, 84, 74, 158),
-                            width: 1,
-                          ),
-                        ),
-                        border: OutlineInputBorder(),
                       ),
                       style: const TextStyle(
                         fontFamily: 'Poppins',
@@ -111,12 +97,8 @@ class _SignupState extends State<Signup> {
                       },
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width * 0.86,
-                  child: Material(
+                  SizedBox(height: screenHeight * 0.02),
+                  Material(
                     elevation: 5,
                     shadowColor: Colors.black,
                     child: TextFormField(
@@ -135,16 +117,6 @@ class _SignupState extends State<Signup> {
                           Icons.email,
                           color: Color.fromARGB(247, 84, 74, 158),
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromARGB(247, 84, 74, 158),
-                            width: 1,
-                          ),
-                        ),
-                        border: OutlineInputBorder(),
                       ),
                       style: const TextStyle(
                         fontFamily: 'Poppins',
@@ -153,7 +125,8 @@ class _SignupState extends State<Signup> {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter an email address.';
-                        } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                        } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                            .hasMatch(value)) {
                           return 'Invalid email format. Please enter a valid email address.';
                         } else {
                           return null;
@@ -161,12 +134,8 @@ class _SignupState extends State<Signup> {
                       },
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width * 0.86,
-                  child: Material(
+                  SizedBox(height: screenHeight * 0.02),
+                  Material(
                     elevation: 5,
                     shadowColor: Colors.black,
                     child: TextFormField(
@@ -185,16 +154,6 @@ class _SignupState extends State<Signup> {
                           Icons.phone,
                           color: Color.fromARGB(247, 84, 74, 158),
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromARGB(247, 84, 74, 158),
-                            width: 1,
-                          ),
-                        ),
-                        border: OutlineInputBorder(),
                       ),
                       style: const TextStyle(
                         fontFamily: 'Poppins',
@@ -203,8 +162,8 @@ class _SignupState extends State<Signup> {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter a phone number.';
-                        }
-                        else if (!RegExp(r'^\+92[0-9]{10}$').hasMatch(value)) {
+                        } else if (!RegExp(r'^\+92[0-9]{10}$')
+                            .hasMatch(value)) {
                           return 'Invalid phone number format. valid format is +920000000000';
                         } else if (value.length != 13) {
                           return 'Phone number must be 13 digits long,';
@@ -214,13 +173,8 @@ class _SignupState extends State<Signup> {
                       },
                     ),
                   ),
-                ),
-
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width * 0.86,
-                  child: Material(
+                  SizedBox(height: screenHeight * 0.02),
+                  Material(
                     elevation: 5,
                     shadowColor: Colors.black,
                     child: TextFormField(
@@ -239,16 +193,6 @@ class _SignupState extends State<Signup> {
                           Icons.location_on,
                           color: Color.fromARGB(247, 84, 74, 158),
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromARGB(247, 84, 74, 158),
-                            width: 1,
-                          ),
-                        ),
-                        border: OutlineInputBorder(),
                       ),
                       style: const TextStyle(
                         fontFamily: 'Poppins',
@@ -263,12 +207,8 @@ class _SignupState extends State<Signup> {
                       },
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width * 0.86,
-                  child: Material(
+                  SizedBox(height: screenHeight * 0.02),
+                  Material(
                     elevation: 5,
                     shadowColor: Colors.black,
                     child: TextFormField(
@@ -287,16 +227,6 @@ class _SignupState extends State<Signup> {
                           Icons.lock,
                           color: Color.fromARGB(247, 84, 74, 158),
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromARGB(247, 84, 74, 158),
-                            width: 1,
-                          ),
-                        ),
-                        border: OutlineInputBorder(),
                       ),
                       style: const TextStyle(
                         fontFamily: 'Poppins',
@@ -313,12 +243,8 @@ class _SignupState extends State<Signup> {
                       },
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: MediaQuery.of(context).size.width * 0.07),
-                  child: Row(
+                  SizedBox(height: screenHeight * 0.02),
+                  Row(
                     children: [
                       Radio(
                         activeColor: const Color.fromARGB(247, 84, 74, 158),
@@ -330,7 +256,7 @@ class _SignupState extends State<Signup> {
                           });
                         },
                       ),
-                      const SizedBox(width: 5),
+                      SizedBox(width: screenHeight * 0.02),
                       const Expanded(
                         child: Text(
                           "Customer",
@@ -347,7 +273,7 @@ class _SignupState extends State<Signup> {
                           });
                         },
                       ),
-                      const SizedBox(width: 5),
+                      SizedBox(width: screenHeight * 0.02),
                       const Expanded(
                         child: Text(
                           "Admin",
@@ -356,62 +282,63 @@ class _SignupState extends State<Signup> {
                       ),
                     ],
                   ),
-                ),
-                SizedBox(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width * 0.86,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: const Color.fromARGB(247, 84, 74, 158),
-                      onPrimary: Colors.white,
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  SizedBox(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width * 0.86,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: const Color.fromARGB(247, 84, 74, 158),
+                        onPrimary: Colors.white,
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          registerUser(context);
+                        }
+                      },
+                      child: const Text(
+                        'Create new account',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                        ),
                       ),
                     ),
-                    onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        registerUser(context);
-                      }
-                    },
-                    child: const Text(
-                      'Create new account',
-                      style: TextStyle(
+                  ),
+                  const SizedBox(height: 10),
+                  RichText(
+                    text: TextSpan(
+                      text: "Already have an account? ",
+                      style: const TextStyle(
+                        color: Colors.black,
                         fontFamily: 'Poppins',
                         fontSize: 16,
                       ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                RichText(
-                  text: TextSpan(
-                    text: "Already have an account? ",
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'Poppins',
-                      fontSize: 14,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'Login',
-                        style: const TextStyle(
-                          color: Color.fromARGB(247, 84, 74, 158),
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
+                      children: [
+                        TextSpan(
+                          text: 'Login',
+                          style: const TextStyle(
+                            color: Color.fromARGB(247, 84, 74, 158),
+                            fontFamily: 'Poppins',
+                            fontSize: 16,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Login()),
+                              );
+                            },
                         ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => const Login()),
-                            );
-                          },
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -419,12 +346,10 @@ class _SignupState extends State<Signup> {
     );
   }
 
-
-
-
   Future<void> registerUser(BuildContext context) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text.toString(),
         password: passwordController.text.toString(),
       );
@@ -449,12 +374,12 @@ class _SignupState extends State<Signup> {
           'deviceId': deviceId,
         });
 
-
         Fluttertoast.showToast(
           msg: "Registration successful!",
           backgroundColor: const Color.fromARGB(247, 84, 74, 158),
         );
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const Login()));
         clearForm();
       } else {
         Fluttertoast.showToast(
@@ -477,7 +402,7 @@ class _SignupState extends State<Signup> {
     String deviceId = "";
     FirebaseMessaging message = FirebaseMessaging.instance;
     try {
-      String? token= await message.getToken();
+      String? token = await message.getToken();
       if (token != null) {
         deviceId = token;
         if (kDebugMode) {
@@ -492,8 +417,6 @@ class _SignupState extends State<Signup> {
 
     return deviceId;
   }
-
-
 
   void clearForm() {
     nameController.clear();

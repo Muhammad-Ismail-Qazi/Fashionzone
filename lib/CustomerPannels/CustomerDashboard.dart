@@ -24,12 +24,18 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
   List<String> salonIds = []; // Create a list to store salon IDs
   String? salonIdGet;
   String? salonIdPass;
-  // String? userIdGet;
+  late final TextEditingController searchController;
 
   @override
   void initState() {
     super.initState();
     fetchSalonData();
+    searchController = TextEditingController();
+  }
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   Widget build(BuildContext context) {
@@ -42,7 +48,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: const Color.fromARGB(240, 249, 249, 252),
-        appBar: const MyCustomAppBarComponent(appBarTitle: 'Customer Dashboard'),
+        appBar: const MyCustomAppBarComponent(appBarTitle: 'Dashboard'),
         drawer: const MyCustomDrawerComponent(),
         body: SingleChildScrollView(
           child: Column(
@@ -80,6 +86,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   child: TextField(
+                    controller: searchController,
                     decoration: InputDecoration(
                       hintText: 'Search...',
                       contentPadding: const EdgeInsets.only(left: 20),
@@ -92,15 +99,13 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                       fillColor: Colors.white,
                       suffixIcon: GestureDetector(
                         onTap: () {
-                          // Handle button press here
-                          // Add your desired functionality when the icon button is pressed
+                          performSearch(searchController.text);
                         },
                         child: IconButton(
                           icon: const Icon(Icons.search,
                               color: Color.fromARGB(247, 84, 74, 158)),
                           onPressed: () {
-                            // Handle button press here
-                            // Add your desired functionality when the icon button is pressed
+                            performSearch(searchController.text);
                           },
                         ),
                       ),
@@ -125,7 +130,6 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                       return GestureDetector(
                         onTap:(){
                           salonIdPass= salonData['userID'];
-                          // print("IDS before the navigater "+salonIdPass.toString());
                           navigateToSalon(salonIdPass!);
                         },
                         child: MyCustomCardComponent(
@@ -221,11 +225,10 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
               if (userSnapshot.exists) {
                 final userData = userSnapshot.data() as Map<String, dynamic>;
                 final String ownerName = userData['name'] ?? '';
-                salonData['owner'] = ownerName; // Add owner name to salon data
+                salonData['owner'] = ownerName;
 
-                // Add salonIdGet to the list
                 salonIdGet = salonDocument.id;
-                // userIdGet = userSnapshot.id;
+
                 salonIds.add(salonIdGet!);
 
               }
@@ -252,11 +255,23 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
 
   void navigateToSalon(String  salonIdPass) {
 
-    // print("this is the ids in navigater: "+salonIdPass.toString());
+
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => Salon(salonId: salonIdPass.toString())),
     );
+  }
+
+  void performSearch(String query) {
+
+    List<Map<String, dynamic>> searchResults = salonList.where((salon) {
+      final name = salon['name'] as String;
+      return name.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+
+    setState(() {
+      salonList = searchResults;
+    });
   }
 
 }

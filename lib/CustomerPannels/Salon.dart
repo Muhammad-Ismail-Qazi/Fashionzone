@@ -1,9 +1,5 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fashionzone/Components/BottomNavigationBarComponent.dart';
 import 'package:fashionzone/CustomerPannels/TrackRoutes.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../Components/AppBarComponent.dart';
@@ -66,6 +62,7 @@ class _SalonState extends State<Salon> {
         appBar: const MyCustomAppBarComponent(appBarTitle: 'Salon Details'),
         drawer: const MyCustomDrawerComponent(),
         body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
           child: SizedBox(
             height: MediaQuery.of(context).size.height,
             child: Stack(
@@ -122,7 +119,7 @@ class _SalonState extends State<Salon> {
                               height: 10,
                             ),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 // Rating
                                 ElevatedButton.icon(
@@ -145,9 +142,6 @@ class _SalonState extends State<Salon> {
                                       ),
                                     )),
                                 // Location
-                                const SizedBox(
-                                  width: 10,
-                                ),
                                 ElevatedButton.icon(
                                     style: ElevatedButton.styleFrom(
                                       elevation: 5,
@@ -158,7 +152,13 @@ class _SalonState extends State<Salon> {
                                           247, 84, 74, 158),
                                     ),
                                     onPressed: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) =>  RoutesTracking(salonID:widget.salonId ),));
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                RoutesTracking(
+                                                    salonID: widget.salonId),
+                                          ));
                                     },
                                     icon: const Icon(Icons.map_outlined,
                                         color: Colors.red),
@@ -200,6 +200,7 @@ class _SalonState extends State<Salon> {
                                   },
                                   child: const Text('Book Now',
                                       style: TextStyle(
+                                        color: Colors.white,
                                           fontFamily: 'Poppins', fontSize: 20)),
                                   // ... Existing button properties ...
                                 ),

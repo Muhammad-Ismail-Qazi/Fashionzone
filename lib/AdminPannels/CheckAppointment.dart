@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fashionzone/Components/DrawerComponent.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'CheckCustomerDetails.dart';
@@ -35,16 +34,18 @@ class _CheckAppointmentState extends State<CheckAppointment> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
+        appBar:AppBar(
           backgroundColor: const Color.fromARGB(247, 84, 74, 158),
           title: const Center(
             child: Text(
               "Appointments",
-              style: TextStyle(fontFamily: 'Poppins', fontSize: 25),
+              style: TextStyle(fontFamily: 'Poppins', fontSize: 25, color: Colors.white),
             ),
           ),
           bottom: const TabBar(
             indicatorColor: Colors.white,
+            labelColor: Colors.white, // Set text color of the selected tab
+            unselectedLabelColor: Colors.white, // Set text color of unselected tabs
             tabs: [
               Tab(
                 text: "PENDING",
@@ -57,10 +58,21 @@ class _CheckAppointmentState extends State<CheckAppointment> {
           actions: const [
             Padding(
               padding: EdgeInsets.only(right: 14.0),
-              child: Icon(Icons.notifications),
+              child: Icon(Icons.notifications, color: Colors.white),
             )
           ],
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white), // Set color of the drawer icon
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              );
+            },
+          ),
         ),
+
         body: TabBarView(
           children: [
             // First TabBarView for "PENDING"

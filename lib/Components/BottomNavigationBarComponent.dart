@@ -21,7 +21,7 @@ class _MyCustomBottomNavigationBarState
     AR(),
     const Profile(),
   ];
-  final navbaritem = const [
+  final navbarItems = const [
     Icon(
       Icons.home,
       size: 30,
@@ -39,7 +39,7 @@ class _MyCustomBottomNavigationBarState
       size: 30,
     ),
   ];
-  var currentindex = 0;
+  var currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -52,18 +52,18 @@ class _MyCustomBottomNavigationBarState
         child: CurvedNavigationBar(
           color: const Color.fromARGB(247, 84, 74, 158),
           height: 60,
-          items: navbaritem,
-          index: currentindex,
+          items: navbarItems,
+          index: currentIndex,
           backgroundColor: Colors.transparent,
           buttonBackgroundColor: const Color.fromARGB(247, 84, 74, 158),
           onTap: (index) {
             setState(() {
-              currentindex = index;
+              currentIndex = index;
             });
           },
         ),
       ),
-      body: screens[currentindex],
+      body: screens[currentIndex],
     );
   }
 }

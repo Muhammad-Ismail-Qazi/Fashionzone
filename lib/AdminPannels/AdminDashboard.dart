@@ -1,6 +1,4 @@
-
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashionzone/Components/AppBarComponent.dart';
 import 'package:fashionzone/Components/DrawerComponent.dart';
@@ -9,10 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart ' as firebase_storage;
-
 import '../Components/AdminServicesComponent.dart';
 import 'CheckAppointment.dart';
 import 'GoogleMap.dart';
@@ -75,14 +71,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ? const Text(
                       'Upload Cover Photo',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         color: Colors.white,
                       ),
                     )
                   : const Text(
                       'Upload Your Logo',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         color: Colors.white,
                       ),
                     ),
@@ -152,7 +148,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: const MyCustomAppBarComponent(appBarTitle: 'Admin Dashboard'),
+        appBar: const MyCustomAppBarComponent(appBarTitle: 'Dashboard'),
         drawer: const MyCustomDrawerComponent(),
         body: Padding(
           padding: const EdgeInsets.only(bottom: 14.0),
@@ -176,56 +172,39 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ),
                   ),
                   //button to upload cover photo
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        uploadPicture();
-                        _showModalBottomSheet(context);
-                        setState(() {
-                          textID = true;
-                        });
-                        // Reset isHover after the button is clicked
-                        setState(() {
-                          coverPhotoID = true;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        elevation: 5,
-                        backgroundColor: const Color.fromARGB(247, 84, 74, 158),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      uploadPicture();
+                      _showModalBottomSheet(context);
+                      setState(() {
+                        textID = true;
+                      });
+                      // Reset isHover after the button is clicked
+                      setState(() {
+                        coverPhotoID = true;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      elevation: 5,
+                      backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final buttonWidth = constraints.maxWidth * 0.5;
-                          return SizedBox(
-                            height: 32,
-                            width: buttonWidth,
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.upload_outlined,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(width: 5),
-                                Text(
-                                  'Upload Cover Photo',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                      onSurface: const Color.fromARGB(
+                          247, 84, 74, 158), // Set onSurface to the same color
+                    ),
+                    icon: const Icon(
+                      Icons.upload_outlined,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      'Upload Cover Photo',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
                       ),
                     ),
                   ),
-
                   // the white bottom screen half
                   Align(
                     alignment: Alignment.bottomCenter,
@@ -233,7 +212,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       width: double.infinity,
                       height: MediaQuery.of(context).size.height * 0.7,
                       decoration: const BoxDecoration(
-                        color: Color.fromARGB(240, 254, 254, 255),
+                        color: Colors.white,
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(30),
                           topRight: Radius.circular(30),
@@ -275,7 +254,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                           Text(
                                             "4.5",
                                             style: TextStyle(
-                                              fontSize: 18,
+                                              fontSize: 16,
                                               color: Colors.white,
                                             ),
                                           ),
@@ -320,152 +299,149 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   MediaQuery.of(context).size.height * 0.001,
                             ),
                             // Subtitle
-                            // space
+
                             SizedBox(
                               height: MediaQuery.of(context).size.height * 0.01,
                             ),
                             Row(
                               children: [
-                                // google map
+                                // upload video button
                                 ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 5,
-                                    backgroundColor:
-                                        const Color.fromARGB(247, 84, 74, 158),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                  ),
-                                  icon: const Icon(CupertinoIcons.map,
-                                      color: Colors.red),
-                                  onPressed: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) =>  GoogleMaps()));
-
-                                  },
-                                  label: const Text(
-                                    "Google Map",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                // check Appointments
-                                ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 5,
-                                    backgroundColor:
-                                        const Color.fromARGB(247, 84, 74, 158),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                  ),
-                                  icon: const Icon(Icons.list_alt_outlined),
                                   onPressed: () {
                                     Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const CheckAppointment(),
-                                        ));
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                        const UploadVideos(),
+                                      ),
+                                    );
                                   },
-                                  label: const Text(
-                                    "Appointments",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 5,
+                                    backgroundColor: const Color.fromARGB(
+                                        247, 84, 74, 158),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.upload_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  label: const Center(
+                                    child: Text(
+                                      'Upload video',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                // space
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width *
+                                      0.01,
+                                ), // Add spacing between buttons
+                                // upload services button
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                        const UploadServices(),
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 5,
+                                    backgroundColor: const Color.fromARGB(
+                                        247, 84, 74, 158),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.upload_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  label: const Center(
+                                    child: Text(
+                                      'Upload services',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                // google map
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 5,
+                                      backgroundColor: const Color.fromARGB(
+                                          247, 84, 74, 158),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                    ),
+                                    icon: const Icon(CupertinoIcons.map,
+                                        color: Colors.red),
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  GoogleMaps()));
+                                    },
+                                    label: const Text(
+                                      "Google Map",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                // check Appointments
+                                Expanded(
+                                  child: ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 5,
+                                      backgroundColor: const Color.fromARGB(
+                                          247, 84, 74, 158),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                    ),
+                                    icon: const Icon(Icons.list_alt_outlined),
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const CheckAppointment(),
+                                          ));
+                                    },
+                                    label: Text(
+                                      "Appointments",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ),
                                 )
                               ],
                             ),
                             // space
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.01,
-                            ),
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  // upload video button
-                                  ElevatedButton.icon(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const UploadVideos(),
-                                        ),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      elevation: 5,
-                                      backgroundColor: const Color.fromARGB(
-                                          247, 84, 74, 158),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                    ),
-                                    icon: const Icon(
-                                      Icons.upload_outlined,
-                                      color: Colors.white,
-                                    ),
-                                    label: const Center(
-                                      child: Text(
-                                        'Upload video',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  // space
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.01,
-                                  ), // Add spacing between buttons
-                                  // upload services button
-                                  ElevatedButton.icon(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const UploadServices(),
-                                        ),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      elevation: 5,
-                                      backgroundColor: const Color.fromARGB(
-                                          247, 84, 74, 158),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                    ),
-                                    icon: const Icon(
-                                      Icons.upload_outlined,
-                                      color: Colors.white,
-                                    ),
-                                    label: const Center(
-                                      child: Text(
-                                        'Upload services',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+
                             //space
                             SizedBox(
                               height: MediaQuery.of(context).size.height * 0.01,
@@ -476,7 +452,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 const Text(
                                   "Gallery",
                                   style: TextStyle(
-                                      fontSize: 18, fontFamily: 'Poppins'),
+                                      fontSize: 16, fontFamily: 'Poppins'),
                                 ),
                                 const Spacer(),
                                 GestureDetector(
@@ -486,7 +462,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   child: const Text(
                                     "see all",
                                     textAlign: TextAlign.end,
-                                    style: TextStyle(fontSize: 18),
+                                    style: TextStyle(fontSize: 16),
                                   ),
                                 ),
                               ],
@@ -517,7 +493,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   "Services",
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
-                                    fontSize: 18,
+                                    fontSize: 16,
                                   ),
                                 ),
                                 const Spacer(),
@@ -528,7 +504,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   child: const Text(
                                     "see all",
                                     textAlign: TextAlign.end,
-                                    style: TextStyle(fontSize: 18),
+                                    style: TextStyle(fontSize: 16),
                                   ),
                                 ),
                               ],

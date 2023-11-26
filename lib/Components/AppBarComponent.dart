@@ -15,7 +15,7 @@ class _MyCustomAppBarComponentState extends State<MyCustomAppBarComponent> {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor:const Color.fromARGB(247, 84, 74, 158),
-      shadowColor: Colors.black,
+
       elevation: 5,
       title:  Center(
         child: Text(
@@ -38,6 +38,10 @@ class _MyCustomAppBarComponentState extends State<MyCustomAppBarComponent> {
           },
         ),
       ],
+      iconTheme: const IconThemeData(
+
+          color: Colors.white), // Set the drawer icon color here
+
     );
   }
 }

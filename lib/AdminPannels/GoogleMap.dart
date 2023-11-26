@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -30,7 +29,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
   var uuid = const Uuid();
   String? sessionToken;
   List<dynamic> places = [];
-  final Completer<GoogleMapController> _controller = Completer( );
+  final Completer<GoogleMapController> _controller = Completer();
   static const CameraPosition kGooglePlex = CameraPosition(
     target: LatLng(33.729435, 73.036947),
     zoom: 14,
@@ -81,15 +80,11 @@ class _GoogleMapsState extends State<GoogleMaps> {
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
-
                 hintText: 'Search places',
                 border: OutlineInputBorder(
-                  borderSide: const BorderSide(
-                    color: Colors.white
-                  ),
+                  borderSide: const BorderSide(color: Colors.white),
                   borderRadius: BorderRadius.circular(12),
                 ),
-
               ),
             ),
           ),
@@ -108,7 +103,8 @@ class _GoogleMapsState extends State<GoogleMaps> {
             googleMarkerAdding.add(
               Marker(
                 markerId: const MarkerId('2'),
-                position: LatLng(value.latitude.toDouble(), value.longitude.toDouble()),
+                position: LatLng(
+                    value.latitude.toDouble(), value.longitude.toDouble()),
                 infoWindow: const InfoWindow(title: 'Your current location'),
               ),
             );
@@ -116,23 +112,27 @@ class _GoogleMapsState extends State<GoogleMaps> {
             controller.animateCamera(
               CameraUpdate.newCameraPosition(
                 CameraPosition(
-                  target: LatLng(value.latitude.toDouble(), value.longitude.toDouble()),
+                  target: LatLng(
+                      value.latitude.toDouble(), value.longitude.toDouble()),
                   zoom: 14,
                 ),
               ),
             );
-            convertCoordinatesIntoAddress(value.latitude.toDouble(), value.longitude.toDouble());
+            convertCoordinatesIntoAddress(
+                value.latitude.toDouble(), value.longitude.toDouble());
             //open bottom sheet
             setState(() {});
           });
         },
-        child: const Icon(Icons.my_location_outlined),
+        child: const Icon(Icons.my_location_outlined, color: Colors.white),
       ),
     );
   }
 
   Future<Position> getUserCurrentLocation() async {
-    await Geolocator.requestPermission().then((value) {}).onError((error, stackTrace) {
+    await Geolocator.requestPermission()
+        .then((value) {})
+        .onError((error, stackTrace) {
       if (kDebugMode) {
         print("error$error");
       }
@@ -153,8 +153,10 @@ class _GoogleMapsState extends State<GoogleMaps> {
 
   void createSuggestion(String input) async {
     String APIKEY = 'AIzaSyC5WwVhfdBloWcVzKYOVFAqKRzZoAC4DfU';
-    String baseURL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    String request = '$baseURL?input=$input&key=$APIKEY&sessiontoken=$sessionToken';
+    String baseURL =
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    String request =
+        '$baseURL?input=$input&key=$APIKEY&sessiontoken=$sessionToken';
 
     try {
       var response = await http.get(Uri.parse(request));
@@ -164,7 +166,6 @@ class _GoogleMapsState extends State<GoogleMaps> {
       if (response.statusCode == 200) {
         setState(() {
           places = json.decode(response.body)['predictions'];
-
         });
       } else {
         throw Exception('Error: ${response.statusCode}');
@@ -184,7 +185,8 @@ class _GoogleMapsState extends State<GoogleMaps> {
         if (kDebugMode) {
           print("Address: ${place.street}");
         }
-        _showAddressBottomSheet(place.street ?? 'No address found',lat.toString(),long.toString());
+        _showAddressBottomSheet(place.street ?? 'No address found',
+            lat.toString(), long.toString());
       }
     } catch (e) {
       if (kDebugMode) {
@@ -193,44 +195,58 @@ class _GoogleMapsState extends State<GoogleMaps> {
     }
   }
 
-  void _showAddressBottomSheet(String address, String lat,String long,) {
+  void _showAddressBottomSheet(
+    String address,
+    String lat,
+    String long,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return Container(
           height: 200,
+          width: double.infinity,
           color: Colors.white,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
                 'Confirm your address',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,fontFamily: 'Poppins'),
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins'),
               ),
               const SizedBox(height: 14),
               Text(
                 address,
-                style: const TextStyle(fontSize: 16,fontFamily: 'Poppins',fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 14),
               Text(
                 "$lat , $long",
-                style: const TextStyle(fontSize: 16,fontFamily: 'Poppins',fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 14),
               ElevatedButton(
-               style: ElevatedButton.styleFrom(
-                 elevation: 5,
-                 backgroundColor:  const Color.fromARGB(
-                     247, 84, 74, 158),
-               ),
+                style: ElevatedButton.styleFrom(
+                  elevation: 5,
+                  backgroundColor: const Color.fromARGB(247, 84, 74, 158),
+                ),
                 onPressed: () {
                   // Send the location to the Firestore database
-                  String userId = FirebaseAuth.instance.currentUser!.uid; // Get the current user ID
-                  sendAddressToFirestore(userId, address,lat,long);
+                  String userId = FirebaseAuth
+                      .instance.currentUser!.uid; // Get the current user ID
+                  sendAddressToFirestore(userId, address, lat, long);
                   Navigator.pop(context);
                 },
-                child: const Text('Add to GoogleMap'),
+                child: const Text('Add to GoogleMap',style: TextStyle(color: Colors.white,fontFamily: 'Poppins',fontSize: 16)),
               ),
             ],
           ),
@@ -238,7 +254,9 @@ class _GoogleMapsState extends State<GoogleMaps> {
       },
     );
   }
-  void sendAddressToFirestore(String userId, String address,String latitude,String longitude) {
+
+  void sendAddressToFirestore(
+      String userId, String address, String latitude, String longitude) {
     FirebaseFirestore.instance
         .collection('salons')
         .where('userID', isEqualTo: userId)
@@ -247,15 +265,14 @@ class _GoogleMapsState extends State<GoogleMaps> {
       querySnapshot.docs.forEach((doc) {
         doc.reference.update({
           'salonAddress': address,
-          'latitude':latitude,
-          'longitude':longitude,
-
+          'latitude': latitude,
+          'longitude': longitude,
         }).then((value) {
           if (kDebugMode) {
             print('Address added to Firestore');
           }
           Fluttertoast.showToast(
-            gravity: ToastGravity.BOTTOM,
+              gravity: ToastGravity.BOTTOM,
               msg: 'Successfully added your salon!');
         }).catchError((error) {
           if (kDebugMode) {
@@ -269,6 +286,7 @@ class _GoogleMapsState extends State<GoogleMaps> {
       }
     });
   }
+
   void fetchSalonFromFirestore(String userId) async {
     FirebaseFirestore.instance
         .collection('salons')
@@ -288,8 +306,8 @@ class _GoogleMapsState extends State<GoogleMaps> {
                 Marker(
                   markerId: MarkerId(salonName),
                   icon: BitmapDescriptor.fromBytes(markerIcon!),
-                  position: LatLng(
-                      double.parse(salonLatitude), double.parse(salonLongitude)),
+                  position: LatLng(double.parse(salonLatitude),
+                      double.parse(salonLongitude)),
                   infoWindow: InfoWindow(title: salonName),
                 ),
               );
@@ -307,11 +325,14 @@ class _GoogleMapsState extends State<GoogleMaps> {
       }
     });
   }
+
   Future<Uint8List?> getBytesFromAssets(String path, int width) async {
     ByteData data = await rootBundle.load(path);
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
         targetWidth: width); // use targetWidth instead of targetHeight
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))?.buffer.asUint8List();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))
+        ?.buffer
+        .asUint8List();
   }
 }

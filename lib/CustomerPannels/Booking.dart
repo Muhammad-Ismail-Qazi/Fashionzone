@@ -69,59 +69,82 @@ class _BookingState extends State<Booking> {
         backgroundColor: const Color.fromARGB(224, 248, 249, 252),
         appBar: const MyCustomAppBarComponent(appBarTitle: 'Booking'),
         drawer: const MyCustomDrawerComponent(),
-        body: Center(
-          child: Form(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            key: formKey,
-            child: SingleChildScrollView(
+        body: Form(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          key: formKey,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(14.0),
               child: Column(
                 children: [
-                  // full name
-                  SizedBox(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width * 0.86,
-                    child: Material(
-                      elevation: 5,
-                      shadowColor: Colors.black,
-                      child: TextFormField(
-                        controller: nameController,
-                        keyboardType: TextInputType.name,
-                        decoration: const InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          labelText: 'Full Name',
-                          labelStyle: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 16,
-                            color: Color.fromARGB(247, 84, 74, 158),
-                          ),
-                          prefixIcon: Icon(
-                            Icons.person,
-                            color: Color.fromARGB(247, 84, 74, 158),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(247, 84, 74, 158),
-                                width: 1),
-                          ),
-                          border: OutlineInputBorder(),
-                        ),
-                        style: const TextStyle(
-                            fontFamily: 'Poppins', fontSize: 16),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter your full name.';
-                          } else if (!RegExp(r'^[A-Za-z\s]+$')
-                              .hasMatch(value)) {
-                            return 'Invalid name format. Please enter a valid name.';
-                          } else {
-                            return null;
-                          }
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Go back functionality
                         },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                12.0), // Adjust the value for roundness
+                          ),
+                          primary: const Color.fromARGB(247, 84, 74, 168),
+                        ),
+                        child: const SizedBox(
+                          height: 20,
+                          width: 10,
+                          child: Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
+                      const SizedBox(width: 20,),
+                      const Text("Ensure your reservation",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              fontFamily: 'Poppins',
+                              color: Colors.black54)),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  // full name
+                  Material(
+                    elevation: 5,
+                    shadowColor: Colors.black,
+                    child: TextFormField(
+                      controller: nameController,
+                      keyboardType: TextInputType.name,
+                      decoration: const InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        labelText: 'Full Name',
+                        labelStyle: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                          color: Color.fromARGB(247, 84, 74, 158),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.person,
+                          color: Color.fromARGB(247, 84, 74, 158),
+                        ),
+
+                      ),
+                      style: const TextStyle(
+                          fontFamily: 'Poppins', fontSize: 16),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your full name.';
+                        } else if (!RegExp(r'^[A-Za-z\s]+$')
+                            .hasMatch(value)) {
+                          return 'Invalid name format. Please enter a valid name.';
+                        } else {
+                          return null;
+                        }
+                      },
                     ),
                   ),
                   //space
@@ -129,100 +152,75 @@ class _BookingState extends State<Booking> {
                     height: 20,
                   ),
                   //email
-                  SizedBox(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width * 0.86,
-                    child: Material(
-                      elevation: 5,
-                      shadowColor: Colors.black,
-                      child: TextFormField(
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          labelText: 'Email',
-                          labelStyle: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 16,
-                              color: Color.fromARGB(247, 84, 74, 158)),
-                          prefixIcon: Icon(
-                            Icons.email,
-                            color: Color.fromARGB(247, 84, 74, 158),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(247, 84, 74, 158),
-                                width: 1),
-                          ),
-                          border: OutlineInputBorder(),
+                  Material(
+                    elevation: 5,
+                    shadowColor: Colors.black,
+                    child: TextFormField(
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        labelText: 'Email',
+                        labelStyle: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 16,
+                            color: Color.fromARGB(247, 84, 74, 158)),
+                        prefixIcon: Icon(
+                          Icons.email,
+                          color: Color.fromARGB(247, 84, 74, 158),
                         ),
-                        style: const TextStyle(
-                            fontFamily: 'Poppins', fontSize: 16),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter your email address.';
-                          } else if (!RegExp(
-                                  r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-                              .hasMatch(value)) {
-                            return 'Invalid email address format. Please enter a valid email address.';
-                          } else {
-                            return null;
-                          }
-                        },
+
                       ),
+                      style: const TextStyle(
+                          fontFamily: 'Poppins', fontSize: 16),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your email address.';
+                        } else if (!RegExp(
+                                r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                            .hasMatch(value)) {
+                          return 'Invalid email address format. Please enter a valid email address.';
+                        } else {
+                          return null;
+                        }
+                      },
                     ),
                   ),
                   // space
                   const SizedBox(height: 20),
                   //phone
-                  SizedBox(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width * 0.86,
-                    child: Material(
-                      elevation: 4,
-                      shadowColor: Colors.black,
-                      child: TextFormField(
-                        controller: phoneController,
-                        keyboardType: TextInputType.phone,
-                        decoration: const InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          labelText: 'Phone',
-                          labelStyle: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 16,
-                            color: Color.fromARGB(247, 84, 74, 158),
-                          ),
-                          prefixIcon: Icon(
-                            Icons.phone,
-                            color: Color.fromARGB(247, 84, 74, 158),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(247, 84, 74, 158),
-                                width: 1),
-                          ),
-                          border: OutlineInputBorder(),
+                  Material(
+                    elevation: 4,
+                    shadowColor: Colors.black,
+                    child: TextFormField(
+                      controller: phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        labelText: 'Phone',
+                        labelStyle: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                          color: Color.fromARGB(247, 84, 74, 158),
                         ),
-                        style: const TextStyle(
-                            fontFamily: 'Poppins', fontSize: 16),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter your phone number.';
-                          } else if (!RegExp(r'^\+92\d{10}$').hasMatch(value)) {
-                            return 'Invalid format. Please enter a valid  format +92xxxxxxxxxx.';
-                          } else {
-                            return null;
-                          }
-                        },
+                        prefixIcon: Icon(
+                          Icons.phone,
+                          color: Color.fromARGB(247, 84, 74, 158),
+                        ),
                       ),
+                      style: const TextStyle(
+                          fontFamily: 'Poppins', fontSize: 16),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your phone number.';
+                        } else if (!RegExp(r'^\+92\d{10}$').hasMatch(value)) {
+                          return 'Invalid format. Please enter a valid  format +92xxxxxxxxxx.';
+                        } else {
+                          return null;
+                        }
+                      },
                     ),
                   ),
                   //space
@@ -230,48 +228,36 @@ class _BookingState extends State<Booking> {
                     height: 20,
                   ),
                   //address
-                  SizedBox(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width * 0.86,
-                    child: Material(
-                      elevation: 4,
-                      shadowColor: Colors.black,
-                      child: TextFormField(
-                        controller: addressController,
-                        keyboardType: TextInputType.streetAddress,
-                        decoration: const InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          labelText: 'Address',
-                          labelStyle: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 16,
-                            color: Color.fromARGB(247, 84, 74, 158),
-                          ),
-                          prefixIcon: Icon(
-                            Icons.location_city,
-                            color: Color.fromARGB(247, 84, 74, 158),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(247, 84, 74, 158),
-                                width: 1),
-                          ),
-                          border: OutlineInputBorder(),
+                  Material(
+                    elevation: 4,
+                    shadowColor: Colors.black,
+                    child: TextFormField(
+                      controller: addressController,
+                      keyboardType: TextInputType.streetAddress,
+                      decoration: const InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        labelText: 'Address',
+                        labelStyle: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                          color: Color.fromARGB(247, 84, 74, 158),
                         ),
-                        style: const TextStyle(
-                            fontFamily: 'Poppins', fontSize: 16),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter your street address.';
-                          } else {
-                            return null;
-                          }
-                        },
+                        prefixIcon: Icon(
+                          Icons.location_city,
+                          color: Color.fromARGB(247, 84, 74, 158),
+                        ),
+
                       ),
+                      style: const TextStyle(
+                          fontFamily: 'Poppins', fontSize: 16),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your street address.';
+                        } else {
+                          return null;
+                        }
+                      },
                     ),
                   ),
                   //space
@@ -279,106 +265,94 @@ class _BookingState extends State<Booking> {
                     height: 20,
                   ),
                   //time and date
-                  SizedBox(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width * 0.86,
-                    child: Material(
-                      elevation: 5,
-                      shadowColor: Colors.black,
-                      child: TextFormField(
-                        controller: timeController,
-                        keyboardType: TextInputType.datetime,
-                        decoration: const InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          labelText: 'Time',
-                          labelStyle: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 16,
-                            color: Color.fromARGB(247, 84, 74, 158),
-                          ),
-                          prefixIcon: Icon(
-                            Icons.calendar_today,
-                            color: Color.fromARGB(247, 84, 74, 158),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(247, 84, 74, 158),
-                                width: 1),
-                          ),
-                          border: OutlineInputBorder(),
+                  Material(
+                    elevation: 5,
+                    shadowColor: Colors.black,
+                    child: TextFormField(
+                      controller: timeController,
+                      keyboardType: TextInputType.datetime,
+                      decoration: const InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        labelText: 'Time',
+                        labelStyle: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                          color: Color.fromARGB(247, 84, 74, 158),
                         ),
-                        onTap: () async {
-                          final ThemeData theme = Theme.of(context);
-                          final DateTime? pickedDateTime = await showDatePicker(
+                        prefixIcon: Icon(
+                          Icons.calendar_today,
+                          color: Color.fromARGB(247, 84, 74, 158),
+                        ),
+
+                      ),
+                      onTap: () async {
+                        final ThemeData theme = Theme.of(context);
+                        final DateTime? pickedDateTime = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate:
+                              DateTime.now().add(const Duration(days: 7)),
+                          builder: (BuildContext context, Widget? child) {
+                            return Theme(
+                              data: theme.copyWith(
+                                colorScheme: theme.colorScheme.copyWith(
+                                  primary:
+                                      const Color.fromARGB(247, 84, 74, 158),
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (pickedDateTime != null) {
+                          final TimeOfDay? pickedTime = await showTimePicker(
                             context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate:
-                                DateTime.now().add(const Duration(days: 7)),
+                            initialTime: TimeOfDay.now(),
                             builder: (BuildContext context, Widget? child) {
                               return Theme(
                                 data: theme.copyWith(
                                   colorScheme: theme.colorScheme.copyWith(
-                                    primary:
-                                        const Color.fromARGB(247, 84, 74, 158),
+                                    primary: const Color.fromARGB(
+                                        247, 84, 74, 158),
                                   ),
                                 ),
                                 child: child!,
                               );
                             },
                           );
-                          if (pickedDateTime != null) {
-                            final TimeOfDay? pickedTime = await showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay.now(),
-                              builder: (BuildContext context, Widget? child) {
-                                return Theme(
-                                  data: theme.copyWith(
-                                    colorScheme: theme.colorScheme.copyWith(
-                                      primary: const Color.fromARGB(
-                                          247, 84, 74, 158),
-                                    ),
-                                  ),
-                                  child: child!,
-                                );
-                              },
+                          if (pickedTime != null) {
+                            final DateTime combinedDateTime = DateTime(
+                              pickedDateTime.year,
+                              pickedDateTime.month,
+                              pickedDateTime.day,
+                              pickedTime.hour,
+                              pickedTime.minute,
                             );
-                            if (pickedTime != null) {
-                              final DateTime combinedDateTime = DateTime(
-                                pickedDateTime.year,
-                                pickedDateTime.month,
-                                pickedDateTime.day,
-                                pickedTime.hour,
-                                pickedTime.minute,
-                              );
 
-                              final DateFormat formatter =
-                                  DateFormat('dd/MM/yyyy hh:mm a');
-                              final String formattedDateTime =
-                                  formatter.format(combinedDateTime);
+                            final DateFormat formatter =
+                                DateFormat('dd/MM/yyyy hh:mm a');
+                            final String formattedDateTime =
+                                formatter.format(combinedDateTime);
 
-                              setState(() {
-                                timeController.text = formattedDateTime;
-                              });
-                            }
+                            setState(() {
+                              timeController.text = formattedDateTime;
+                            });
                           }
-                        },
-                        style: const TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 16,
-                            color: Colors.black),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please Select the date and time.';
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
+                        }
+                      },
+                      style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                          color: Colors.black),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please Select the date and time.';
+                        } else {
+                          return null;
+                        }
+                      },
                     ),
                   ),
                   //space

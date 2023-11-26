@@ -239,34 +239,7 @@ class _MyCustomDrawerComponentState extends State<MyCustomDrawerComponent> {
                 },
                 mouseCursor: MaterialStateMouseCursor.clickable,
               ),
-              const Divider(),
-              ListTile(
-                enabled: true,
-                leading: Container(
-                    height: 50,
-                    width: 50,
-                    decoration: const BoxDecoration(
-                        color: Color.fromARGB(247, 84, 74, 158),
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
-                    child: const Icon(Icons.bug_report, color: Colors.white)),
-                title: const Text(
-                  'Testing',
-                  style: TextStyle(
-                    color: Color.fromARGB(247, 84, 74, 158),
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.normal,
-                    fontSize: 20,
-                  ),
-                ),
-                onTap: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => const screenOne(),
-                  //     ));
-                },
-                mouseCursor: MaterialStateMouseCursor.clickable,
-              ),
+
             ],
           );
         },
