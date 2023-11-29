@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fashionzone/Components/AppBarComponent.dart';
-import 'package:fashionzone/Components/DrawerComponent.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RoutesTracking extends StatefulWidget {
   final String salonID;
@@ -20,7 +20,7 @@ class RoutesTracking extends StatefulWidget {
 class _RoutesTrackingState extends State<RoutesTracking> {
   Position? userPosition;
   LatLng salonPosition = const LatLng(0.0000, 0.0000);
-  List<LatLng> route=[];
+  List<LatLng> route = [];
 
   @override
   void initState() {
@@ -29,8 +29,8 @@ class _RoutesTrackingState extends State<RoutesTracking> {
   }
 
   final Completer<GoogleMapController> _controller = Completer();
-  static  CameraPosition kGooglePlex = const CameraPosition(
-    target:LatLng(33.729435, 73.036947),
+  static CameraPosition kGooglePlex = const CameraPosition(
+    target: LatLng(33.729435, 73.036947),
     zoom: 14,
   );
 
@@ -51,8 +51,9 @@ class _RoutesTrackingState extends State<RoutesTracking> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MyCustomAppBarComponent(appBarTitle: 'Find Route'),
-      drawer: const MyCustomDrawerComponent(),
+      appBar:  AppBar(
+        title: const Text('Find Route'),
+      ),
       body: Stack(
         children: [
           GoogleMap(
@@ -71,9 +72,13 @@ class _RoutesTrackingState extends State<RoutesTracking> {
             padding: const EdgeInsets.all(14.0),
             child: TextField(
               controller: searchController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Search places',
-                border: OutlineInputBorder(
+                suffixIcon: ElevatedButton(
+                  child: const Text("Search"),
+                  onPressed: () {},
+                ),
+                border: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),
                 ),
               ),
@@ -92,7 +97,8 @@ class _RoutesTrackingState extends State<RoutesTracking> {
               googleMarkerAdding.add(
                 Marker(
                   markerId: const MarkerId('Current Location'),
-                  position: LatLng(userPosition!.latitude, userPosition!.longitude),
+                  position:
+                  LatLng(userPosition!.latitude, userPosition!.longitude),
                   infoWindow: const InfoWindow(title: 'Current Location'),
                 ),
               );
@@ -103,7 +109,8 @@ class _RoutesTrackingState extends State<RoutesTracking> {
               controller.animateCamera(
                 CameraUpdate.newCameraPosition(
                   CameraPosition(
-                    target: LatLng(userPosition!.latitude, userPosition!.longitude),
+                    target:
+                    LatLng(userPosition!.latitude, userPosition!.longitude),
                     zoom: 14,
                   ),
                 ),
@@ -112,26 +119,25 @@ class _RoutesTrackingState extends State<RoutesTracking> {
                 LatLng(salonPosition.latitude, salonPosition.longitude),
               );
               polyLines.add(
-                 Polyline(
-                    polylineId: const PolylineId('1'),
-                  points: route
-                )
+                  Polyline(polylineId: const PolylineId('1'), points: route));
+
+              // Fetch directions and update polylines
+              await fetchDirections(
+                userPosition!,
+                LatLng(salonPosition.latitude, salonPosition.longitude),
               );
-
-              setState(() {});
             });
-
-
           }
         },
         child: const Icon(Icons.my_location_outlined),
       ),
-
     );
   }
 
   Future<Position> getUserCurrentLocation() async {
-    await Geolocator.requestPermission().then((value) {}).onError((error, stackTrace) {
+    await Geolocator.requestPermission()
+        .then((value) {})
+        .onError((error, stackTrace) {
       if (kDebugMode) {
         print("error$error");
       }
@@ -139,9 +145,67 @@ class _RoutesTrackingState extends State<RoutesTracking> {
     return await Geolocator.getCurrentPosition();
   }
 
+  Future<void> fetchDirections(Position origin, LatLng destination) async {
+    final apiKey = 'AIzaSyC5WwVhfdBloWcVzKYOVFAqKRzZoAC4DfU'; // Replace with your Google Maps API key
+    final endpoint =
+        'https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&key=$apiKey';
+
+    final response = await http.get(Uri.parse(endpoint));
+
+    if (response.statusCode == 200) {
+      final decoded = json.decode(response.body);
+      final routes = decoded['routes'][0]['overview_polyline']['points'];
+
+      setState(() {
+        polyLines.clear();
+        polylineCoordinates = decodePolyline(routes);
+        polyLines.add(Polyline(
+          polylineId: PolylineId('route'),
+          points: polylineCoordinates,
+          color: Colors.blue,
+          width: 5,
+        ));
+      });
+    } else {
+      print('Failed to fetch directions');
+    }
+  }
+
+  List<LatLng> decodePolyline(String encoded) {
+    List<LatLng> points = [];
+    int index = 0, len = encoded.length;
+    int lat = 0, lng = 0;
+
+    while (index < len) {
+      int b, shift = 0, result = 0;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1F) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      lat += ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1F) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      lng += ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+
+      points.add(LatLng(lat / 1e5, lng / 1e5));
+    }
+
+    return points;
+  }
+
   void fetchSalonData(String salonID) async {
     try {
-      var snapshot = await FirebaseFirestore.instance.collection('salons').doc(salonID).get();
+      var snapshot = await FirebaseFirestore.instance
+          .collection('salons')
+          .doc(salonID)
+          .get();
       if (snapshot.exists) {
         var data = snapshot.data();
         if (data != null) {
@@ -186,13 +250,16 @@ class _RoutesTrackingState extends State<RoutesTracking> {
   Future<Uint8List?> getBytesFromAssets(String path, int width) async {
     try {
       ByteData data = await rootBundle.load(path);
-      ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+      ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+          targetWidth: width);
       ui.FrameInfo fi = await codec.getNextFrame();
       if (kDebugMode) {
         print("Check the image ");
         print(fi.image);
       }
-      return (await fi.image.toByteData(format: ui.ImageByteFormat.png))?.buffer.asUint8List();
+      return (await fi.image.toByteData(format: ui.ImageByteFormat.png))
+          ?.buffer
+          .asUint8List();
     } catch (e) {
       if (kDebugMode) {
         print('Error loading image: $e');
@@ -200,6 +267,4 @@ class _RoutesTrackingState extends State<RoutesTracking> {
       return null;
     }
   }
-
-
 }

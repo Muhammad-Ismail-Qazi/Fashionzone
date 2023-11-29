@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class CheckAppointmentDetails extends StatefulWidget {
   final String? customerName;
   final String? appointmentSlot;
-  final String? serviceId;
+  final List<String> serviceId;
   final String? contactInformation;
   final String? status;
   final String? imageURL;
@@ -15,7 +15,7 @@ class CheckAppointmentDetails extends StatefulWidget {
     Key? key,
     this.customerName,
     this.appointmentSlot,
-    this.serviceId,
+    required this.serviceId,
     this.contactInformation,
     this.status,
     this.imageURL,
@@ -91,18 +91,18 @@ class _CheckAppointmentDetailsState extends State<CheckAppointmentDetails> {
                     ],
                   ),
                   const SizedBox(height: 16.0),
-                  const  Row(
+                    Row(
                     children: [
-                      Icon(Icons.assignment, color: Colors.black),
+                      const Icon(Icons.assignment, color: Colors.black),
                       SizedBox(width: 8.0),
-                      Text(
+                      const Text(
                         'Service:',
                         style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
                       ),
-                      SizedBox(width: 8.0),
+                      const SizedBox(width: 8.0),
                       Text(
-                        'widget.serviceId ?? N/A',
-                        style: TextStyle(fontSize: 16.0, fontFamily: 'Poppins'),
+                        ' ${widget.serviceId.join(', ')}',
+                        style: const TextStyle(fontSize: 16.0, fontFamily: 'Poppins'),
                       ),
                     ],
                   ),

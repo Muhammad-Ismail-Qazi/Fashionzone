@@ -62,6 +62,9 @@ dependencies:
   uuid:
   custom_info_window: ^1.0.1
   flutter_polyline_points: ^1.0.0
+  google_place:
+  google_maps_webservice: ^0.0.3
+
 
 dev_dependencies:
   flutter_test:

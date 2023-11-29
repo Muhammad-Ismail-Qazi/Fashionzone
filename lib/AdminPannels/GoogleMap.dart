@@ -80,6 +80,8 @@ class _GoogleMapsState extends State<GoogleMaps> {
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
+                suffixIcon: const Icon(Icons.search,
+                    color: Colors.black), // Adjusted color
                 hintText: 'Search places',
                 border: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.white),
@@ -246,7 +248,11 @@ class _GoogleMapsState extends State<GoogleMaps> {
                   sendAddressToFirestore(userId, address, lat, long);
                   Navigator.pop(context);
                 },
-                child: const Text('Add to GoogleMap',style: TextStyle(color: Colors.white,fontFamily: 'Poppins',fontSize: 16)),
+                child: const Text('Add to GoogleMap',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Poppins',
+                        fontSize: 16)),
               ),
             ],
           ),

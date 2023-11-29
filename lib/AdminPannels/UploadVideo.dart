@@ -148,8 +148,8 @@ class _UploadVideosState extends State<UploadVideos> {
                                   alignment: Alignment.bottomCenter,
                                   children: [
                                     SizedBox(
-                                      height: 230,
-                                      width: double.infinity,
+                                      height: MediaQuery.of(context).size.height * 0.4,
+                                      width: MediaQuery.of(context).size.width * 0.92,
                                       child:
                                           VideoPlayer(_videoPlayerController!),
                                     ),
