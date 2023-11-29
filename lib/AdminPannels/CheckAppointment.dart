@@ -13,6 +13,7 @@ class CheckAppointment extends StatefulWidget {
 class _CheckAppointmentState extends State<CheckAppointment> {
   List<Map<String, dynamic>> pendingBookings = [];
   List<Map<String, dynamic>> completeBookings = [];
+  List<String> serviceIds =[];
   String salonId = "";
   String? userName;
   String? imageUrl;
@@ -89,63 +90,96 @@ class _CheckAppointmentState extends State<CheckAppointment> {
   // A helper function to build a ListView for bookings
   Widget buildBookingListView(List<Map<String, dynamic>> bookings) {
     return ListView.builder(
-        itemCount: bookings.length,
-        itemBuilder: (context, index) {
-          String userId = bookings[index]['userId'];
-          String date = bookings[index]['date'];
-          String status = bookings[index]['status'];
+      itemCount: bookings.length,
+      itemBuilder: (context, index) {
+        String userId = bookings[index]['userId'];
+        String date = bookings[index]['date'];
+        String status = bookings[index]['status'];
+        serviceIds = bookings[index]['service_ids'] ?? [];
 
-          // Fetch user details
-          fetchUserDetails(userId);
 
-          return GestureDetector(
-            // here we have all information just pass it in constructor from this class
-            onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CheckAppointmentDetails(
-                    customerName: userName.toString(),
-                    appointmentSlot: date,
-                    serviceId: '',
-                    contactInformation: contact.toString(),
-                    status: status,
-                    imageURL: imageUrl.toString(),
-                  ),
-                )),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                elevation: 5,
-                child: ListTile(
-                  leading: imageUrl != null
-                      ? CircleAvatar(
-                          backgroundImage: NetworkImage(imageUrl!),
-                          radius: 35,
-                        )
-                      : const CircleAvatar(
-                          // Provide a placeholder image or default image URL here
-                          backgroundImage:
-                              AssetImage('assets/default_avatar.png'),
-                          radius: 30,
-                        ),
-                  trailing: const Icon(Icons.pending, size: 30),
-                  title: Text(userName ?? "",
-                      style: const TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 20,
-                          color: Colors.black)),
-                  subtitle: Text(date),
-                ),
+
+        return GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CheckAppointmentDetails(
+                customerName: userName.toString(),
+                appointmentSlot: date,
+                serviceId: serviceIds,
+                contactInformation: contact.toString(),
+                status: status,
+                imageURL: imageUrl.toString(),
               ),
             ),
-          );
-        });
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              elevation: 5,
+              child: ListTile(
+                leading: imageUrl != null
+                    ? CircleAvatar(
+                  backgroundImage: NetworkImage(imageUrl!),
+                  radius: 35,
+                )
+                    : const CircleAvatar(
+                  backgroundImage:
+                  AssetImage('assets/default_avatar.png'),
+                  radius: 30,
+                ),
+                trailing: const Icon(Icons.pending, size: 30),
+                title: Text(userName ?? "",
+                    style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 20,
+                        color: Colors.black)),
+                subtitle: Text(date),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+  // return salon ID
+  Future<List<String>> fetchSalonIDsForCurrentUser() async {
+    try {
+      // Get the current user's ID
+      final User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        // Handle the case where there is no logged-in user
+        return [];
+      }
+
+      // Reference to the Firestore collection
+      final CollectionReference salonsCollection =
+      FirebaseFirestore.instance.collection('salons');
+
+      // Query Firestore to find all salon documents where the userID matches the current user's ID
+      final QuerySnapshot salonQuery = await salonsCollection
+          .where('userID', isEqualTo: currentUser.uid)
+          .get();
+
+      // Extract salon IDs from the matching documents
+      final List<String> salonIDs =
+      salonQuery.docs.map((doc) => doc.id).toList();
+      salonId = salonIDs.toString();
+      
+      return salonIDs;
+    } catch (error) {
+      // Handle any errors that occur during the process
+      print('Error fetching salon IDs: $error');
+      return [];
+    }
   }
 
+  // booking detail against salon id
   Future<void> fetchBookings(String salonId) async {
     // Clear the existing data when fetching new data
     pendingBookings.clear();
     completeBookings.clear();
+    serviceIds.clear();
 
     final FirebaseAuth auth = FirebaseAuth.instance;
     final User? user = auth.currentUser;
@@ -161,9 +195,13 @@ class _CheckAppointmentState extends State<CheckAppointment> {
         String date = data['date_time'];
         String userId = data['user_id'];
         String status = data['status'];
-
+        serviceIds = data['service_ids'];
+        print('The salon id is : $salonId');
         if (status == 'Pending') {
+          // Fetch user details
+          fetchUserDetails(userId);
           pendingBookings.add({'date': date, 'userId': userId,'status': status});
+          pendingBookings.addAll(serviceIds as Iterable<Map<String, dynamic>>);
         } else if (status == 'Complete') {
           completeBookings
               .add({'date': date, 'userId': userId, });
@@ -171,10 +209,10 @@ class _CheckAppointmentState extends State<CheckAppointment> {
       }
 
       // Trigger a rebuild to display the fetched data
-      setState(() {});
+
     }
   }
-
+  // user deatrails against user id
   Future<Map<String, dynamic>> fetchUserDetails(String userId) async {
     try {
       final DocumentSnapshot userDoc = await FirebaseFirestore.instance
@@ -204,33 +242,5 @@ class _CheckAppointmentState extends State<CheckAppointment> {
     }
   }
 
-  Future<List<String>> fetchSalonIDsForCurrentUser() async {
-    try {
-      // Get the current user's ID
-      final User? currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) {
-        // Handle the case where there is no logged-in user
-        return [];
-      }
 
-      // Reference to the Firestore collection
-      final CollectionReference salonsCollection =
-          FirebaseFirestore.instance.collection('salons');
-
-      // Query Firestore to find all salon documents where the userID matches the current user's ID
-      final QuerySnapshot salonQuery = await salonsCollection
-          .where('userID', isEqualTo: currentUser.uid)
-          .get();
-
-      // Extract salon IDs from the matching documents
-      final List<String> salonIDs =
-          salonQuery.docs.map((doc) => doc.id).toList();
-      salonId = salonIDs.toString();
-      return salonIDs;
-    } catch (error) {
-      // Handle any errors that occur during the process
-      print('Error fetching salon IDs: $error');
-      return [];
-    }
-  }
 }
