@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fashionzone/Components/AppBarComponent.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,9 +52,7 @@ class _RoutesTrackingState extends State<RoutesTracking> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  AppBar(
-        title: const Text('Find Route'),
-      ),
+      appBar: const MyCustomAppBarComponent(appBarTitle:'Find Location'),
       body: Stack(
         children: [
           GoogleMap(

@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart ' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import '../Components/AdminServicesComponent.dart';
 import 'CheckAppointment.dart';
 import 'GoogleMap.dart';
@@ -71,14 +71,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ? const Text(
                       'Upload Cover Photo',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         color: Colors.white,
                       ),
                     )
                   : const Text(
                       'Upload Your Logo',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         color: Colors.white,
                       ),
                     ),
@@ -201,7 +201,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       'Upload Cover Photo',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 14,
                       ),
                     ),
                   ),
@@ -254,7 +254,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                           Text(
                                             "4.5",
                                             style: TextStyle(
-                                              fontSize: 16,
+                                              fontSize: 14,
                                               color: Colors.white,
                                             ),
                                           ),
@@ -312,14 +312,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                        const UploadVideos(),
+                                            const UploadVideos(),
                                       ),
                                     );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     elevation: 5,
-                                    backgroundColor: const Color.fromARGB(
-                                        247, 84, 74, 158),
+                                    backgroundColor:
+                                        const Color.fromARGB(247, 84, 74, 158),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30),
                                     ),
@@ -333,15 +333,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                       'Upload video',
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 16,
+                                        fontSize: 14,
                                       ),
                                     ),
                                   ),
                                 ),
                                 // space
                                 SizedBox(
-                                  width: MediaQuery.of(context).size.width *
-                                      0.01,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.01,
                                 ), // Add spacing between buttons
                                 // upload services button
                                 ElevatedButton.icon(
@@ -350,14 +350,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                        const UploadServices(),
+                                            const UploadServices(),
                                       ),
                                     );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     elevation: 5,
-                                    backgroundColor: const Color.fromARGB(
-                                        247, 84, 74, 158),
+                                    backgroundColor:
+                                        const Color.fromARGB(247, 84, 74, 158),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30),
                                     ),
@@ -371,7 +371,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                       'Upload services',
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 16,
+                                        fontSize: 14,
                                       ),
                                     ),
                                   ),
@@ -404,7 +404,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                       "Google Map",
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 16,
+                                        fontSize: 14,
                                       ),
                                     ),
                                   ),
@@ -420,7 +420,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                         borderRadius: BorderRadius.circular(30),
                                       ),
                                     ),
-                                    icon: const Icon(Icons.list_alt_outlined),
+                                    icon: const Icon(Icons.list_alt_outlined,
+                                        color: Colors.white),
                                     onPressed: () {
                                       Navigator.push(
                                           context,
@@ -429,11 +430,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                 const CheckAppointment(),
                                           ));
                                     },
-                                    label: Text(
+                                    label: const Text(
                                       "Appointments",
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 16,
+                                        fontSize: 14,
                                       ),
                                     ),
                                   ),
@@ -452,7 +453,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 const Text(
                                   "Gallery",
                                   style: TextStyle(
-                                      fontSize: 16, fontFamily: 'Poppins'),
+                                      fontSize: 14, fontFamily: 'Poppins'),
                                 ),
                                 const Spacer(),
                                 GestureDetector(
@@ -493,7 +494,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   "Services",
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
-                                    fontSize: 16,
+                                    fontSize: 14,
                                   ),
                                 ),
                                 const Spacer(),

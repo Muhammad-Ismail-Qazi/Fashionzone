@@ -38,6 +38,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
@@ -52,6 +53,8 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
         drawer: const MyCustomDrawerComponent(),
         body: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(
                 height: 20,
@@ -59,61 +62,46 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
               // find best salon
               const Center(
                   child: Text(
-                "Find the best salon",
-                style: TextStyle(
-                    color: Colors.black45,
-                    fontFamily: 'Poppins',
-                    fontSize: 30,
-                    fontWeight: FontWeight.w500),
-              )),
+                    "Find the best salon",
+                    style: TextStyle(
+                        color: Colors.black45,
+                        fontFamily: 'Poppins',
+                        fontSize: 25,
+                        fontWeight: FontWeight.w500),
+                  )),
               // services
               const Center(
                   child: Text(
-                "Services!",
-                style: TextStyle(
-                    color: Colors.black45,
-                    fontFamily: 'Poppins',
-                    fontSize: 30,
-                    fontWeight: FontWeight.w500),
-              )),
-              // search bar
-              Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: Material(
-                  elevation: 5,
-                  shape: const OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  child: TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search...',
-                      contentPadding: const EdgeInsets.only(left: 20),
-                      hintStyle: TextStyle(
-                        fontSize: MediaQuery.of(context).size.width * 0.04,
+                    "Services!",
+                    style: TextStyle(
+                        color: Colors.black45,
                         fontFamily: 'Poppins',
-                        color: const Color.fromARGB(247, 84, 74, 158),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      suffixIcon: GestureDetector(
-                        onTap: () {
-                          performSearch(searchController.text);
-                        },
-                        child: IconButton(
-                          icon: const Icon(Icons.search,
-                              color: Color.fromARGB(247, 84, 74, 158)),
-                          onPressed: () {
-                            performSearch(searchController.text);
-                          },
-                        ),
-                      ),
-                      border: const OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                      ),
-                    ),
+                        fontSize: 25,
+                        fontWeight: FontWeight.w500),
+                  )),
+              // search bar
+              TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                  contentPadding: const EdgeInsets.only(left: 20),
+                  hintStyle: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width * 0.04,
+                    fontFamily: 'Poppins',
+                    color: const Color.fromARGB(247, 84, 74, 158),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.search,
+                        color: Color.fromARGB(247, 84, 74, 158)),
+                    onPressed: () {
+                      performSearch(searchController.text);
+                    },
+                  ),
+                  border: const OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
                   ),
                 ),
               ),
@@ -155,7 +143,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                         "Near you",
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 16,
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w500,
                           color: Colors.black45,
@@ -171,7 +159,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                         "View more",
                         textAlign: TextAlign.right,
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 16,
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w500,
                           color: Colors.black45,

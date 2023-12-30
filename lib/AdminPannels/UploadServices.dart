@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart ' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 import '../Components/AdminListtileUploadServices.dart';
 
@@ -313,6 +313,7 @@ class _UploadServicesState extends State<UploadServices> {
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 16,
+                              color: Colors.white,
                             ),
                           ),
                         ),

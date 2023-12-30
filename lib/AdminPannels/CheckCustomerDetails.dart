@@ -1,24 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashionzone/Components/AppBarComponent.dart';
-import 'package:fashionzone/Components/BottomNavigationBarComponent.dart';
 import 'package:fashionzone/Components/DrawerComponent.dart';
 import 'package:flutter/material.dart';
 
 class CheckAppointmentDetails extends StatefulWidget {
   final String? customerName;
   final String? appointmentSlot;
-  final List<String> serviceId;
-  final String? contactInformation;
-  final String? status;
-  final String? imageURL;
 
-  const CheckAppointmentDetails({
+  final String? contactInformation;
+   String? status;
+  final String? imageURL;
+  final String? documentId;
+
+   CheckAppointmentDetails({
     Key? key,
     this.customerName,
     this.appointmentSlot,
-    required this.serviceId,
     this.contactInformation,
-    this.status,
+     this.status,
     this.imageURL,
+    this.documentId,
   }) : super(key: key);
 
   @override
@@ -91,22 +92,6 @@ class _CheckAppointmentDetailsState extends State<CheckAppointmentDetails> {
                     ],
                   ),
                   const SizedBox(height: 16.0),
-                    Row(
-                    children: [
-                      const Icon(Icons.assignment, color: Colors.black),
-                      SizedBox(width: 8.0),
-                      const Text(
-                        'Service:',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
-                      ),
-                      const SizedBox(width: 8.0),
-                      Text(
-                        ' ${widget.serviceId.join(', ')}',
-                        style: const TextStyle(fontSize: 16.0, fontFamily: 'Poppins'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16.0),
                    Row(
                     children: [
                       const Icon(Icons.phone, color: Colors.black),
@@ -146,19 +131,17 @@ class _CheckAppointmentDetailsState extends State<CheckAppointmentDetails> {
                       IconButton(
                         onPressed: () {
                           // Perform action - Confirm Appointment
+                          updateAppointmentStatus('Confirmed');
                         },
                         icon: const Icon(Icons.check),
-                        style: ButtonStyle(
-                          padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero),
-                        ),
                         color: Colors.blue,
                         iconSize: 50.0,
                       ),
-
                       const SizedBox(width: 20.0),
                       IconButton(
                         onPressed: () {
                           // Perform action - Cancel Appointment
+                          updateAppointmentStatus('Canceled');
                         },
                         icon: const Icon(Icons.cancel),
                         color: Colors.red,
@@ -168,6 +151,7 @@ class _CheckAppointmentDetailsState extends State<CheckAppointmentDetails> {
                       IconButton(
                         onPressed: () {
                           // Perform action - Mark as Completed
+                          updateAppointmentStatus('Completed');
                         },
                         icon: const Icon(Icons.done_all),
                         color: Colors.green,
@@ -184,5 +168,22 @@ class _CheckAppointmentDetailsState extends State<CheckAppointmentDetails> {
         // bottomNavigationBar: const MyCustomBottomNavigationBar(),
       ),
     );
+  }
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> updateAppointmentStatus(String status) async {
+    try {
+      await _firestore
+          .collection('bookings') // Replace with your collection name
+          .doc(widget.documentId)
+          .update({'status': status});
+
+      // Update the local widget state after the status change
+      setState(() {
+        widget.status = status;
+      });
+    } catch (e) {
+      print('Error updating status: $e');
+    }
   }
 }

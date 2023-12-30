@@ -13,7 +13,6 @@ class CheckAppointment extends StatefulWidget {
 class _CheckAppointmentState extends State<CheckAppointment> {
   List<Map<String, dynamic>> pendingBookings = [];
   List<Map<String, dynamic>> completeBookings = [];
-  List<String> serviceIds =[];
   String salonId = "";
   String? userName;
   String? imageUrl;
@@ -35,45 +34,37 @@ class _CheckAppointmentState extends State<CheckAppointment> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar:AppBar(
+        appBar: AppBar(
           backgroundColor: const Color.fromARGB(247, 84, 74, 158),
           title: const Center(
             child: Text(
               "Appointments",
-              style: TextStyle(fontFamily: 'Poppins', fontSize: 25, color: Colors.white),
+              style: TextStyle(fontFamily: 'Poppins', fontSize: 25),
             ),
           ),
-          bottom: const TabBar(
+          bottom:  const TabBar(
+
             indicatorColor: Colors.white,
-            labelColor: Colors.white, // Set text color of the selected tab
-            unselectedLabelColor: Colors.white, // Set text color of unselected tabs
+            labelColor: Colors.white,
             tabs: [
               Tab(
                 text: "PENDING",
               ),
+
               Tab(
                 text: "COMPLETE",
               ),
             ],
+
           ),
+
           actions: const [
             Padding(
               padding: EdgeInsets.only(right: 14.0),
-              child: Icon(Icons.notifications, color: Colors.white),
+              child: Icon(Icons.notifications),
             )
           ],
-          leading: Builder(
-            builder: (BuildContext context) {
-              return IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white), // Set color of the drawer icon
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              );
-            },
-          ),
         ),
-
         body: TabBarView(
           children: [
             // First TabBarView for "PENDING"
@@ -95,9 +86,10 @@ class _CheckAppointmentState extends State<CheckAppointment> {
         String userId = bookings[index]['userId'];
         String date = bookings[index]['date'];
         String status = bookings[index]['status'];
-        serviceIds = bookings[index]['service_ids'] ?? [];
 
 
+        // Fetch user details
+        fetchUserDetails(userId);
 
         return GestureDetector(
           onTap: () => Navigator.push(
@@ -106,11 +98,12 @@ class _CheckAppointmentState extends State<CheckAppointment> {
               builder: (context) => CheckAppointmentDetails(
                 customerName: userName.toString(),
                 appointmentSlot: date,
-                serviceId: serviceIds,
                 contactInformation: contact.toString(),
                 status: status,
                 imageURL: imageUrl.toString(),
+                documentId: bookings[index]['documentId'], // Pass documentId here
               ),
+
             ),
           ),
           child: Padding(
@@ -129,11 +122,14 @@ class _CheckAppointmentState extends State<CheckAppointment> {
                   radius: 30,
                 ),
                 trailing: const Icon(Icons.pending, size: 30),
-                title: Text(userName ?? "",
-                    style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 20,
-                        color: Colors.black)),
+                title: Text(
+                  userName ?? "",
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 20,
+                    color: Colors.black,
+                  ),
+                ),
                 subtitle: Text(date),
               ),
             ),
@@ -142,7 +138,69 @@ class _CheckAppointmentState extends State<CheckAppointment> {
       },
     );
   }
-  // return salon ID
+
+  Future<void> fetchBookings(String salonId) async {
+    // Clear the existing data when fetching new data
+    pendingBookings.clear();
+    completeBookings.clear();
+
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
+
+    if (user != null) {
+      final QuerySnapshot bookings = await FirebaseFirestore.instance
+          .collection('bookings')
+          .where('salonID', isEqualTo: salonId)
+          .get();
+      for (QueryDocumentSnapshot booking in bookings.docs) {
+        final Map<String, dynamic> data =
+        booking.data() as Map<String, dynamic>;
+        String date = data['date_time'];
+        String userId = data['user_id'];
+        String status = data['status'];
+
+        if (status == 'Pending') {
+          pendingBookings.add({'date': date, 'userId': userId,'status': status});
+        } else if (status == 'Complete') {
+          completeBookings
+              .add({'date': date, 'userId': userId, });
+        }
+      }
+
+      // Trigger a rebuild to display the fetched data
+      setState(() {});
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchUserDetails(String userId) async {
+    try {
+      final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        final Map<String, dynamic> userDetails =
+        userDoc.data() as Map<String, dynamic>;
+        setState(() {
+          userName = userDetails['name'];
+        });
+        imageUrl = userDetails['profilePicture'];
+        contact = userDetails['phone'];
+
+        return userDetails;
+      } else {
+        // Handle the case where the user document doesn't exist
+        print("User document does not exist for userId: $userId");
+        return {};
+      }
+    } catch (error) {
+      // Handle any errors that occur during the process
+      print('Error fetching user details: $error');
+      return {};
+    }
+  }
+
   Future<List<String>> fetchSalonIDsForCurrentUser() async {
     try {
       // Get the current user's ID
@@ -165,7 +223,6 @@ class _CheckAppointmentState extends State<CheckAppointment> {
       final List<String> salonIDs =
       salonQuery.docs.map((doc) => doc.id).toList();
       salonId = salonIDs.toString();
-      
       return salonIDs;
     } catch (error) {
       // Handle any errors that occur during the process
@@ -173,74 +230,4 @@ class _CheckAppointmentState extends State<CheckAppointment> {
       return [];
     }
   }
-
-  // booking detail against salon id
-  Future<void> fetchBookings(String salonId) async {
-    // Clear the existing data when fetching new data
-    pendingBookings.clear();
-    completeBookings.clear();
-    serviceIds.clear();
-
-    final FirebaseAuth auth = FirebaseAuth.instance;
-    final User? user = auth.currentUser;
-
-    if (user != null) {
-      final QuerySnapshot bookings = await FirebaseFirestore.instance
-          .collection('bookings')
-          .where('salonID', isEqualTo: salonId)
-          .get();
-      for (QueryDocumentSnapshot booking in bookings.docs) {
-        final Map<String, dynamic> data =
-            booking.data() as Map<String, dynamic>;
-        String date = data['date_time'];
-        String userId = data['user_id'];
-        String status = data['status'];
-        serviceIds = data['service_ids'];
-        print('The salon id is : $salonId');
-        if (status == 'Pending') {
-          // Fetch user details
-          fetchUserDetails(userId);
-          pendingBookings.add({'date': date, 'userId': userId,'status': status});
-          pendingBookings.addAll(serviceIds as Iterable<Map<String, dynamic>>);
-        } else if (status == 'Complete') {
-          completeBookings
-              .add({'date': date, 'userId': userId, });
-        }
-      }
-
-      // Trigger a rebuild to display the fetched data
-
-    }
-  }
-  // user deatrails against user id
-  Future<Map<String, dynamic>> fetchUserDetails(String userId) async {
-    try {
-      final DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-
-      if (userDoc.exists) {
-        final Map<String, dynamic> userDetails =
-            userDoc.data() as Map<String, dynamic>;
-        setState(() {
-          userName = userDetails['name'];
-        });
-        imageUrl = userDetails['profilePicture'];
-        contact = userDetails['phone'];
-
-        return userDetails;
-      } else {
-        // Handle the case where the user document doesn't exist
-        print("User document does not exist for userId: $userId");
-        return {};
-      }
-    } catch (error) {
-      // Handle any errors that occur during the process
-      print('Error fetching user details: $error');
-      return {};
-    }
-  }
-
-
 }

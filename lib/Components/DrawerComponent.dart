@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fashionzone/CommonPannels/Login.dart';
-import 'package:fashionzone/CustomerPannels/CustomerDashboard.dart';
 import 'package:fashionzone/CommonPannels/Profile.dart';
+import 'package:fashionzone/CustomerPannels/CustomerDashboard.dart';
+import 'package:fashionzone/CustomerPannels/ar/deep_ar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../CustomerPannels/Ar.dart';
+
 import '../CustomerPannels/Reels.dart';
 
 class MyCustomDrawerComponent extends StatefulWidget {
@@ -172,7 +173,8 @@ class _MyCustomDrawerComponentState extends State<MyCustomDrawerComponent> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AR(),
+                      builder: (context) => DeepArExample(),
+                      // builder: (context) => AR(),
                     ),
                   );
                 },
@@ -239,7 +241,6 @@ class _MyCustomDrawerComponentState extends State<MyCustomDrawerComponent> {
                 },
                 mouseCursor: MaterialStateMouseCursor.clickable,
               ),
-
             ],
           );
         },

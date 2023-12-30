@@ -137,7 +137,7 @@ class _SalonState extends State<Salon> {
                                     label: const Text(
                                       "4.5",
                                       style: TextStyle(
-                                        fontSize: 20,
+                                        fontSize: 16,
                                         color: Colors.white,
                                       ),
                                     )),
@@ -165,7 +165,7 @@ class _SalonState extends State<Salon> {
                                     label: const Text(
                                       "View on google map",
                                       style: TextStyle(
-                                        fontSize: 20,
+                                        fontSize: 16,
                                         color: Colors.white,
                                       ),
                                     )),
@@ -215,7 +215,7 @@ class _SalonState extends State<Salon> {
                                 const Text(
                                   "Gallery",
                                   style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 16,
                                   ),
                                 ),
                                 const Spacer(),
@@ -254,7 +254,7 @@ class _SalonState extends State<Salon> {
                                 const Text(
                                   "Services",
                                   style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 16,
                                   ),
                                 ),
                                 const Spacer(),
